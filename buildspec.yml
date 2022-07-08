@@ -13,7 +13,6 @@ phases:
   pre_build:
     commands:
       - npm i
-      - pwd
   build:
     commands:
       - npm run build
