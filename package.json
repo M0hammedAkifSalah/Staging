@@ -1,6 +1,6 @@
 {
     "name": "metronic-angular",
-    "version": "7.0.9",
+    "version": "8.3.22",
     "description": "Packages used by Angular",
     "scripts": {
         "serve": "node --max_old_space_size=12288 ./node_modules/@angular/cli/bin/ng serve",
