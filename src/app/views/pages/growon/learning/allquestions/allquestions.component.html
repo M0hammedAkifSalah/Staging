@@ -1,0 +1,435 @@
+<h3>All Questions</h3>
+
+
+<!-- <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Created By</th>
+        <th scope="col">Question Type</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let question of questions; let i = index">
+        <th scope="row">{{i+1}}</th>
+        <td>{{question.questionTitle}}</td>
+        <td>{{question.createdBy}}</td>
+        <td>{{question.questionType[0]}}</td>
+        <td><button class="btn btn-primary" (click)="openQuestion(question._id)">View</button></td>
+      </tr>
+    </tbody>
+  </table> -->
+<div class="d-flex" style="float: right">
+  <ng-container *ngIf="isOwner">
+    <div class="import-btn mr-2">
+      <button class="btn btn-primary" (click)="import()">Import</button>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!isOwner">
+    <span class="import-btn">
+      <button class="btn btn-primary" (click)="downloadCSV()">Download CSV</button>
+    </span>&nbsp;&nbsp;
+    <div>
+      <input
+        type="file"
+        accept=".csv"
+        style="display: none"
+        name="files"
+        #uploads
+        (change)="bulkUploadQuestion(uploads.files)"
+        multiple
+        value="process"
+      />
+      <div class="import-btn">
+        <button class="btn btn-primary" (click)="uploads.click()">
+          Bulk Upload
+        </button>
+      </div>
+      <!-- <button class="btn btn-primary" (click)="bulkUpload()">
+        Bulk Upload
+      </button> -->
+    </div>
+  </ng-container>
+</div>
+
+<div class="row mt-3">
+  <div class="col-md-3">
+    <div class="form-group">
+      <label>Class</label>
+      <ng-select [(ngModel)]="filterOptins.class" (change)="classChanged()" [closeOnSelect]="false" clearAllText="Clear" [clearSearchOnAdd]="true"
+        name="classes" placeholder="-- select an option --" (change)="filterChanged($event)" #classess="ngModel" [items]="classes"
+        [bindLabel]="'name'" [bindValue]="'_id'">
+        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+          <div class="row pl-3 pr-1">
+            <!-- <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+              [ngModelOptions]="{standalone: true}" /> -->
+            {{item['name']}}
+          </div>
+        </ng-template>
+        <ng-template ng-multi-label-tmp let-items="items">
+          <div class="ng-value" *ngFor="let item of items | slice:0:3">
+            {{item['name']}}
+          </div>
+          <div class="ng-value" *ngIf="items.length > 3">
+            <span class="ng-value-label">{{items.length - 3}} more...</span>
+          </div>
+        </ng-template>
+        <ng-option *ngIf="classes.length==0" disabled>No Subject Available</ng-option>
+      </ng-select>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="form-group">
+      <label>Board</label>
+      <ng-select [(ngModel)]="filterOptins.board" [closeOnSelect]="false" clearAllText="Clear" [clearSearchOnAdd]="true"
+        name="board" placeholder="-- select an option --" (change)="filterChanged($event)" #boardss="ngModel" [items]="boards"
+        [bindLabel]="'name'" [bindValue]="'_id'" [multiple]="!isOwner">
+        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+          <div class="row pl-3 pr-1">
+            <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+              [ngModelOptions]="{standalone: true}" />
+            {{item['name']}}
+          </div>
+        </ng-template>
+        <ng-template ng-multi-label-tmp let-items="items">
+          <div class="ng-value" *ngFor="let item of items | slice:0:3">
+            {{item['name']}}
+          </div>
+          <div class="ng-value" *ngIf="items.length > 3">
+            <span class="ng-value-label">{{items.length - 3}} more...</span>
+          </div>
+        </ng-template>
+        <ng-option *ngIf="boards.length==0" disabled>No Topic Available</ng-option>
+      </ng-select>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="form-group">
+      <label>Syllabus</label>
+      <ng-select [(ngModel)]="filterOptins.syllabus" [closeOnSelect]="false" clearAllText="Clear" [clearSearchOnAdd]="true"
+        name="syllabus" placeholder="-- select an option --" (change)="filterChanged($event)" #syllabusess="ngModel" [items]="syllabuses"
+        [bindLabel]="'name'" [bindValue]="'_id'" [multiple]="!isOwner">
+        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+          <div class="row pl-3 pr-1">
+            <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+              [ngModelOptions]="{standalone: true}" />
+            {{item['name']}}
+          </div>
+        </ng-template>
+        <ng-template ng-multi-label-tmp let-items="items">
+          <div class="ng-value" *ngFor="let item of items | slice:0:3">
+            {{item['name']}}
+          </div>
+          <div class="ng-value" *ngIf="items.length > 3">
+            <span class="ng-value-label">{{items.length - 3}} more...</span>
+          </div>
+        </ng-template>
+        <ng-option *ngIf="syllabuses.length==0" disabled>No Topic Available</ng-option>
+      </ng-select>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="form-group">
+      <label>Subject</label>
+      <ng-select [(ngModel)]="filterOptins.subject" (change)="getChpterAndSetSubjectGlobal()" [closeOnSelect]="false" clearAllText="Clear" [clearSearchOnAdd]="true"
+        name="Subject" placeholder="-- select an option --" (change)="filterChanged($event)" #Subjectss="ngModel" [items]="Subjects"
+        [bindLabel]="'name'" [bindValue]="'_id'" [loading]="(!isOwner && (!Subjects || !Subjects.length))" [multiple]="true">
+        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+          <div class="row pl-3 pr-1">
+            <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+              [ngModelOptions]="{standalone: true}" />
+            {{item['name']}}
+          </div>
+        </ng-template>
+        <ng-template ng-multi-label-tmp let-items="items">
+          <div class="ng-value" *ngFor="let item of items | slice:0:3">
+            {{item['name']}}
+          </div>
+          <div class="ng-value" *ngIf="items.length > 3">
+            <span class="ng-value-label">{{items.length - 3}} more...</span>
+          </div>
+        </ng-template>
+        <ng-option *ngIf="Subjects.length==0" disabled>No Subject Available</ng-option>
+      </ng-select>
+    </div>
+  </div>
+  <div class="col-md-3" *ngIf="Chapters && Chapters.length">
+    <div class="form-group">
+      <label>Chapter</label>
+      <ng-select [(ngModel)]="filterOptins.chapter" [closeOnSelect]="false" clearAllText="Clear" [clearSearchOnAdd]="true"
+        name="chapter" (change)="getTopicAndSetChapterGlobal()" placeholder="-- select an option --" (change)="filterChanged($event)" #Chapterss="ngModel" [items]="Chapters"
+        [bindLabel]="'name'" [bindValue]="'_id'" [multiple]="true">
+        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+          <div class="row pl-3 pr-1">
+            <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+              [ngModelOptions]="{standalone: true}" />
+            {{item['name']}}
+          </div>
+        </ng-template>
+        <ng-template ng-multi-label-tmp let-items="items">
+          <div class="ng-value" *ngFor="let item of items | slice:0:3">
+            {{item['name']}}
+          </div>
+          <div class="ng-value" *ngIf="items.length > 3">
+            <span class="ng-value-label">{{items.length - 3}} more...</span>
+          </div>
+        </ng-template>
+        <ng-option *ngIf="Chapters.length==0" disabled>No Subject Available</ng-option>
+      </ng-select>
+    </div>
+  </div>
+  <div class="col-md-3" *ngIf="topics && topics.length">
+    <div class="form-group">
+      <label>Topics</label>
+      <ng-select [(ngModel)]="filterOptins.topic" [closeOnSelect]="false" clearAllText="Clear" [clearSearchOnAdd]="true"
+        name="Topic" placeholder="-- select an option --" (change)="filterChanged($event)" #topicss="ngModel" [items]="topics"
+        [bindLabel]="'name'" [bindValue]="'_id'" [multiple]="true">
+        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+          <div class="row pl-3 pr-1">
+            <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+              [ngModelOptions]="{standalone: true}" />
+            {{item['name']}}
+          </div>
+        </ng-template>
+        <ng-template ng-multi-label-tmp let-items="items">
+          <div class="ng-value" *ngFor="let item of items | slice:0:3">
+            {{item['name']}}
+          </div>
+          <div class="ng-value" *ngIf="items.length > 3">
+            <span class="ng-value-label">{{items.length - 3}} more...</span>
+          </div>
+        </ng-template>
+        <ng-option *ngIf="topics.length==0" disabled>No Topic Available</ng-option>
+      </ng-select>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="form-group">
+      <label>Question Type</label>
+      <ng-select [(ngModel)]="filterOptins.questionType"  [multiple]="true" [closeOnSelect]="false" clearAllText="Clear" [clearSearchOnAdd]="true"
+        name="queType" placeholder="-- select an option --" (change)="filterChanged($event)" #queTypess="ngModel" [items]="queTypes"
+        [bindLabel]="'name'" [bindValue]="'_id'">
+        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+          <div class="row pl-3 pr-1">
+            <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+              [ngModelOptions]="{standalone: true}" />
+            {{item['name']}}
+          </div>
+        </ng-template>
+        <ng-template ng-multi-label-tmp let-items="items">
+          <div class="ng-value" *ngFor="let item of items | slice:0:3">
+            {{item['name']}}
+          </div>
+          <div class="ng-value" *ngIf="items.length > 3">
+            <span class="ng-value-label">{{items.length - 3}} more...</span>
+          </div>
+        </ng-template>
+        <ng-option *ngIf="queTypes.length==0" disabled>No Topic Available</ng-option>
+      </ng-select>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="form-group">
+      <label>Attempt Type</label>
+      <ng-select [(ngModel)]="filterOptins.practiceAndTestQuestion" [closeOnSelect]="false" clearAllText="Clear" [clearSearchOnAdd]="true"
+        name="attemptType" placeholder="-- select an option --" (change)="filterChanged($event)" #queTypess="ngModel" [items]="attemptType"
+        [bindLabel]="'name'" [bindValue]="'value'">
+        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+          <div class="row pl-3 pr-1">
+            <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+              [ngModelOptions]="{standalone: true}" />
+            {{item['name']}}
+          </div>
+        </ng-template>
+        <ng-template ng-multi-label-tmp let-items="items">
+          <div class="ng-value" *ngFor="let item of items | slice:0:3">
+            {{item['name']}}
+          </div>
+          <div class="ng-value" *ngIf="items.length > 3">
+            <span class="ng-value-label">{{items.length - 3}} more...</span>
+          </div>
+        </ng-template>
+      </ng-select>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="form-group">
+      <label>Difficulty Level</label>
+      <ng-select [(ngModel)]="filterOptins.difficultyLevel" [multiple]="false" [closeOnSelect]="false" clearAllText="Clear" [clearSearchOnAdd]="true"
+        name="difficulty" placeholder="-- select an option --" (change)="filterChanged($event)" #queTypess="ngModel" [items]="difficultyLevelArray"
+        [bindLabel]="'name'" [bindValue]="'value'">
+        <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+          <div class="row pl-3 pr-1">
+            <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+              [ngModelOptions]="{standalone: true}" />
+            {{item['name']}}
+          </div>
+        </ng-template>
+        <ng-template ng-multi-label-tmp let-items="items">
+          <div class="ng-value" *ngFor="let item of items | slice:0:3">
+            {{item['name']}}
+          </div>
+          <div class="ng-value" *ngIf="items.length > 3">
+            <span class="ng-value-label">{{items.length - 3}} more...</span>
+          </div>
+        </ng-template>
+      </ng-select>
+    </div>
+  </div>
+</div>
+
+<mat-form-field>
+  <mat-label>Filter</mat-label>
+  <input
+    matInput
+    placeholder="Search a Role"
+    (keyup)="applyFilter($event)"
+    #input
+  />
+</mat-form-field>
+
+<div class="mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource" matSort>
+    <!-- question Count Column -->
+    <ng-container matColumnDef="questionCount">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Question ID</th>
+      <td mat-cell *matCellDef="let row">{{ row.question_count }}</td>
+    </ng-container>
+
+     <!-- question Count Column -->
+     <ng-container matColumnDef="questionPreview">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Question Preview</th>
+      <td mat-cell *matCellDef="let row">
+        <div class="Preview" style="text-align: start; margin-top: 10px; margin-bottom: 10px;">
+          <b><div  [innerHtml]='row.questionSvg ? (row.questionSvg | sanitizeHtml) : row.question[0] | sanitizeHtml' class="questionPreview"></div></b>
+         
+         <!-- <span mathjax-bind="row.question"></span>  -->
+          <!-- Comprehension -->
+          <div *ngIf="row.questionType == 'comprehension'">
+            <div *ngFor="let q of row.questions; let i = index">
+              {{i+1}}. &nbsp;{{q.questionType  }}
+            </div>
+           </div>
+
+          <!-- True or False -->
+          <div *ngIf="row.questionType == 'True Or False'">
+           <span>True | False</span>
+          </div>
+           <!-- Other Questions -->
+          <div *ngFor="let i of row.options; let j = index">
+             <div style="display: flex;">
+              <span *ngIf="row.questionType == 'Objectives' 
+              || row.questionType == 'MCQ' 
+              || row.questionType == '2 Column Match The Following' 
+              || row.questionType == '3 Column Match The Following' 
+              || row.questionType == 'Option Level Scoring'
+              || row.questionType == 'Option Level Scoring - 3 Column Match The Following'
+              ">{{j+1}}.&nbsp;</span>
+              <span *ngIf="row.questionType == 'Fill in the blanks' 
+              || row.questionType == 'NumericalRange'
+              ">Answer:&nbsp; </span>
+              <div *ngIf="!row.options[j].value.includes('https://')" [innerHtml]='row.options[j].valueSvg ? (row.options[j].valueSvg | sanitizeHtml) : row.options[j].value | sanitizeHtml'> </div>
+              <div  style="display: flex;flex-direction: row;" >
+                <div *ngIf="row.options[j].value.includes('https://') && !row.options[j].value.includes('mp3')"><img src={{row.options[j].value}} height="50" /></div>
+                <div *ngIf="row.options[j].value.includes('mp3')">Audio File</div>
+              </div>
+              
+             </div>
+             
+            
+          </div>
+        </div>
+        
+     
+      </td>
+    </ng-container>
+
+    <!-- question title Column
+    <ng-container matColumnDef="questionTitle">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+      <td mat-cell *matCellDef="let row">{{ row.questionTitle }}</td>
+    </ng-container> -->
+
+    <!-- Class Column -->
+    <ng-container matColumnDef="class">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Class</th>
+      <td mat-cell *matCellDef="let row">{{ row.class ? row.class.name : "" }}</td>
+    </ng-container>
+
+    <!-- Board Column -->
+    <ng-container matColumnDef="board">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Board</th>
+      <td mat-cell *matCellDef="let row">{{ row.board ? row.board[0].name  : '' }}</td>
+    </ng-container>
+
+    <!-- Subject Column -->
+    <ng-container matColumnDef="subject">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Subject</th>
+      <td mat-cell *matCellDef="let row">{{ row.subject ? row.subject.name  : '' }}</td>
+    </ng-container>
+
+    <!-- created by Column 
+    <ng-container matColumnDef="createdBy">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Created By</th>
+      <td mat-cell *matCellDef="let row">{{ row.createdBy }}</td>
+    </ng-container>-->
+
+    <!-- Topic Coulumn -->
+    <ng-container matColumnDef="topic">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Topic</th>
+      <td mat-cell *matCellDef="let row">
+        <span *ngFor="let item of row.topic">
+        {{ item.name }}
+      </span>
+      </td>
+      
+    </ng-container>
+
+    <!-- question list Column -->
+    <ng-container matColumnDef="questionType">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Question type</th>
+      <td mat-cell *matCellDef="let row">{{ row.questionType }}</td>
+    </ng-container>
+    <!-- <ng-container matColumnDef="class">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Class</th>
+      <td mat-cell *matCellDef="let row">{{ row.class?.name }}</td>
+    </ng-container> -->
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+      <td mat-cell *matCellDef="let row">
+        <button class="btn btn-primary" (click)="openQuestion(row._id)">
+          <mat-icon aria-hidden="false" aria-label="Update">edit</mat-icon>
+        </button>
+        <button class="btn btn-primary" (click)="deleteQuestion(row)">
+          <mat-icon aria-hidden="false" aria-label="Delete">delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+    <!-- Row shown when there is no matching data. -->
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">
+        No data matching the filter "{{ input.value }}"
+      </td>
+    </tr>
+  </table>
+
+  <mat-paginator
+    #paginator
+    [length]="resultLength"
+    [pageIndex]="0"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 25, 50, 100]"
+    (page)="onPageFired($event)"
+  >
+  </mat-paginator>
+</div>
+
+<!-- <kt-viewquestion></kt-viewquestion> -->
+<!-- <kt-view-questionpaper></kt-view-questionpaper> -->

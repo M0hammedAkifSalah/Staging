@@ -1,0 +1,35 @@
+[
+    {
+        "Objectives": true
+    },
+    {
+        "MCQs": true
+    },
+    {
+        "Fill_in_The_Blanks": true
+    },
+    {
+        "Two_Column_Match_The_Following": true
+    },
+    {
+        "Three_Column_Match_The_Following": true
+    },
+    {
+        "Option_Level_Scoring_three_Column_Match_The_Following": true
+    },
+    {
+        "Option_Level_Scoring": true
+    },
+    {
+        "True_Or_False": true
+    },
+    {
+        "Numerical_value_Range": true
+    },
+    {
+        "Free_Text": true
+    },
+    {
+        "Comprehensive": true
+    }
+]

@@ -1,0 +1,200 @@
+<div class="classcontainer">
+    <div class="modal-header">
+        <h4 class="modal-title">Update School admin</h4>
+    </div>
+    <div class="modal-body px-0" *ngIf="isLoaded">
+        <!-- <div style="overflow-y: hidden; height: calc(100vh - 15rem);"> -->
+        <!-- <div class="px-2" style="overflow-y: auto; height: 100%;"> -->
+        <form [formGroup]="userForm" autocomplete="off">
+
+            <!-- Name -->
+            <mat-form-field>
+                <mat-label>Name</mat-label>
+                <input matInput placeholder="Name" formControlName="name" class="form-control" #firstname="matInput"
+                    required>
+            </mat-form-field>
+            <div class="row">
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                    <!-- Contact -->
+                    <mat-form-field>
+                        <mat-label>Contact Number</mat-label>
+                        <input type="number" matInput placeholder="Contact Number" formControlName="mobile">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                    <!-- Password -->
+                    <mat-form-field>
+                        <mat-label>Password</mat-label>
+                        <input type="text" matInput placeholder="Password" formControlName="password"
+                            class="form-control" required>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                    <!-- <mat-form-field>
+                        <mat-label>Branch</mat-label>
+                        <mat-select placeholder="Branch" formControlName="branch_id" required>
+                            <mat-option *ngFor="let branch of branches" [value]="branch.name">
+                                {{branch.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field> -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                    <!-- Gender -->
+                    <mat-radio-group formControlName="gender" color="primary">
+                        <mat-label>Gender</mat-label>
+                        <mat-radio-button class="example-radio-button" *ngFor="let gend of genders" [value]="gend">
+                            {{gend}}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                    <!-- DOB -->
+                    <mat-form-field>
+                        <mat-label>Date of Birth (Please select from calender)</mat-label>
+                        <input matInput [matDatepicker]="picker2" formControlName="dob">
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                    <!-- Email -->
+                    <mat-form-field>
+                        <mat-label>Email</mat-label>
+                        <input type="email" matInput placeholder="Email" formControlName="email">
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                    <!-- Email -->
+                    <mat-form-field>
+                        <mat-label>Role</mat-label>
+                        <input type="text" readonly matInput placeholder="Email" formControlName="role_name">
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                    <!-- Email -->
+                    <!-- <mat-form-field>
+                                <mat-label>secondary Role</mat-label>
+                                <mat-select placeholder="Branch" formControlName="secondary_profile_type" multiple>
+                                    <mat-option *ngFor="let role of roles" [value]="role._id">
+                                        {{role.display_name}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field> -->
+                </div>
+            </div>
+            <!-- Address -->
+            <mat-form-field appearance="fill">
+                <mat-label>Address</mat-label>
+                <textarea matInput placeholder="Address" formControlName="address"></textarea>
+            </mat-form-field>
+            <div class="row">
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <!-- Country -->
+                    <mat-form-field>
+                        <mat-label>Select Country</mat-label>
+                        <mat-select placeholder="Country" formControlName="country" (selectionChange)="getStates()">
+                            <mat-option *ngFor="let country of countries" [value]="country.country_name">
+                                {{country.country_name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <!-- State -->
+                    <mat-form-field>
+                        <mat-label>Select State</mat-label>
+                        <mat-select placeholder="State" formControlName="state" (selectionChange)="getCities()">
+                            <mat-option *ngFor="let state of states" [value]="state.state_name">
+                                {{state.state_name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <!-- City -->
+                    <mat-form-field>
+                        <mat-label>Select City</mat-label>
+                        <mat-select placeholder="City" formControlName="city">
+                            <mat-option *ngFor="let city of cities" [value]="city.city_name">
+                                {{city.city_name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <mat-form-field>
+                        <mat-label>Pincode</mat-label>
+                        <input matInput type="number" placeholder="pincode" formControlName="pincode"
+                            class="form-control">
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <!-- Aadhar card no -->
+                    <mat-form-field>
+                        <mat-label>Aadhaar Card no</mat-label>
+                        <input type="number" matInput placeholder="Aadhaar Card no" formControlName="aadhar_card"
+                            class="form-control">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <!-- Blood group -->
+                    <mat-form-field>
+                        <mat-label>Blood Group</mat-label>
+                        <input matInput placeholder="Blood Group" formControlName="blood_gr" class="form-control">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <!-- Mother Tongue -->
+                    <mat-form-field>
+                        <mat-label>Mother Tongue</mat-label>
+                        <input matInput placeholder="Mother Tongue" formControlName="mother_tounge"
+                            class="form-control">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <!-- Marital status -->
+                    <mat-form-field>
+                        <mat-label>Marital status</mat-label>
+                        <mat-select placeholder="Marital status" formControlName="marital_status">
+                            <mat-option *ngFor="let mode of maritalStatuses" [value]="mode">
+                                {{mode}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                    <!-- Religion -->
+                    <mat-form-field>
+                        <mat-label>Religion</mat-label>
+                        <input matInput placeholder="Religion" formControlName="religion" class="form-control">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                    <!-- Cast -->
+                    <mat-form-field>
+                        <mat-label>Caste</mat-label>
+                        <input matInput placeholder="Cast" formControlName="caste" class="form-control">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-12"></div>
+            </div>
+            <div class="import-btn">
+                <button [disabled]="!userForm.valid" (click)="updateUser()" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+        <!-- </div> -->
+        <!-- </div> -->
+    </div>
+</div>

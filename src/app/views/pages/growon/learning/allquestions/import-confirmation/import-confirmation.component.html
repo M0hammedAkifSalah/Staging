@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="row col-md-12 col-sm-12 p-12">
+        <h3>You are about to import <b>{{totalQuestion}}</b> question in to your School Repo </h3>
+    </div>
+    <div class="row">
+        <span *ngFor="let queCount of questionCount;let i = index">
+            <button id="i" class="btn btn-count" (click)="getSelectedQuestion(queCount.questionType,i)">
+                <span class="btn-count-text">
+                {{queCount.questionTypeValue}}
+                ({{queCount.selectCount}})
+                </span>
+            </button>
+        </span>
+    </div>
+    <div class="row col-md-12 col-sm-12 mt-35 content">
+        Click Confirm to complete the Import or click Back the change seelction or mappings
+     </div>
+     <div class="row col-md-12 col-sm-12 mt-24 pb-60">
+        <button mat-raised-button class="btn btn-sm btn-primary btn-backk" (click)="backToSelectQuestion()">Back</button>
+        <button mat-raised-button class="btn  btn-sm btn-primary btn-confirm" (click)="confirmToImport()">Confirm</button>
+     </div>
+</div>

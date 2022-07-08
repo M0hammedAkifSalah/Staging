@@ -1,0 +1,329 @@
+<div style="display: flex;justify-content: end;" >
+  
+  <div class="userPicDiv" (click)="fileUpload.click()">
+    <input type="file" style="display:none" #fileUpload (change)="onFileUpload($event)">
+    <span *ngIf="!filePreview">
+      <img src="/assets/media/growon/logos/profilePicLogo.png" alt="">
+      <p>Click to add picture</p>
+    </span>
+    <span *ngIf="filePreview">
+      <img [src]="filePreview" alt="">
+    </span>
+  </div>
+</div>
+<div class="content1">
+    <div class="tab-header">
+        <div class="tab-title">Update Institution</div>
+    </div>
+    <form [formGroup]="updateSchoolForm" autocomplete="off">
+        <div class="schooldetails">
+            <div class="row m-0 p-4">
+                <div class="col-md-5 col-sm-3 col-xs-12 p-0 mr-4">
+                    <!-- School -->
+                    <mat-form-field>
+                        <mat-label>Institution Name</mat-label>
+                        <input matInput formControlName="schoolName" required [readonly]="schoolFlag">
+                        <mat-error *ngIf="updateSchoolForm.get('schoolName').hasError('required')"> Institution name is
+                            required
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-6 col-sm-3 col-xs-12 p-0 ml-4">
+                    <!-- Address -->
+                    <mat-form-field>
+                        <mat-label>Address</mat-label>
+                        <input matInput formControlName="address" required>
+                        <mat-error *ngIf="updateSchoolForm.get('address').hasError('required')">Institution address is
+                            required </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row m-0 p-4">
+                <div class="col-md-3 col-sm-3 col-xs-12 p-0 mr-3">
+                    <mat-form-field>
+                        <mat-label>Select Country</mat-label>
+                        <mat-select placeholder="Country" formControlName="country" required (selectionChange)="getStates()">
+                            <mat-option *ngFor="let country of countries" [value]="country._id">
+                                {{country.country_name}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="updateSchoolForm.get('country').hasError('required')"> pleases select the city
+                        </mat-error>
+                    </mat-form-field>
+
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12 p-0 ml-3 mr-3">
+                    <!-- State -->
+                    <mat-form-field>
+                        <mat-label>Select State</mat-label>
+                        <mat-select placeholder="State" formControlName="state" required (selectionChange)="getCities()">
+                            <mat-option *ngFor="let state of states" [value]="state._id">
+                                {{state.state_name}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="updateSchoolForm.get('state').hasError('required')"> please select state
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-12 p-0 ml-3 mr-3">
+                    <!-- City -->
+                    <mat-form-field>
+                        <mat-label>Select City</mat-label>
+                        <mat-select placeholder="City" formControlName="city" required>
+                            <mat-option *ngFor="let city of cities" [value]="city._id">
+                                {{city.city_name}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="updateSchoolForm.get('city').hasError('required')"> please select city
+                        </mat-error>
+                    </mat-form-field>
+
+                </div>
+                <div class="col-md-2 col-sm-3 col-xs-12 p-0 ml-3">
+                    <mat-form-field>
+                        <mat-label>Pincode</mat-label>
+                        <input type="tel" matInput formControlName="pinCode" required>
+                        <mat-error *ngIf="updateSchoolForm.get('pinCode').hasError('required')"> pincode is required
+                        </mat-error>
+                        <mat-error *ngIf="updateSchoolForm.get('pinCode').hasError('maxlength')">You can
+                            only enter maximum
+                            of 10 number </mat-error>
+
+                        <mat-error *ngIf="updateSchoolForm.get('pinCode').hasError('pattern')"> pincode can
+                            only have numbers
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row m-0 p-4">
+                <div class="col-md-3 col-sm-3 col-xs-12 p-0 mr-3">
+                    <!-- email -->
+                    <mat-form-field>
+                        <mat-label>Institution Email</mat-label>
+                        <input type="email" matInput formControlName="email" required>
+                        <mat-error *ngIf="updateSchoolForm.get('email').hasError('required')"> institution email is
+                            required </mat-error>
+                        <mat-error *ngIf="updateSchoolForm.get('email').hasError('pattern')"> Invalid email format
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 col-sm-4 col-xs-12 p-0 ml-3 mr-3">
+                    <!-- Website -->
+                    <mat-form-field>
+                        <mat-label>Institution Website</mat-label>
+                        <input matInput formControlName="website">
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 col-sm-4 col-xs-12 p-0 ml-3">
+                    <!-- Contact -->
+                    <mat-form-field>
+                        <mat-label>Contact Number</mat-label>
+                        <input type="tel" matInput formControlName="contact_number" required>
+
+                        <mat-error *ngIf="updateSchoolForm.get('contact_number').hasError('required')">Institute
+                            contact required
+                        </mat-error>
+                        <mat-error *ngIf="updateSchoolForm.get('contact_number').hasError('maxlength')"> you can
+                            enter maximum of 15
+                            numbers </mat-error>
+                        <mat-error *ngIf="updateSchoolForm.get('contact_number').hasError('minlength')"> You should
+                            enter minimum of
+                            10 numbers</mat-error>
+                        <mat-error *ngIf="updateSchoolForm.get('contact_number').hasError('pattern')"> Contact
+                            number can only have
+                            numbers</mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row m-0 p-4">
+                <div class="col-md-3 col-sm-3 col-xs-12 p-0 mr-2">
+                    <mat-form-field>
+                        <mat-label>Type of Institution</mat-label>
+                        <mat-select placeholder="Type of School" formControlName="sType" required>
+                            <mat-option *ngFor="let type of schoolType" [value]="type._id">
+                                {{type.stype}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="updateSchoolForm.get('sType').hasError('required')"> Institution type is
+                            required </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+
+        <div class="branchdetails">
+            <div formArrayName="branch"
+                *ngFor="let branch of updateSchoolForm.get('branch')['controls'] as FormArray; let i = index">
+                <div [formGroupName]="i">
+                    <div class="tab-header">
+                        <div class="tab-title">Enter branch {{i+1}} details</div>
+                    </div>
+                    <div class="row m-0 p-4">
+                        <div class="col-md-3 col-sm-4 col-xs-12 p-0 mr-3">
+                            <mat-form-field>
+                                <mat-label>Branch {{i+1}} Name</mat-label>
+                                <input type="text" matInput formControlName="name" required>
+
+                                <mat-error *ngIf="branch.get('name').hasError('required')">Branch name is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12 p-0 ml-3 mr-3">
+                            <mat-form-field>
+                                <mat-label>Branch {{i+1}} Address</mat-label>
+                                <input type="text" matInput formControlName="address" required>
+                                <mat-error *ngIf="branch.get('address').hasError('required')">Branch address is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3 col-sm-4 col-xs-12 p-0 ml-3">
+                            <mat-form-field>
+                                <mat-label>Branch {{i+1}} Contact number</mat-label>
+                                <input type="number" matInput formControlName="contact" required>
+                                <mat-error *ngIf="branch.get('contact').hasError('required')">Branch contact is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row m-0 p-4">
+                        <div class="col-md-3 col-sm-3 col-xs-12 p-0 mr-3">
+                            <mat-form-field>
+                                <mat-label>Branch {{i+1}} Country</mat-label>
+                                <mat-select (selectionChange)="countryChangeDropdown($event.value,i)" *ngIf="i==0"
+                                    formControlName="country" required>
+                                    <mat-option *ngFor="let country of b1Countries" [value]="country._id">
+                                        {{country.country_name}}</mat-option>
+                                    <mat-error *ngIf="branch.get('country').hasError('required')">Please select a
+                                        country
+                                    </mat-error>
+                                </mat-select>
+                                <mat-select (selectionChange)="countryChangeDropdown($event.value,i)" *ngIf="i==1"
+                                    formControlName="country" required>
+                                    <mat-option *ngFor="let country of b2Countries" [value]="country._id">
+                                        {{country.country_name}}</mat-option>
+                                    <mat-error *ngIf="branch.get('country').hasError('required')">Please select a
+                                        country
+                                    </mat-error>
+                                </mat-select>
+                                <mat-select (selectionChange)="countryChangeDropdown($event.value,i)" *ngIf="i==2"
+                                    formControlName="country" required>
+                                    <mat-option *ngFor="let country of b3Countries" [value]="country._id">
+                                        {{country.country_name}}</mat-option>
+                                    <mat-error *ngIf="branch.get('country').hasError('required')">Please select a
+                                        country
+                                    </mat-error>
+                                </mat-select>
+                                <mat-select (selectionChange)="countryChangeDropdown($event.value,i)" *ngIf="i==3"
+                                    formControlName="country" required>
+                                    <mat-option *ngFor="let country of b4Countries" [value]="country._id">
+                                        {{country.country_name}}</mat-option>
+                                    <mat-error *ngIf="branch.get('country').hasError('required')">Please select a
+                                        country
+                                    </mat-error>
+                                </mat-select>
+                                <mat-select (selectionChange)="countryChangeDropdown($event.value,i)" *ngIf="i==4"
+                                    formControlName="country" required>
+                                    <mat-option *ngFor="let country of b5Countries" [value]="country._id">
+                                        {{country.country_name}}</mat-option>
+                                    <mat-error *ngIf="branch.get('country').hasError('required')">Please select a
+                                        country
+                                    </mat-error>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 p-0 ml-3 mr-3">
+                            <mat-form-field>
+                                <mat-label>Branch {{i+1}} State</mat-label>
+                                <mat-select (selectionChange)="stateChangeDropdown($event.value,i)" *ngIf="i==0"
+                                    formControlName="state" required>
+                                    <mat-option *ngFor="let state of b1States" [value]="state._id">{{state.state_name}}
+                                    </mat-option>
+                                    <mat-error *ngIf="branch.get('state').hasError('required')">Please select a state
+                                    </mat-error>
+                                </mat-select>
+                                <mat-select (selectionChange)="stateChangeDropdown($event.value,i)" *ngIf="i==1"
+                                    formControlName="state" required>
+                                    <mat-option *ngFor="let state of b2States" [value]="state._id">{{state.state_name}}
+                                    </mat-option>
+                                    <mat-error *ngIf="branch.get('state').hasError('required')">Please select a state
+                                    </mat-error>
+                                </mat-select>
+                                <mat-select (selectionChange)="stateChangeDropdown($event.value,i)" *ngIf="i==2"
+                                    formControlName="state" required>
+                                    <mat-option *ngFor="let state of b3States" [value]="state._id">{{state.state_name}}
+                                    </mat-option>
+                                    <mat-error *ngIf="branch.get('state').hasError('required')">Please select a state
+                                    </mat-error>
+                                </mat-select>
+                                <mat-select (selectionChange)="stateChangeDropdown($event.value,i)" *ngIf="i==3"
+                                    formControlName="state" required>
+                                    <mat-option *ngFor="let state of b4States" [value]="state._id">{{state.state_name}}
+                                    </mat-option>
+                                    <mat-error *ngIf="branch.get('state').hasError('required')">Please select a state
+                                    </mat-error>
+                                </mat-select>
+                                <mat-select (selectionChange)="stateChangeDropdown($event.value,i)" *ngIf="i==4"
+                                    formControlName="state" required>
+                                    <mat-option *ngFor="let state of b5States" [value]="state._id">{{state.state_name}}
+                                    </mat-option>
+                                    <mat-error *ngIf="branch.get('state').hasError('required')">Please select a state
+                                    </mat-error>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-3 col-sm-3 col-xs-12 p-0 ml-3 mr-3">
+                            <mat-form-field>
+                                <mat-label>Branch {{i+1}} City</mat-label>
+                                <mat-select *ngIf="i==0" formControlName="city" required>
+                                    <mat-option *ngFor="let city of b1Cities" [value]="city._id">{{city.city_name}}
+                                    </mat-option>
+                                    <mat-error *ngIf="branch.get('city').hasError('required')">Please select a city
+                                    </mat-error>
+                                </mat-select>
+                                <mat-select *ngIf="i==1" formControlName="city" required>
+                                    <mat-option *ngFor="let city of b2Cities" [value]="city._id">{{city.city_name}}
+                                    </mat-option>
+                                    <mat-error *ngIf="branch.get('city').hasError('required')">Please select a city
+                                    </mat-error>
+                                </mat-select>
+                                <mat-select *ngIf="i==2" formControlName="city" required>
+                                    <mat-option *ngFor="let city of b3Cities" [value]="city._id">{{city.city_name}}
+                                    </mat-option>
+                                    <mat-error *ngIf="branch.get('city').hasError('required')">Please select a city
+                                    </mat-error>
+                                </mat-select>
+                                <mat-select *ngIf="i==3" formControlName="city" required>
+                                    <mat-option *ngFor="let city of b4Cities" [value]="city._id">{{city.city_name}}
+                                    </mat-option>
+                                    <mat-error *ngIf="branch.get('city').hasError('required')">Please select a city
+                                    </mat-error>
+                                </mat-select>
+                                <mat-select *ngIf="i==4" formControlName="city" required>
+                                    <mat-option *ngFor="let city of b5Cities" [value]="city._id">{{city.city_name}}
+                                    </mat-option>
+                                    <mat-error *ngIf="branch.get('city').hasError('required')">Please select a city
+                                    </mat-error>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-2 col-sm-3 col-xs-12 p-0 ml-3">
+                            <mat-form-field>
+                                <mat-label>Branch {{i+1}} Pincode</mat-label>
+                                <input type="number" matInput formControlName="pincode" required>
+                                <mat-error *ngIf="branch.get('pincode').hasError('required')">pincode is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+    <form #update="ngForm" (ngSubmit)="updateSchoolNew()">
+        <div class="form-group import-btn p-4">
+            <button class="btn btn-primary" [disabled]="!updateSchoolForm.valid">Update school</button>
+            <input type="reset" id="reset" class="btn btn-primary" value="Reset" hidden>
+        </div>
+    </form>
+</div>

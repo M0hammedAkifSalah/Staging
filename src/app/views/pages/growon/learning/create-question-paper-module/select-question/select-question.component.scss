@@ -1,0 +1,67 @@
+.mt-25{
+    margin-top:25px !important;
+}
+.heading-row{
+    background-color: #F0F4FC;
+    margin: 0px;
+    height: 48px;
+}
+.heading-text{
+    margin-top: 12px;
+    margin-left: 30px;
+}
+.heading-filter{
+    margin-top: 4.4px;
+    margin-right: 30px;
+}
+.check-div{
+    margin-right: -20px;;
+}
+.checkbox-pos{
+    margin-left:25px;
+}
+.scrollable{
+    overflow-y: scroll;
+    max-height: 525px;
+    height:525px;
+}
+.apply-btn{
+    position: fixed;
+    top: 557px;
+    left: 530px;
+}
+.table-position{
+    float: right;
+}
+.question-list-row{
+    margin-top: 5px;
+}
+tr {
+    background-color: #f8f8f8;
+    height: 25px !important;
+}
+.mb-21{
+    margin-bottom: 21px;
+}
+.td {
+    font-size: 12px;
+    padding: 0 10px !important;
+    text-align: inherit !important;
+}
+
+.q-count{
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+
+  p{
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 0 !important;
+    padding-top: 3px !important;
+  }
+}
+
+.answer-div img{
+  height: 50px;
+}

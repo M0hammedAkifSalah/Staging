@@ -1,0 +1,66 @@
+<div class="classContainer" autocomplete="off">
+    <h2>Update teacher</h2>
+    <div class="row" style="width: 100%;">
+        <div class="col">
+            <form [formGroup]="updateTeacherForm" (ngSubmit)="updateTeacher()">
+                <div class="form-group">
+                    <label> Name*</label>
+                    <input type="text" name="name" id="" class="form-control" formControlName="name">
+                </div>
+                <div class="form-group">
+                    <label>
+                        address
+                    </label>
+                    <input type="text" name="address" id="" class="form-control" formControlName="address">
+                </div>
+                <div class="form-group">
+                    <label>
+                        teaching level
+                    </label>
+                    <input type="text" name="level" id="" class="form-control" formControlName="level">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Aadhaar no
+                    </label>
+                    <input type="text" name="aadhar_card" id="" class="form-control" formControlName="aadhar_card">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        contact
+                    </label>
+                    <input type="text" name="mobile" id="" class="form-control" formControlName="mobile">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        gender
+                    </label>
+                    <input type="text" name="gender" id="" class="form-control" formControlName="gender">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        marital Status
+                    </label>
+                    <input type="text" name="marital_status" id="" class="form-control"
+                        formControlName="marital_status">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Email
+                    </label>
+                    <input type="text" name="email" id="" class="form-control" formControlName="email">
+                </div>
+
+                <div class="form-group import-btn ">
+                    <button class="btn btn-primary" [disabled]="!updateTeacherForm.valid">Update Teacher</button>
+                    <input type="reset" id="reset" class="btn btn-primary" value="Reset" hidden>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

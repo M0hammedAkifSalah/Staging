@@ -1,0 +1,200 @@
+<div class="container">
+    <div class="row ">
+        <div class="col-md-8 col-sm-8 pt-26 pl-24">
+            <span class="heading">Subject / Topic</span>
+        </div>
+        <div class="col-md-4 col-sm-4">
+            <button class="btn btn-import" (click)="importMediaTopic()">Import media</button>
+        </div>
+    </div>
+    <div class="row col-md-12 col-sm-12 mt-7 pl-24">
+        <span class="fetch-content">Fetch and Import content </span>
+    </div>
+    <div class="row mt-29 pl-75">
+        <!-- <ng-container *ngIf="schoolId;else Gadmin">
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <ng-container *ngIf="class">
+                <div class="form-group">
+                    <label>Class<span class="reqStar">*</span></label>
+                    <select [(ngModel)]="importObject.selectedClassId" placeholder="-- select an option --"
+                        #className="ngModel" name="class" class="form-control"
+                        (change)="getBoardIdAndSyllabusId($event.target.value)"
+                        [ngClass]="{'is-invalid':  className.invalid && (className.touched || validationCheckFlag)}">
+                        <option selected value> -- select an option -- </option>
+                        <option *ngFor="let item of class" [value]="item.classId">
+                            &nbsp;&nbsp;&nbsp;&nbsp;{{item.className}}
+                        </option>
+                        <option *ngIf="class.length==0" disabled>No classes Available</option>
+                    </select>
+                    <span class="text-danger"
+                        *ngIf="className.invalid && (className.touched || validationCheckFlag)">Class
+                        is
+                        required</span>
+
+                </div>
+            </ng-container>
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <ng-container *ngIf="subjectFlag && subjects">
+                        <label>Subject<span class="reqStar">*</span></label>
+                        <select [(ngModel)]="importObject.selectedSubjectId" placeholder="-- select an option --"
+                            #subjectName="ngModel" name="subject" class="form-control"
+                            (change)="getChapterAndSetSubject($event.target.value)"
+                            [ngClass]="{'is-invalid':  subjectName.invalid && (subjectName.touched || validationCheckFlag)}">
+                            <option selected value> -- select an option -- </option>
+                            <option *ngFor="let item of subjects" [value]="item._id">
+                                &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                            </option>
+                            <option *ngIf="subjects.length==0" disabled>No Subjects Available</option>
+                        </select>
+                        <span class="text-danger"
+                            *ngIf="subjectName.invalid && (subjectName.touched || validationCheckFlag)">Class
+                            is
+                            required</span>
+                    </ng-container>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <ng-container *ngIf="chapterFlag && chapters">
+                        <label>Chapter<span class="reqStar">*</span></label>
+                        <select [(ngModel)]="importObject.selectedChapters" name="chapter"
+                            placeholder="-- select an option -- " class="form-control"
+                            (change)="getTopicsAndSetChapter($event.source.value)">
+                            <option selected value> -- select an option -- </option>
+                            <option *ngFor="let item of chapters" [value]="item._id">
+                                &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                            <option *ngIf="chapters.length==0" disabled>No chapters Available</option>
+                        </select>
+                    </ng-container>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <ng-container *ngIf="topicFlag && topics">
+                        <label>Topics<span class="reqStar"></span></label>
+                        <select [(ngModel)]="importObject.selectedTopics" name="topic" class="form-control"
+                            placeholder="-- select an option -- ">
+                            <option selected value> -- select an option -- </option>
+                            <option *ngFor="let item of topics" [value]="item._id">
+                                &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                            <option *ngIf="topics.length==0" disabled>No Topics Available</option>
+                        </select>
+                    </ng-container>
+                </div>
+            </div>
+        </ng-container> -->
+        <!-- <ng-template #Gadmin> -->
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <ng-container *ngIf="classes">
+                    <div class="form-group">
+                        <label>Class<span class="reqStar">*</span></label>
+                        <ng-select [clearable]="false" [(ngModel)]="importObject.selectedClassId" placeholder="-- select an option --"
+                            #className1="ngModel" name="class"
+                            [ngClass]="{'is-invalid':  className1.invalid && (className1.touched || validationCheckFlag)}">
+                            <ng-option selected value> -- select an option -- </ng-option>
+                            <ng-option *ngFor="let item of classes" [value]="item._id">
+                                &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                            </ng-option>
+                            <ng-option *ngIf="classes.length==0" disabled>No classes Available</ng-option>
+                        </ng-select>
+                        <span class="text-danger"
+                            *ngIf="className1.invalid && (className1.touched || validationCheckFlag)">Class
+                            is
+                            required</span>
+                    </div>
+                </ng-container>
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <ng-container *ngIf="subjects && subjects">
+                        <label>Subject<span class="reqStar">*</span></label>
+                        <ng-select [clearable]="false" [(ngModel)]="importObject.selectedSubjectId" placeholder="-- select an option --"
+                            #subjectName1="ngModel" name="subject"
+                            (change)="getGlobalChapters($event)"
+                            [ngClass]="{'is-invalid':  subjectName1.invalid && (subjectName1.touched || validationCheckFlag)}">
+                            <ng-option selected value> -- select an option -- </ng-option>
+                            <ng-option *ngFor="let item of subjects" [value]="item._id">
+                                &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                            </ng-option>
+                            <ng-option *ngIf="subjects.length==0" disabled>No Subjects Available</ng-option>
+                        </ng-select>
+                        <span class="text-danger"
+                            *ngIf="subjectName1.invalid && (subjectName1.touched || validationCheckFlag)">Class
+                            is
+                            required</span>
+                    </ng-container>
+                </div>
+            </div>
+            <div class="col-md-3 col-cm-3 col-xs-12">
+                <ng-container *ngIf="chapterFlag && chapters">
+                    <label>Chapter<span class="reqStar"></span></label>
+                    <ng-select [clearable]="false" [(ngModel)]="importObject.selectedChapters" name="chapter"
+                        placeholder="-- select an option -- "  (change)="getTopicGlobally()">
+                        <ng-option selected value> -- select an option -- </ng-option>
+                        <ng-option *ngFor="let item of chapters" [value]="item._id">
+                            &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</ng-option>
+                        <ng-option *ngIf="chapters.length==0" disabled>No chapters Available</ng-option>
+                    </ng-select>
+                </ng-container>
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <ng-container *ngIf="topicFlag && topics">
+                        <label>Topics<span class="reqStar"></span></label>
+                        <ng-select [clearable]="false" [(ngModel)]="importObject.selectedTopics" name="topic"
+                            placeholder="-- select an option -- ">
+                            <ng-option selected value> -- select an option -- </ng-option>
+                            <ng-option *ngFor="let item of topics" [value]="item._id">
+                                &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</ng-option>
+                            <ng-option *ngIf="topics.length==0" disabled>No Topics Available</ng-option>
+                        </ng-select>
+                        <!-- <span class="text-danger" *ngIf="(questionFormControl.topic.touched) && questionFormControl.topic.errors?.required">Topic is
+                        required</span> -->
+                    </ng-container>
+                </div>
+
+            </div>
+        <!-- </ng-template> -->
+    </div>
+    <div class="row col-md-12 col-sm-12 col-xs-12 pt-64">
+        <button class="btn btn-import btn-fetch" (click)="fetchMedia()">Fetch media</button>
+    </div>
+    <ng-container>
+        <div class="container">
+            <div class="row content-row" *ngFor="let media of topicMedia;let i =index">
+                <div class="col-md-1 col-sm-1 col-xs-12">
+                    <div class="image-icon" *ngIf="media.file_type==='image'">
+                        <img src="../../../../../../../assets/media/img/image.png">
+                    </div>
+                    <div class="image-icon" *ngIf="media.file_type==='video'">
+                        <img src="../../../../../../../assets/media/img/video.png">
+                    </div>
+                    <div class="image-icon" *ngIf="media.file_type==='audio'">
+                        <img src="../../../../../../../assets/media/img/audio.png">
+                    </div>
+                    <div class="image-icon" *ngIf="media.file_type==='application'">
+                        <img src="../../../../../../../assets/media/img/archive.png">
+                    </div>
+                </div>
+                <div class="col-md-7 col-sm-7 col-xs-12">
+                    <div class="row col-md-12 col-sm-12">
+                        <span class="file-name">{{media.file_name}}</span>
+                    </div>
+                    <div class="row col-md-12 col-sm-12">
+                        <span class="file-size-type">{{media.file_type}} - {{media.file_size}}</span>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-2 col-xs-12">
+                    <span class="file-date">{{media.createdAt | date: 'dd/MM/yyyy'}}</span>
+                </div>
+                <div class="col-md-1 col-sm-1 col-xs-12">
+                    <input type="checkbox" type="checkbox" [checked]="media.isChecked"
+                        (change)="checkedMediaList(media,$event,i,j)">
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</div>

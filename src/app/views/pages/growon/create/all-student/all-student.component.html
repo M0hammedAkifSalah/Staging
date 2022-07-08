@@ -1,0 +1,212 @@
+<h3>All Students</h3>
+
+<!-- Filters -->
+<div class="filters" style="display: flex;flex-direction: row;justify-content: space-between;margin-top: 20px;margin-bottom: 20px;">
+  <div style="width: 25%;">
+    <label>
+      Class
+    </label>
+    <ng-select placeholder="-- Select Class --" (change)="classSelected()" [(ngModel)]="selectedClass" >
+      <ng-option *ngFor="let class of classList" [value]="isOwner ? class.classId : class._id"  > {{ isOwner ? class.className : class.name }}</ng-option>
+    </ng-select>
+  </div>
+  <div style="width: 25%;">
+    <label>
+      Section
+    </label>
+    <ng-select placeholder="-- Select Section --" (change)="sectionSelected()" [(ngModel)]="selectedSection" >
+      <ng-option *ngFor="let section of sectionList" [value]="section._id"  > {{section.name}}</ng-option>
+    </ng-select>
+  </div>
+  <div style="width: 25%;">
+    <label>
+      Gender
+    </label>
+    <ng-select placeholder="-- Select Gender --" (change)="genderSelected()" [(ngModel)]="selectedGender" >
+      <ng-option value="Male" > Male</ng-option>
+      <ng-option value="Female" > Female</ng-option>
+    </ng-select>
+  </div>
+  <div style="width: 20%;">
+
+  </div>
+</div>
+
+<div *ngIf="!isOwner;else myFlagTrue;">
+  <form [formGroup]="downloadForm">
+    <div class="progress form-group" *ngIf="progress > 0">
+      <div class="progress-bar progress-bar-striped bg-success" role="progressbar" [style.width.%]="progress">
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-3 col-xs-12">
+
+
+      <!--    <mat-form-field>
+        <mat-label>Select School</mat-label>
+        <mat-select placeholder="City" formControlName="school_id">
+
+          <mat-option *ngFor="let school of schools" [value]="school._id">
+            {{school.schoolName}}
+          </mat-option>
+        </mat-select>
+
+      </mat-form-field>  -->
+    </div>
+    <div class="col-md-3 col-sm-3 col-xs-12">
+
+
+      <!--      <mat-form-field>
+                <mat-label>Select class</mat-label>
+                <mat-select placeholder="City" formControlName="class_id">
+
+                    <mat-option *ngFor="let class of classes" [value]="class._id">
+                        {{class.name}}
+                    </mat-option>
+                </mat-select>
+
+            </mat-form-field>  -->
+    </div>
+    <span class=" import-btn">
+      <button class="btn btn-primary" (click)="downloadCSV()">Download
+        School CSV</button>
+    </span>&nbsp;&nbsp;
+    <span class="import-btn">
+      <button class="btn btn-primary" (click)="downloadCSV2()">Download
+        Class CSV</button>
+    </span>&nbsp;&nbsp;
+    <span class="import-btn">
+      <button class="btn btn-primary" (click)="downloadCSV3()">Download
+        Section CSV</button>
+    </span>
+
+
+    <input type="file" accept=".csv" style="display: none;" name="files" #uploads
+      (change)="bulkUploadStudent(uploads.files)" multiple value="process" [disabled]="downloadForm.invalid" />
+    <!-- <input type="file" accept=".csv" style="display: none;" name="files" #uploads
+            (change)="handleFileSelect($event)" multiple value="process" [disabled]="!downloadForm.valid" /> -->
+    <div class=" import-btn">
+      <button class="btn btn-primary" (click)="uploads.click()">Upload </button>
+    </div>
+
+    <!-- <div class="form-group">
+            <input type="file" (change)="onFileSelect($event.target)" name="myfile">
+        </div> -->
+  </form>
+</div>
+<mat-form-field  style="margin-top: 20px;">
+  <mat-label>Search</mat-label>
+  <input matInput placeholder="Search by Name or Mobile " (keyup)="applyFilter($event)" #input>
+</mat-form-field>
+
+<div class="mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource" matSort>
+
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+      <td mat-cell *matCellDef="let row"> {{row.name ? row.name : ''}} </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="username">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Mobile </th>
+      <td mat-cell *matCellDef="let row"> {{ row.username ? row.username : ""}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="gender">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Gender </th>
+      <td mat-cell *matCellDef="let row"> {{row.gender ? row.gender : ''}} </td>
+    </ng-container>
+    <ng-container matColumnDef="class">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Class </th>
+      <td mat-cell *matCellDef="let row"> {{row.class ? row.class.name : ""}} </td>
+    </ng-container>
+    <ng-container matColumnDef="section">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Section </th>
+      <td mat-cell *matCellDef="let row"> {{row.section ? row.section.name : ""}} </td>
+    </ng-container>
+    <ng-container matColumnDef="branch_id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Branch </th>
+      <td mat-cell *matCellDef="let row"> {{row.school_id.branch[0] ? row.school_id.branch[0].name: "" }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="school">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> School </th>
+      <td mat-cell *matCellDef="let row"> {{row.school_id ?row.school_id.schoolName : "" }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="schoolCode">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> School Code </th>
+      <td mat-cell *matCellDef="let row"> {{row.school_id ? row.school_id.school_code : ''}} </td>
+    </ng-container>
+
+    <!-- roleName Column -->
+    <!-- <ng-container matColumnDef="subject_id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> school Name </th>
+            <td mat-cell *matCellDef="let row"> {{row.subject_id}} </td>
+        </ng-container> -->
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef> Status </th>
+      <td mat-cell *matCellDef="let row">
+        <ng-container>
+          <!-- *ngIf="actionFlag; else ownToggle;" -->
+          <mat-slide-toggle [checked]="row.activeStatus" (click)="deactivateAccount(row)">
+          </mat-slide-toggle>
+        </ng-container>
+        <!-- <ng-template #ownToggle>
+          <mat-slide-toggle [disabled]="!actionFlag">
+          </mat-slide-toggle>
+        </ng-template> -->
+      </td>
+    </ng-container>
+    <!-- <ng-container *ngIf="actionFlag">
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-slide-toggle [checked]="row.activeStatus" (click)="deactivateAccount(row)"></mat-slide-toggle>
+        </td>
+      </ng-container>
+    </ng-container> -->
+
+    <ng-container matColumnDef="action">
+
+      <div *ngIf="!isOwner;else myFlagTrue;">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Action </th>
+        <td mat-cell *matCellDef="let row">
+          <button class="btn btn-primary" [disabled]="!this.canEdit">
+            <mat-icon aria-hidden="false" aria-label="Update">edit</mat-icon>
+          </button>
+          <button class="btn btn-primary" (click)="deleteUser(row)">
+            <mat-icon aria-hidden="false" aria-label="Delete">delete</mat-icon>
+          </button>
+        </td>
+      </div>
+
+      <ng-template #myFlagTrue>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+        <td mat-cell *matCellDef="let row">
+          <button class="btn btn-primary" (click)="updateStudent(row)" [disabled]="!this.canEdit">
+            <mat-icon aria-hidden="false" aria-label="Update">edit</mat-icon>
+          </button>
+          <button class="btn btn-primary" (click)="deleteUser(row)">
+            <mat-icon aria-hidden="false" aria-label="Delete">delete</mat-icon>
+          </button>
+        </td>
+      </ng-template>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <!-- Row shown when there is no matching data. -->
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+    </tr>
+
+  </table>
+
+  <mat-paginator #paginator [length]="resultsLength" [pageIndex]="0" [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10,  25, 50, 100]" (page)="onPageFired($event)">
+  </mat-paginator>
+</div>

@@ -1,0 +1,10 @@
+<div class="container p-5">
+  <h6>Select Sections to Delete for {{row.className}}</h6>
+  <br>
+  <ng-select [multiple]="true" placeholder="Select Section" [(ngModel)]="deleteSection.sectionIds" name="section">
+    <ng-option *ngFor="let section of sectionList" [value]="section.id">{{section.name}}</ng-option>
+  </ng-select>
+  <div class="m-3  delete-btn">
+    <button class="btn btn-primary" (click)="deleteSections()">Delete Section</button>
+  </div>
+</div>

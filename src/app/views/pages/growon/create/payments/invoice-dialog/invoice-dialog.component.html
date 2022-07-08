@@ -1,0 +1,70 @@
+<div id="print-section" class="print-section">
+  <div class="header">
+    <div class="header-left-item">
+      <img src="../../../../../../../assets/media/img/cumin360.png" width="200px">
+      <span><b> GST NO: </b> 29AAICC8431C1ZP </span>
+      <span><b> ADDRESS: </b> 15, Queens Rd, Govinda Chetty Colony, <br /> Vasanth Nagar, Bengaluru, Karnataka 560051
+      </span>
+    </div>
+
+    <div class="header-right-item">
+      <h2><b>{{school.schoolName}}</b></h2>
+      <div class="h-left-items">
+        <span> <b>Invoice No : </b> 80 </span>
+        <span> <b>Order Id : </b>{{data.order.order_id}} </span>
+        <span> <b>Due Date : </b> {{data.order.due_date}} </span>
+        <span> <b>State : </b> {{school.state?.state_name}} </span>
+        <span> <b>City : </b> {{school.city?.city_name}} </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="body">
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>No. of Students</th>
+          <th>Per Student</th>
+          <th>Total Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{data.order.no_of_student}}</td>
+          <td>₹10</td>
+          <td>₹{{amount}}</td>
+        </tr>
+        <tr class="active-row">
+          <td> 18% GST </td>
+          <td></td>
+          <td>₹{{gstAmount}}</td>
+        </tr>
+        <tr class="active-row">
+          <td>Total Amount </td>
+          <td></td>
+          <td>₹{{data.order.amount}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <div class="f-left">
+      <img
+        src="https://grow-on-prod.s3.ap-south-1.amazonaws.com/164752269481616448498692661629727353615Master%20Growon%20Logo%202020%20Final%201024%20x%201024%20Pixal_A.png"
+        height="80px">
+    </div>
+    <div class="f-right">
+      Powered by 
+      <img
+        src="../../../../../../../assets/media/img/maarif.png"
+        width="150px">
+    </div>
+
+  </div>
+</div>
+<div class="print-Btn" style="display: flex;justify-content: right;align-items: center;">
+  <button mat-button printSectionId="print-section" ngxPrint [useExistingCss]="true" class="printBtn">
+    Print
+  </button>
+</div>

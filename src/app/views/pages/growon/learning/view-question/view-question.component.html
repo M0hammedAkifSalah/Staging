@@ -1,0 +1,139 @@
+<div *ngIf="questionsLoaded">
+    <div><h3>Update Question</h3></div>
+    <form autocomplete="off" #questionForm="ngForm" (ngSubmit)="updateQuestion(questionForm.value,questionForm.valid)">
+        <div class="row">
+            <div class="col-md-8 col-sm-8 col-xs-12">
+                <div class="form-group">
+                    <label>Select the learning Outcome<span class="reqStar">*</span></label>
+                    <select name="learningOutcome" id="" [(ngModel)]="question.learningOutcome" class="form-control" required>
+                        <option *ngFor="let item of learningOutcomes" [value]="item.name" >{{item.name}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Select the Question Category<span class="reqStar">*</span></label>
+                    <select name="questionCategory" id="" [(ngModel)]="question.questionCategory" class="form-control" required>
+                        <option *ngFor="let item of questionCategories" [value]="item.name" >{{item.name}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Select the Exam Type<span class="reqStar">*</span></label>
+                    <ng-multiselect-dropdown #multiSelect
+                        [placeholder]="" 
+                        [data]="examTypes"
+                        [settings]="settings"
+                        [(ngModel)]="question.examType"
+                        name="examType"
+                        [disabled]="false"
+                        required
+                        >
+                    </ng-multiselect-dropdown>
+                </div>
+                <div class="form-group">
+                    <label>Select the Question Type<span class="reqStar">*</span></label>
+                    <select [(ngModel)]="question.questionType" name="questionType" class="form-control" (change)="changeQuestionType($event.target.value)" required>
+                        <option *ngFor="let item of questionTypes" [value]="item.value" >{{item.name}}</option>
+                    </select>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <h3><strong>Pratice/Test Question<span class="reqStar">*</span></strong></h3>
+                        <div class="form-check" *ngFor="let item of praticTestQuestionArray">
+                            <label class="form-check-label">
+                               <input type="checkbox" [value]="item.value" name="praticTest" [ngModel]="question.praticTest" (change)="selectPraticTestQuestion(item.value)" required>&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                            </label>
+                        </div>                   
+                    </div>       
+                    <!-- <div class="col-md-6 col-sm-6 col-xs-12">
+                        <h3><strong>Student Type<span class="reqStar">*</span></strong></h3>
+                        <div class="form-check" *ngFor="let item of studentTypeArray">
+                            <label class="form-check-label">
+                               <input type="checkbox" [value]="item.value" name="studentType" [ngModel]="question.studentType" (change)="selectStudentType(item.value)" required>&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                            </label>
+                        </div> 
+                    </div>        -->
+                </div>
+                <div class="row">
+                    <h3><strong>Set Difficulty Level<span class="reqStar">*</span></strong></h3>
+                    <div class="form-check" *ngFor="let item of difficultyLevelArray">
+                        <label class="form-check-label">
+                           <input type="radio" [value]="item.value" name="questionDifficulty" [(ngModel)]="question.questionDifficulty" required>&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="classGrade">
+                    <div class="form-group">
+                        <label>Class/Grade<span class="reqStar">*</span></label>
+                        <select name="class" id="" [(ngModel)]="question.class" class="form-control" required>
+                            <option *ngFor="let item of classes" [value]="item.name" >&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Board<span class="reqStar">*</span></label>
+                        <select name="board" id="" [(ngModel)]="question.board" class="form-control" required>
+                            <option *ngFor="let item of boards" [value]="item.name" >&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Syllabus<span class="reqStar">*</span></label>
+                        <select name="syl" id="" [(ngModel)]="question.syllabus" class="form-control" required>
+                            <option *ngFor="let item of syllabus" [value]="item.name" >&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject<span class="reqStar">*</span></label>
+                        <select name="subject" id="" [(ngModel)]="question.subject" class="form-control" required>
+                            <option *ngFor="let item of subjects" [value]="item.name" >&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Chapter<span class="reqStar">*</span></label>
+                        <select name="chapter" id="" [(ngModel)]="question.chapter" class="form-control" required>
+                            <option *ngFor="let item of chapters" [value]="item.name" >&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Topic<span class="reqStar">*</span></label>
+                        <select name="topic" id="" [(ngModel)]="question.topic" class="form-control" required>
+                            <option *ngFor="let item of topics" [value]="item.name" >&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="row">
+                    <div class="col-md-8 col-sm-8 col-xs-12">
+                        <h3>Your question title here<span class="reqStar">*</span></h3>
+                        <input type="text" class="form-control" name="questionTitle" [(ngModel)]="question.questionTitle" required>
+                        <div style="background: #fff;">
+                            <h3 *ngIf="questionType == 'fillInTheBlanks'"><strong>Instruction:</strong>Add {{fibText}} for the blank the 'Answer' will need to be provide in the answer section See example below <br /> EX:{{fibText}} is the capital city of India</h3>
+                        </div>
+                        <kt-editor [editordata]="question.question" (valuechanges)="valuechanged($event)"></kt-editor>
+                    </div>
+                    <div class="btn btn-primary" *ngIf="questionType == 'fillInTheBlanks'" (click)='validateFib(htmlContent)'>Next</div>
+                    <div class="col-md-4 col-sm-4 col-xs-12">
+    
+                    </div>
+                </div>
+                <div *ngIf="questionType == 'fillInTheBlanks'">
+                    <form #fibForm="ngForm" (ngSubmit)="fillInTheBlanksForm(fibForm.value)">
+                        <div class="form-group" *ngFor="let len of fibAnsLength; let i = index">
+                            <label *ngIf="i+1 == 1">Answer for {{i+1}}st blank</label>
+                            <label *ngIf="i+1 == 2">Answer for {{i+1}}nd blank</label>
+                            <label *ngIf="i+1 == 3">Answer for {{i+1}}rd blank</label>
+                            <label *ngIf="i+1 > 3">Answer for {{i+1}}th blank</label>
+                            <input type="text" class="form-control" [(ngModel)]="question.answer[i].value" name="fibAnswer{{i}}" value="question.answer[i].value">
+                        </div>
+                        <div *ngIf="fibAnsLength.length > 0"><input type="submit" value="Submit Answers" class="btn btn-primary"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div *ngIf="!questionsLoaded">
+    <h3 class="text-center"><strong>Loading...</strong></h3>
+</div>

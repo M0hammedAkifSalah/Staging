@@ -1,0 +1,26 @@
+<div class="pd-30">
+    <div class="row">
+       <span class="head ins">Instruction</span>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label class="head">Section Title</label>
+                <input type="text" [(ngModel)]="queList.sectionInstruction" class="form-control">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label class="head">Instruction</label>
+                <textarea col="5" row="5" [(ngModel)]="queList.instruction" class="form-control"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 right">
+            <button class="btn btn-add-ins" (click)="addInstruction()">Add Instruction</button>
+        </div>
+    </div>
+</div>

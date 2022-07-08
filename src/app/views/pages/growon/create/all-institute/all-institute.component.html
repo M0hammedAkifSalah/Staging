@@ -1,0 +1,113 @@
+<div class="content">
+  <div class="tab-header">
+    <div class="tab-title">Institution Details</div>
+    <div class="tab-input">
+      <label>
+        <input
+          (keyup)="applyFilter($event)"
+          type="search"
+          class="form-control form-control-sm"
+          placeholder="Search by school name,number,location or type"
+          aria-controls="distributorTable"
+        />
+      </label>
+    </div>
+  </div>
+  <div class="example-container row m-0 w-100">
+    <div class="innerDiv">
+      <table
+        *ngIf="dataSource.filteredData.length > 0"
+        mat-table
+        [dataSource]="dataSource"
+        matSort
+      >
+        <ng-container matColumnDef="schoolCode">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>School Code</th>
+          <td mat-cell *matCellDef="let row">{{ row.school_code ? row.school_code  : ''}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="schoolName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>School Name</th>
+          <td mat-cell *matCellDef="let row">{{ row.schoolName ? row.schoolName : '' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Location</th>
+          <td mat-cell *matCellDef="let row">{{ row.address ? row.address : '' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="city">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>City</th>
+          <td mat-cell *matCellDef="let row">{{ row.city ? row.city.city_name : '' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="contact_number">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            School Contact Number
+          </th>
+          <td mat-cell *matCellDef="let row">{{ row.contact_number ?  row.contact_number : '' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            School Email Id
+          </th>
+          <td mat-cell *matCellDef="let row">{{ row.email ? row.email : '' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let row">
+              <ng-container *ngIf="!isOwner; else ownToggle;">
+                <!-- *ngIf="actionFlag; else ownToggle;" -->
+                <mat-slide-toggle
+                  [checked]="row.activeStatus"
+                  (click)="deactivateAccount(row)"
+                >
+                </mat-slide-toggle>
+              </ng-container>
+              <ng-template #ownToggle>
+                      <mat-slide-toggle [disabled]="isOwner">
+                      </mat-slide-toggle>
+                    </ng-template>
+            </td>
+          </ng-container>
+
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+          <td mat-cell *matCellDef="let row">
+            <button
+              class="btn btn-primary"
+              (click)="updateSchool(row)"
+              [disabled]="!this.canEdit"
+            >
+              <mat-icon aria-hidden="false" aria-label="Update">edit</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+    <div class="norecord" *ngIf="dataSource.filteredData.length == 0">
+      No records found
+    </div>
+    <mat-toolbar>
+      <mat-toolbar-row>
+        <div class="col-md-12">
+          <mat-paginator
+            class="mat-paginator-sticky"
+            #myPaginator
+            [pageSize]="10"
+            [pageSizeOptions]="[5, 10, 15]"
+            showFirstLastButtons
+          >
+          </mat-paginator>
+        </div>
+      </mat-toolbar-row>
+    </mat-toolbar>
+  </div>
+</div>

@@ -1,0 +1,692 @@
+<div class="bg">
+  <h2>Enroll Students</h2>
+  <div>
+    <input accept="image/x-png,image/jpg,image/jpeg" type="file" style="display:none" #fileUpload
+      (change)="onFileUpload($event)">
+    <div class="userPicDiv" (click)="fileUpload.click()">
+      <span *ngIf="!filePreview">
+        <img src="/assets/media/growon/logos/profilePicLogo.png" alt="">
+        <p>Click to add picture</p>
+      </span>
+      <span *ngIf="filePreview">
+        <img [src]="filePreview" alt="">
+      </span>
+    </div>
+  </div>
+  <form [formGroup]="studentForm" autocomplete="off">
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <!-- Name -->
+        <mat-form-field>
+          <mat-label>Student Name*</mat-label>
+          <input matInput placeholder="Student Name" formControlName="name" class="form-control">
+          <mat-error *ngIf="studentForm.get('name').hasError('required')">Student name required </mat-error>
+          <mat-error *ngIf="studentForm.get('name').hasError('maxlength')">You can only enter maximum
+            of 50 character </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <!-- <div class="col-md-4 col-sm-4 col-xs-12">
+
+            <mat-form-field>
+                <mat-label>Username</mat-label>
+                <input matInput placeholder="Student Name" formControlName="username" class="form-control" >
+
+            </mat-form-field>
+        </div> -->
+      <!-- <div class="col-md-4 col-sm-4 col-xs-12">
+            < Passwordd -->
+      <!-- <mat-form-field>
+                <mat-label>Password</mat-label>
+                <input matInput placeholder="Password" formControlName="password" class="form-control">
+                <mat-error *ngIf="studentForm.get('password').hasError('required')">password required </mat-error>
+
+            </mat-form-field>
+        </div> -->
+    </div>
+    <div class="row">
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- Gender -->
+
+        <mat-radio-group formControlName="gender" color="primary">
+          <mat-label>Gender*</mat-label>
+          <mat-radio-button class="example-radio-button" *ngFor="let gend of gender" [value]="gend">
+            {{gend}}
+          </mat-radio-button>
+        </mat-radio-group>
+        <mat-error *ngIf="studentForm.get('gender').hasError('required')">gender is required </mat-error>
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- Student class -->
+        <!-- <mat-form-field> -->
+        <mat-label>Class*</mat-label>
+        <ng-select (change)="primaryClassChange($event)" placeholder="Class" formControlName="class">
+          <ng-option *ngFor="let c of class" [value]="c.classId">
+            {{c.className}}
+          </ng-option>
+        </ng-select>
+        <mat-error *ngIf="studentForm.get('class').hasError('required') || classRequiredFlag"> Please select the class
+        </mat-error>
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <!-- <mat-form-field> -->
+        <mat-label>Section/Division</mat-label>
+        <ng-select placeholder="Section/Division" formControlName="section">
+          <!-- <ng-option [value]="">Section/Division</ng-option> -->
+          <ng-option *ngFor="let section of sections" [value]="section._id">{{section.name}}</ng-option>
+        </ng-select>
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <!-- <mat-form-field> -->
+        <mat-label>Branch*</mat-label>
+        <ng-select placeholder="Branch" formControlName="branch">
+          <ng-option *ngFor="let branch of branches" [value]="branch._id">
+            {{branch.name}}
+          </ng-option>
+        </ng-select>
+        <mat-error *ngIf="studentForm.get('branch').hasError('required')">Please select the branch</mat-error>
+        <!-- </mat-form-field> -->
+      </div>
+
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+        <!-- <form #adddsection="ngForm">
+        <div class="row">
+          <div class="col-md-2">
+            <div class="import-btn">
+              <button class="btn btn-primary" (click)="addSection(adddsection)">Add</button>
+            </div>
+          </div>
+          <div class="col-md-10">
+            <mat-form-field>
+              <input matInput placeholder="Add Section" name="section" [(ngModel)]="addSectionName"
+                class="form-control">
+            </mat-form-field>
+            <mat-error *ngIf="classRequiredFlag">Select class</mat-error>
+          </div>
+        </div>
+      </form> -->
+      </div>
+      <div class="col-md-4 col-sm-4 col-xs-12">
+        <!--
+      <mat-form-field>
+
+        <mat-select placeholder="Section/Division" formControlName="section">
+          <mat-option [value]="">Section/Division</mat-option>
+          <mat-option *ngFor="let section of sections" [value]="section._id">{{section.name}}</mat-option>
+        </mat-select>
+      </mat-form-field> -->
+      </div>
+      <!-- <div class="col-md-4">
+      <mat-form-field>
+        <mat-label>Select Subjects</mat-label>
+        <mat-select placeholder="Select Subjects" formControlName="subjects" multiple>
+          <mat-option *ngFor="let subject of subjects" [value]="subject._id">
+            {{subject.name}}
+          </mat-option>
+        </mat-select>
+
+      </mat-form-field>
+    </div> -->
+
+
+    </div>
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <!-- Address -->
+        <mat-form-field appearance="fill">
+          <mat-label>Address</mat-label>
+          <textarea matInput placeholder="Address" formControlName="address"></textarea>
+          <!-- <mat-error *ngIf="studentForm.get('address').hasError('required')">Address is required </mat-error> -->
+          <mat-error *ngIf="studentForm.get('address').hasError('maxlength')">You can only enter maximum
+            of 150 character </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- Country -->
+        <!-- <mat-form-field> -->
+        <mat-label>Select Country*</mat-label>
+        <ng-select placeholder="Country" formControlName="country">
+          <ng-option *ngFor="let country of countries" [value]="country._id">
+            {{country.country_name}}
+
+          </ng-option>
+        </ng-select>
+        <!-- <mat-error *ngIf="studentForm.get('country').hasError('required')">Please select a country </mat-error> -->
+
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- State -->
+        <!-- <mat-form-field> -->
+        <mat-label>Select State*</mat-label>
+        <ng-select placeholder="State" formControlName="state">
+          <ng-option *ngFor="let state of states" [value]="state._id">
+            {{state.state_name}}
+          </ng-option>
+        </ng-select>
+        <!-- <mat-error *ngIf="studentForm.get('state').hasError('required')">Please select a state </mat-error> -->
+
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-12">
+
+        <!-- City -->
+        <!-- <mat-form-field> -->
+        <mat-label>Select City*</mat-label>
+        <ng-select placeholder="City" formControlName="city">
+          <ng-option *ngFor="let city of cities" [value]="city._id">
+            {{city.city_name}}
+          </ng-option>
+        </ng-select>
+        <!-- <mat-error *ngIf="studentForm.get('city').hasError('required')">please select a city </mat-error> -->
+
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <mat-form-field>
+          <mat-label>Pincode</mat-label>
+          <input matInput type="tel" placeholder="pincode" formControlName="pinCode" class="form-control">
+          <!-- <mat-error *ngIf="studentForm.get('pinCode').hasError('required')">pincode is required </mat-error> -->
+          <mat-error *ngIf="studentForm.get('pinCode').hasError('maxlength')">You can only enter maximum
+            of 10 number </mat-error>
+
+          <mat-error *ngIf="studentForm.get('pinCode').hasError('pattern')"> pincode can only have numbers
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- Aadhar card no -->
+        <mat-form-field>
+          <mat-label>Aadhaar Card no</mat-label>
+          <input type="tel" matInput placeholder="Aadhaar Card no" formControlName="aadhaarNo" class="form-control">
+          <mat-error *ngIf="studentForm.get('aadhaarNo').hasError('maxlength')">you have reached maximum limit of
+            characters </mat-error>
+          <mat-error *ngIf="studentForm.get('aadhaarNo').hasError('pattern')"> aadhaarNo can only have numbers
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- STS no -->
+        <mat-form-field>
+          <mat-label>STS no</mat-label>
+          <input matInput placeholder="STS no" formControlName="STSNo" class="form-control">
+          <!-- <mat-error *ngIf="studentForm.get('STSNo').hasError('required')">STSNo required </mat-error> -->
+
+        </mat-form-field>
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- RTE Student -->
+        <mat-form-field>
+          <mat-label>RTE Student</mat-label>
+          <input matInput placeholder="RTE Student" formControlName="RTEStudent" class="form-control">
+          <!-- <mat-error *ngIf="studentForm.get('RTEStudent').hasError('required')">RTE required </mat-error> -->
+
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- Religion -->
+        <mat-form-field>
+          <mat-label>Religion</mat-label>
+          <input matInput placeholder="Religion" formControlName="religion" class="form-control">
+          <!-- <mat-error *ngIf="studentForm.get('religion').hasError('required')">religion required </mat-error> -->
+
+        </mat-form-field>
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- Caste -->
+        <mat-form-field>
+          <mat-label>Caste</mat-label>
+          <input matInput placeholder="Caste" formControlName="caste" class="form-control">
+          <!-- <mat-error *ngIf="studentForm.get('caste').hasError('required')">caste required </mat-error> -->
+
+        </mat-form-field>
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- Mother Tongue -->
+        <mat-form-field>
+          <mat-label>Mother Tongue</mat-label>
+          <input matInput placeholder="Mother Tongue" formControlName="motherTongue" class="form-control">
+          <!-- <mat-error *ngIf="studentForm.get('motherTongue').hasError('required')">Mother tongue required
+                </mat-error> -->
+
+        </mat-form-field>
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- Blood Group -->
+        <mat-form-field>
+          <mat-label>Blood Group</mat-label>
+          <input matInput placeholder="Blood Group" formControlName="bloodGroup" class="form-control">
+          <!-- <mat-error *ngIf="studentForm.get('bloodGroup').hasError('required')">blood group required </mat-error> -->
+
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- Mode of Transportation -->
+        <!-- <mat-form-field> -->
+        <mat-label>Mode of Transportation</mat-label>
+        <ng-select placeholder="Mode of Transportation" formControlName="transportation">
+          <ng-option *ngFor="let mode of transportationMode" [value]="mode">
+            {{mode}}
+          </ng-option>
+        </ng-select>
+        <!-- <mat-error *ngIf="studentForm.get('transportation').hasError('required')">transportation required
+                </mat-error> -->
+
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- Medical Conditions (if Any) -->
+        <!-- <mat-form-field> -->
+        <mat-label>Medical Conditions (if Any)</mat-label>
+        <ng-select placeholder="Medical Conditions (if Any)" formControlName="medicalConditions">
+          <ng-option *ngFor="let condition of medicalConditions" [value]="condition">
+            {{condition}}
+          </ng-option>
+        </ng-select>
+        <!-- <mat-error *ngIf="studentForm.get('medicalConditions').hasError('required')"> required </mat-error> -->
+
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <!-- Does the Child wear Glasses -->
+        <mat-radio-group formControlName="glasses" color="primary">
+          <mat-label>Does the Child wear Glasses</mat-label>
+          <mat-radio-button class="example-radio-button" *ngFor="let bo of boolean" [value]="bo">{{bo}}
+          </mat-radio-button>
+        </mat-radio-group>
+        <!-- <mat-error *ngIf="studentForm.get('glasses').hasError('required')"> required </mat-error> -->
+
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- Email -->
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input type="email" matInput placeholder="Email" formControlName="email">
+          <mat-error *ngIf="studentForm.get('email').hasError('pattern')"> Invalid email format
+          </mat-error>
+
+        </mat-form-field>
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <!-- DOB -->
+        <mat-form-field>
+          <mat-label>Date of Birth (Please select from calender)</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="dob">
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+          <!-- <mat-error *ngIf="studentForm.get('dob').hasError('required')"> dob required </mat-error> -->
+
+        </mat-form-field>
+      </div>
+    </div>
+    <hr>
+    <h1>Parent/Guardian</h1>
+    <div class="row">
+      <div class="col-md-4 col-sm-4 col-xs-4">
+        <!-- <mat-form-field> -->
+        <mat-label>Primary Parent / Guardian*</mat-label>
+        <ng-select placeholder="primaryParent" formControlName="primaryParent">
+          <ng-option *ngFor="let primary of primaryParent" [value]="primary.value">
+            {{primary.name}}
+          </ng-option>
+        </ng-select>
+        <mat-error *ngIf="studentForm.get('primaryParent').hasError('required')">Primary parent is required </mat-error>
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-8 col-sm-8 col-xs-8">
+        <h3>Note: The mobile number of this parent/guardian will be user for parent login</h3>
+      </div>
+    </div>
+    <!-- Father -->
+    <h1>1. Father</h1>
+    <div class="row">
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <mat-form-field>
+          <mat-label>Father Name</mat-label>
+          <input matInput placeholder="Father Name" formControlName="fatherName" class="form-control">
+          <mat-error *ngIf="studentForm.get('fatherName').hasError('required')">father name required </mat-error>
+          <mat-error *ngIf="studentForm.get('fatherName').hasError('maxlength')">You can only enter maximum
+            of 50 character </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-md-4 col-sm-4 col-xs-12">
+        <!-- Contact -->
+        <mat-form-field>
+          <mat-label>Father Contact</mat-label>
+          <input type="number" matInput placeholder="Father Contact" (blur)="checkParentValidation('father')"
+            formControlName="fatherContact">
+          <mat-error *ngIf="studentForm.get('fatherContact').hasError('required')">father contact required </mat-error>
+
+        </mat-form-field>
+        <span class="text-danger" *ngIf="parentNumberExist[0]">
+          Mobile number is already in use.
+        </span>
+      </div>
+    </div>
+    <div class="row">
+      <!-- Email -->
+      <div class="col-md-12">
+        <mat-form-field>
+          <mat-label>Father Email</mat-label>
+          <input type="email" matInput placeholder="Father Email" formControlName="fatherEmail">
+          <mat-error *ngIf="studentForm.get('fatherEmail').hasError('pattern')"> Invalid email format
+          </mat-error>
+
+        </mat-form-field>
+      </div>
+      <!-- Qualification -->
+      <div class="col-md-12">
+        <!-- <mat-form-field> -->
+        <mat-label>Father Qualification</mat-label>
+        <!-- <input matInput placeholder="Father Name" formControlName="fatherQualification" class="form-control"> -->
+        <ng-select placeholder="Father Qualification" formControlName="fatherQualification">
+          <ng-option *ngFor="let qualification of parentQualification" [value]="qualification">
+            {{qualification}}
+          </ng-option>
+        </ng-select>
+        <!-- <mat-error *ngIf="studentForm.get('fatherQualification').hasError('required')"> required </mat-error> -->
+
+        <!-- </mat-form-field> -->
+      </div>
+      <!-- Aadhar -->
+      <div class="col-md-12">
+        <mat-form-field>
+          <mat-label>Aadhaar Card no</mat-label>
+          <input type="tel" matInput placeholder="Aadhaar Card no" formControlName="fatheraadhaarNo"
+            class="form-control">
+          <mat-error *ngIf="studentForm.get('fatheraadhaarNo').hasError('maxlength')">you have reached maximum limit of
+            characters </mat-error>
+          <mat-error *ngIf="studentForm.get('fatheraadhaarNo').hasError('pattern')"> aadhaarNo can only have numbers
+          </mat-error>
+          <!-- <mat-error *ngIf="studentForm.get('fatheraadhaarNo').hasError('required')"> required </mat-error> -->
+        </mat-form-field>
+      </div>
+    </div>
+    <!-- Language Proficiency -->
+    <h1>Language Proficiency</h1>
+    <div class="row" *ngFor="let count of countOfFour">
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <mat-form-field>
+          <mat-label>Language {{count}}</mat-label>
+          <input matInput placeholder="Language {{count}}" formControlName="fatherLanguage{{count}}"
+            class="form-control">
+
+        </mat-form-field>
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <!-- <mat-form-field> -->
+        <mat-label>Read</mat-label>
+        <ng-select placeholder="Read" formControlName="fatherLanguageRead{{count}}">
+          <ng-option *ngFor="let boo of boolean" [value]="boo">
+            {{boo}}
+          </ng-option>
+        </ng-select>
+
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <!-- <mat-form-field> -->
+        <mat-label>Write</mat-label>
+        <ng-select placeholder="Read" formControlName="fatherLanguageWrite{{count}}">
+          <ng-option *ngFor="let boo of boolean" [value]="boo">
+            {{boo}}
+          </ng-option>
+        </ng-select>
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <!-- <mat-form-field> -->
+        <mat-label>Speak</mat-label>
+        <ng-select placeholder="Read" formControlName="fatherLanguageSpeak{{count}}">
+          <ng-option *ngFor="let boo of boolean" [value]="boo">
+            {{boo}}
+          </ng-option>
+        </ng-select>
+        <!-- </mat-form-field> -->
+      </div>
+    </div>
+    <!-- Mother -->
+    <h1>2. Mother</h1>
+    <div class="row">
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <mat-form-field>
+
+          <mat-label>Mother Name</mat-label>
+          <input matInput placeholder="Mother Name" formControlName="motherName" class="form-control">
+          <mat-error *ngIf="studentForm.get('motherName').hasError('required')">mother name required </mat-error>
+          <mat-error *ngIf="studentForm.get('motherName').hasError('maxlength')">You can only enter maximum
+            of 50 character </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-md-4 col-sm-4 col-xs-12">
+        <!-- Contact -->
+        <mat-form-field>
+          <mat-label>Mother Contact</mat-label>
+          <input type="number" matInput placeholder="Mother Contact" (blur)="checkParentValidation('mother')"
+            formControlName="motherContact">
+          <mat-error *ngIf="studentForm.get('motherContact').hasError('required')">mother contact required </mat-error>
+
+        </mat-form-field>
+        <span class="text-danger" *ngIf="parentNumberExist[1]">
+          Mobile number is already in use.
+        </span>
+      </div>
+    </div>
+    <div class="row">
+      <!-- Email -->
+      <div class="col-md-12">
+        <mat-form-field>
+          <mat-label>Mother Email</mat-label>
+          <input type="email" matInput placeholder="Mother Email" formControlName="motherEmail">
+          <mat-error *ngIf="studentForm.get('motherEmail').hasError('pattern')"> Invalid email format
+          </mat-error>
+
+        </mat-form-field>
+      </div>
+      <!-- Qualification -->
+      <div class="col-md-12">
+        <!-- <mat-form-field> -->
+        <mat-label>Mother Qualification</mat-label>
+        <!-- <input matInput placeholder="Mother Name" formControlName="motherQualification" class="form-control"> -->
+        <ng-select placeholder="Mother Qualification" formControlName="motherQualification">
+          <ng-option *ngFor="let qualification of parentQualification" [value]="qualification">
+            {{qualification}}
+          </ng-option>
+        </ng-select>
+        <!-- <mat-error *ngIf="studentForm.get('motherQualification').hasError('required')">required </mat-error> -->
+
+        <!-- </mat-form-field> -->
+      </div>
+      <!-- Aadhar -->
+      <div class="col-md-12">
+        <mat-form-field>
+          <mat-label>Aadhaar Card no</mat-label>
+          <input type="tel" matInput placeholder="Aadhaar Card no" formControlName="motheraadhaarNo"
+            class="form-control">
+          <mat-error *ngIf="studentForm.get('motheraadhaarNo').hasError('maxlength')">you have reached maximum limit of
+            characters </mat-error>
+          <mat-error *ngIf="studentForm.get('motheraadhaarNo').hasError('pattern')"> aadhaarNo can only have numbers
+          </mat-error>
+          <!-- <mat-error *ngIf="studentForm.get('motheraadhaarNo').hasError('required')"> required </mat-error> -->
+
+        </mat-form-field>
+      </div>
+    </div>
+    <!-- Language Proficiency -->
+    <h1>Language Proficiency</h1>
+    <div class="row" *ngFor="let count of countOfFour">
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <mat-form-field>
+          <mat-label>Language {{count}}</mat-label>
+          <input matInput placeholder="Language {{count}}" formControlName="motherLanguage{{count}}"
+            class="form-control">
+
+
+        </mat-form-field>
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <!-- <mat-form-field> -->
+        <mat-label>Read</mat-label>
+        <ng-select placeholder="Read" formControlName="motherLanguageRead{{count}}">
+          <ng-option *ngFor="let boo of boolean" [value]="boo">
+            {{boo}}
+          </ng-option>
+        </ng-select>
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <!-- <mat-form-field> -->
+        <mat-label>Write</mat-label>
+        <ng-select placeholder="Read" formControlName="motherLanguageWrite{{count}}">
+          <ng-option *ngFor="let boo of boolean" [value]="boo">
+            {{boo}}
+          </ng-option>
+        </ng-select>
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <!-- <mat-form-field> -->
+        <mat-label>Speak</mat-label>
+        <ng-select placeholder="Read" formControlName="motherLanguageSpeak{{count}}">
+          <ng-option *ngFor="let boo of boolean" [value]="boo">
+            {{boo}}
+          </ng-option>
+        </ng-select>
+        <!-- </mat-form-field> -->
+      </div>
+    </div>
+    <!-- Guardian -->
+    <h1>3. Guardian</h1>
+    <div class="row">
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <mat-form-field>
+          <mat-label>Guardian Name</mat-label>
+          <input matInput placeholder="Guardian Name" formControlName="guardianName" class="form-control">
+          <mat-error *ngIf="studentForm.get('guardianName').hasError('required')">guardian name required </mat-error>
+          <mat-error *ngIf="studentForm.get('guardianName').hasError('maxlength')">You can only enter maximum
+            of 50 character </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-md-4 col-sm-4 col-xs-12">
+        <!-- Contact -->
+        <mat-form-field>
+          <mat-label>Guardian Contact</mat-label>
+          <input type="number" matInput placeholder="Guardian Contact" (blur)="checkParentValidation('guardian')"
+            formControlName="guardianContact">
+          <mat-error *ngIf="studentForm.get('guardianContact').hasError('required')">guardian contact required
+          </mat-error>
+        </mat-form-field>
+        <span class="text-danger" *ngIf="parentNumberExist[2]">
+          Mobile number is already in use.
+        </span>
+      </div>
+    </div>
+    <div class="row">
+      <!-- Email -->
+      <div class="col-md-12">
+        <mat-form-field>
+          <mat-label>Guardian Email</mat-label>
+          <input type="email" matInput placeholder="Guardian Email" formControlName="guardianEmail">
+          <mat-error *ngIf="studentForm.get('guardianEmail').hasError('pattern')"> Invalid email format
+          </mat-error>
+
+        </mat-form-field>
+      </div>
+      <!-- Qualification -->
+      <div class="col-md-12">
+        <!-- <mat-form-field> -->
+        <mat-label>Guardian Qualification</mat-label>
+        <!-- <input matInput placeholder="Guardian Name" formControlName="guardianQualification" class="form-control"> -->
+        <ng-select placeholder="Guardian Qualification" formControlName="guardianQualification">
+          <ng-option *ngFor="let qualification of parentQualification" [value]="qualification">
+            {{qualification}}
+          </ng-option>
+        </ng-select>
+        <!-- <mat-error *ngIf="studentForm.get('guardianQualification').hasError('required')"> required </mat-error> -->
+
+        <!-- </mat-form-field> -->
+      </div>
+      <!-- Aadhar -->
+      <div class="col-md-12">
+        <mat-form-field>
+          <mat-label>Aadhaar Card no</mat-label>
+          <input type="tel" matInput placeholder="Aadhaar Card no" formControlName="guardianaadhaarNo"
+            class="form-control">
+          <mat-error *ngIf="studentForm.get('guardianaadhaarNo').hasError('maxlength')">you have reached maximum limit
+            of
+            characters </mat-error>
+          <mat-error *ngIf="studentForm.get('guardianaadhaarNo').hasError('pattern')"> aadhaarNo can only have numbers
+          </mat-error>
+          <!-- <mat-error *ngIf="studentForm.get('guardianaadhaarNo').hasError('required')"> required </mat-error> -->
+
+        </mat-form-field>
+      </div>
+    </div>
+    <!-- Language Proficiency -->
+    <h1>Language Proficiency</h1>
+    <div class="row" *ngFor="let count of countOfFour">
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <mat-form-field>
+          <mat-label>Language {{count}}</mat-label>
+          <input matInput placeholder="Language {{count}}" formControlName="guardianLanguage{{count}}"
+            class="form-control">
+
+
+        </mat-form-field>
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <!-- <mat-form-field> -->
+        <mat-label>Read</mat-label>
+        <ng-select placeholder="Read" formControlName="guardianLanguageRead{{count}}">
+          <ng-option *ngFor="let boo of boolean" [value]="boo">
+            {{boo}}
+          </ng-option>
+        </ng-select>
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <!-- <mat-form-field> -->
+        <mat-label>Write</mat-label>
+        <ng-select placeholder="Read" formControlName="guardianLanguageWrite{{count}}">
+          <ng-option *ngFor="let boo of boolean" [value]="boo">
+            {{boo}}
+          </ng-option>
+        </ng-select>
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="col-md-3 col-sm-3 col-xs-3">
+        <!-- <mat-form-field> -->
+        <mat-label>Speak</mat-label>
+        <ng-select placeholder="Read" formControlName="guardianLanguageSpeak{{count}}">
+          <ng-option *ngFor="let boo of boolean" [value]="boo">
+            {{boo}}
+          </ng-option>
+        </ng-select>
+        <!-- </mat-form-field> -->
+      </div>
+    </div>
+
+    <!-- <mat-form-field> -->
+    <div class="import-btn">
+      <button class="btn btn-primary" (click)="createStudent()" [disabled]="!studentForm.valid">Submit</button>
+    </div>
+    <!-- <button class="btn btn-primary" (click)="createStudent()">Submit</button> -->
+
+    <!-- </mat-form-field> -->
+  </form>
+</div>

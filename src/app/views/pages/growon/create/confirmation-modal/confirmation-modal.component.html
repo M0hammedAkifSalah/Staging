@@ -1,0 +1,19 @@
+<div class="modal-header nb-header">
+  <h4 class="modal-title nb-text">Please Confirm</h4>
+</div>
+<ng-container *ngIf="activeStatus; else other">
+  <div class="modal-body">
+    Do you really want to Deactivate User?
+  </div>
+</ng-container>
+<ng-template #other>
+  <div class="modal-body">
+    Do you really want to Activate User?
+  </div>
+</ng-template>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary btn-sm btn-design" (click)="accept()">Ok</button>
+  <button type="button" class="btn btn-primary btn-sm btn-design" (click)="decline()">Cancel</button>
+
+</div>

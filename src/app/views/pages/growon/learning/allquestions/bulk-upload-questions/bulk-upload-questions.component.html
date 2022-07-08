@@ -1,0 +1,14 @@
+<div class="container">
+  <div class="row col-12">
+    <span class="question-heading">Question Bulk Upload</span>
+  </div>
+  <div class="row col-12">
+    <input type="file" accept=".csv" style="display: none;" name="files" #uploads
+      (change)="bulkUploadStudent(uploads.files)" multiple value="process"  />
+    <!-- <input type="file" accept=".csv" style="display: none;" name="files" #uploads
+            (change)="handleFileSelect($event)" multiple value="process" [disabled]="!downloadForm.valid" /> -->
+    <div class=" import-btn">
+      <button class="btn btn-primary"  (click)="uploads.click()">Upload </button>
+    </div>
+  </div>
+</div>

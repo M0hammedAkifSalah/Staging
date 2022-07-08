@@ -1,0 +1,27 @@
+
+
+
+.classcontainer{
+    padding: 10px;
+//     display: flex;
+//   flex-direction: column;
+}
+
+::ng-deep .cdk-overlay-container {
+    z-index: 1200 !important;
+  }
+
+  /* /deep/ */ .cdk-overlay-container {
+    z-index: 1200 !important;
+  }
+
+  .cdk-global-overlay-wrapper, .cdk-overlay-container {
+    z-index: 99999 !important;
+  }
+.close-btn{
+  float: left;
+  padding: 21px;
+  .close-icon{
+    font-size: 36px;
+  }
+}

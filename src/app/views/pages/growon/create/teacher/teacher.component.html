@@ -1,0 +1,617 @@
+<div class="bg">
+  <ng-container *ngIf="updateFlag">
+    <button
+    class="close close-btn btn-foucs-none"
+    aria-label="Close"
+    (click)="activeModal.close('success')"
+  >
+    <span aria-hidden="true" class="close-icon">&times;</span>
+  </button>
+  </ng-container>
+  <div [style.padding]="updateFlag? '23px':'0px'">
+    <ng-container *ngIf="updateFlag; else add">
+      <h2>Update Teacher </h2>
+    </ng-container>
+    <ng-template #add>
+      <h2>Register Teacher</h2>
+    </ng-template>
+      <div >
+        <input type="file" style="display:none" #fileUpload (change)="onFileUpload($event)">
+        <div class="userPicDiv" (click)="fileUpload.click()">
+          <span *ngIf="!filePreview">
+            <img src="/assets/media/growon/logos/profilePicLogo.png" alt="">
+            <p>Click to add picture</p>
+          </span>
+          <span *ngIf="filePreview">
+            <img [src]="filePreview" alt="">
+          </span>
+        </div>
+      </div>
+
+
+    <form [formGroup]="teacherForm" autocomplete="off" enctype="multipart/form-data">
+      <!-- Name -->
+      <div class="row">
+        <mat-form-field>
+          <mat-label>Name*</mat-label>
+          <input matInput placeholder="Name" formControlName="name" class="form-control">
+  
+          <mat-error *ngIf="teacherForm.get('name').hasError('required')">teacher name is required </mat-error>
+          <mat-error *ngIf="teacherForm.get('name').hasError('maxlength')">You can only enter maximum
+            of 50 character </mat-error>
+        </mat-form-field>
+        <mat-label>Event Authorization </mat-label>
+        <mat-radio-group [(ngModel)]="isAuthorized" formControlName="authorized">
+          <mat-radio-button  class="example-radio-button" *ngFor="let auth of authorized" [value]="auth == 'Yes' ? true : false">{{auth}}
+          </mat-radio-button>
+        </mat-radio-group>
+          
+        
+      </div>
+     
+      <div class="row">
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <!-- Contact -->
+          <mat-form-field>
+            <mat-label>Contact Number*</mat-label>
+            <input type="number" matInput placeholder="Contact Number" (blur)="checkAlreadyExist($event.target.value)"
+              formControlName="contact">
+            <div class="text-danger" *ngIf="userExistFlag">Mobile Number is already exist.</div>
+            <mat-error *ngIf="teacherForm.get('contact').hasError('required')"> contact number is required </mat-error>
+            <mat-error *ngIf="teacherForm.get('contact').hasError('maxlength')"> you can enter maximum of 15
+              numbers </mat-error>
+            <mat-error *ngIf="teacherForm.get('contact').hasError('minlength')"> You should enter minimum of
+              10 numbers</mat-error>
+            <mat-error *ngIf="teacherForm.get('contact').hasError('pattern')"> Contact number can only have
+              numbers</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <!-- Password -->
+          <mat-form-field>
+            <mat-label>Password*</mat-label>
+            <input type="text" matInput placeholder="Password" formControlName="password" class="form-control">
+            <mat-error *ngIf="teacherForm.get('password').hasError('required')"> password is required </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <!-- <mat-form-field> -->
+          <mat-label>Branch*</mat-label>
+          <ng-select placeholder="Branch" formControlName="branch">
+            <ng-option *ngFor="let branch of branches" [value]="branch._id">
+              {{branch.name}}
+            </ng-option>
+          </ng-select>
+          <mat-error *ngIf="teacherForm.get('branch').hasError('required')"> please select the branch </mat-error>
+
+          <!-- </mat-form-field> -->
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <!-- Gender -->
+          <mat-radio-group formControlName="gender" color="primary">
+            <mat-label>Gender*</mat-label>
+            <mat-radio-button class="example-radio-button" *ngFor="let gend of gender" [value]="gend">{{gend}}
+            </mat-radio-button>
+            <mat-error *ngIf="teacherForm.get('gender').hasError('required')"> gender is required </mat-error>
+          </mat-radio-group>
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <!-- DOB -->
+          <mat-form-field>
+            <mat-label>Date of Birth (Please select from calender)</mat-label>
+            <input matInput [matDatepicker]="picker2" formControlName="dob">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+            <!-- <mat-error *ngIf="teacherForm.get('dob').hasError('required')"> required </mat-error> -->
+          </mat-form-field>
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <!-- Email -->
+          <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input type="email" matInput placeholder="Email" formControlName="email">
+            <mat-error *ngIf="teacherForm.get('email').hasError('pattern')"> Invalid email format
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <!-- Address -->
+      <mat-form-field appearance="fill">
+        <mat-label>Address</mat-label>
+        <textarea matInput placeholder="Address" formControlName="address"></textarea>
+        <mat-error *ngIf="teacherForm.get('address').hasError('maxlength')">You can only enter maximum
+          of 150 character </mat-error>
+      </mat-form-field>
+      <div class="row">
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <!-- <mat-form-field> -->
+            <mat-label>Primary Class</mat-label>
+            <ng-select (change)="primaryClassChange($event)" name="primaryClass" placeholder="Primary Class"
+              formControlName="primaryClass">
+              <!-- <ng-option [value]="">Primary Class</ng-option> -->
+              <ng-option *ngFor="let class of class" [value]="class.classId">
+                {{class.className}}
+              </ng-option>
+            </ng-select>
+
+          <!-- </mat-form-field> -->
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <!-- Section/Division -->
+          <!-- <mat-form-field> -->
+            <mat-label>Section/Division</mat-label>
+            <ng-select placeholder="Section/Division" formControlName="section"
+              (change)="primarySectionSelection()">
+              <!-- <ng-option [value]="">Section/Division</ng-option> -->
+              <ng-option *ngFor="let section of sections" [value]="section._id">{{section.name}}</ng-option>
+            </ng-select>
+            <!-- <mat-error *ngIf="teacherForm.get('section').hasError('required')">required </mat-error> -->
+          <!-- </mat-form-field> -->
+        </div>
+        <!-- <div class="col-md-4 col-sm-4 col-xs-12">
+      <mat-form-field>
+        <mat-label>Secondary Classes</mat-label>
+        <mat-select name="secondaryClass" placeholder="" formControlName="secondaryClass" required multiple>
+          <mat-option *ngFor="let class of classes" [value]="class._id">
+            {{class.name}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="teacherForm.get('secondaryClass').hasError('required')"> required </mat-error>
+      </mat-form-field>
+    </div> -->
+      </div>
+      <div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="import-btn" style="float: left;">
+              <!-- {{teacherForm.get('secondaryClass')['controls'].length}} -->
+
+              <button [disabled]="teacherForm.get('secondaryClass')['controls'].length==classLength"
+                class="btn btn-primary" (click)="addSecondaryClass()">Add Secondary Class</button>
+            </div>
+          </div>
+        </div>
+        <ng-container *ngIf="teacherForm.get('secondaryClass')">
+          <div formArrayName="secondaryClass"
+            *ngFor="let second of teacherForm.get('secondaryClass')['controls']; let i=index">
+            <div [formGroupName]="i">
+              <div class="row">
+                <div class="col-md-5">
+                  <ng-container *ngIf="class && class.length">
+                    <!-- <mat-form-field> -->
+                      <mat-label [attr.for]="'secondClasses'+i">Secondary Class</mat-label>{{secondClasses}}
+                      <ng-select (change)="secondaryClassChange($event,i)" name="secondClasses"
+                        [id]="'secondClasses'+i" placeholder="Secondary Class" formControlName="secondClasses">
+                        <ng-option [value]="">Secondary Class</ng-option>
+                        <ng-option
+                          *ngFor="let clas of class | secondaryClassSelected:teacherForm.get('secondaryClass')['controls']:i:pipeRefreshCounter"
+                          [value]="clas.classId">
+                          {{clas.className}}
+                        </ng-option>
+                      </ng-select>
+                      <!-- <mat-error *ngIf="teacherForm.get('secondaryClass').hasError('required')"> required </mat-error> -->
+                    <!-- </mat-form-field> -->
+                  </ng-container>
+                </div>
+                <div class="col-md-5">
+                  <mat-form-field>
+                    <mat-select placeholder="Section/Division" name="section" id="'section'+i" formControlName="section"
+                      multiple placeholder="Section/Division">
+                      <!-- <mat-option [value]="">Section/Division</mat-option> -->
+                      <mat-option *ngIf="this.teacherForm.controls.secondaryClass.value[i].tempSection.length ? this.teacherForm.controls.secondaryClass.value[i].tempSection.length==0 : ''"
+                        disabled>No Section Available</mat-option>
+                      <mat-option
+                        [disabled]="this.teacherForm.controls.secondaryClass.value[i].secondClasses==undefined || this.teacherForm.controls.secondaryClass.value[i].secondClasses==null || this.teacherForm.controls.secondaryClass.value[i].secondClasses=='' "
+                        *ngFor="let section of this.teacherForm.controls.secondaryClass.value[i].tempSection"
+                        [value]="section._id">{{section.name}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-2" *ngIf="teacherForm.get('secondaryClass').length>0">
+                  <button class="btn btn-danger btn-sm" (click)="removeSecodaryClass(i)">X</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Country -->
+          <!-- <mat-form-field> -->
+          <mat-label>Select Country</mat-label>
+          <ng-select placeholder="Country" formControlName="country" (change)="getStates()">
+            <ng-option *ngFor="let country of countries" [value]="country._id">
+              {{country.country_name}}
+            </ng-option>
+          </ng-select>
+
+          <!-- </mat-form-field> -->
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- State -->
+          <!-- <mat-form-field> -->
+          <mat-label>Select State</mat-label>
+          <ng-select placeholder="State" formControlName="state" (change)="getCities()">
+            <ng-option *ngFor="let state of states" [value]="state._id">
+              {{state.state_name}}
+            </ng-option>
+          </ng-select>
+
+          <!-- </mat-form-field> -->
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+
+          <!-- City -->
+          <!-- <mat-form-field> -->
+          <mat-label>Select City</mat-label>
+          <ng-select placeholder="City" formControlName="city">
+            <ng-option *ngFor="let city of cities" [value]="city._id">
+              {{city.city_name}}
+            </ng-option>
+          </ng-select>
+
+          <!-- </mat-form-field> -->
+
+
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <mat-form-field>
+            <mat-label>Pincode</mat-label>
+            <input matInput type="tel" placeholder="pincode" formControlName="pinCode" class="form-control">
+            <mat-error *ngIf="teacherForm.get('pinCode').hasError('maxlength')">You can only enter maximum
+              of 10 number </mat-error>
+
+            <mat-error *ngIf="teacherForm.get('pinCode').hasError('pattern')"> pincode can only have numbers
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Aadhar card no -->
+          <mat-form-field>
+            <mat-label>Aadhaar Card no</mat-label>
+            <input type="tel" matInput placeholder="Aadhaar Card no" formControlName="aadhaarNo" class="form-control">
+            <mat-error *ngIf="teacherForm.get('aadhaarNo').hasError('maxlength')">you have reached maximum limit of
+              characters </mat-error>
+            <mat-error *ngIf="teacherForm.get('aadhaarNo').hasError('pattern')"> aadhaarNo can only have numbers
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Blood group -->
+          <mat-form-field>
+            <mat-label>Blood Group</mat-label>
+            <input matInput placeholder="Blood Group" formControlName="bloodGroup" class="form-control">
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Mother Tongue -->
+          <mat-form-field>
+            <mat-label>Mother Tongue</mat-label>
+            <input matInput placeholder="Mother Tongue" formControlName="motherTongue" class="form-control">
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Marital status -->
+          <!-- <mat-form-field> -->
+          <mat-label>Marital status</mat-label>
+          <ng-select placeholder="Marital status" formControlName="maritalStatus">
+            <ng-option *ngFor="let mode of maritalStatus" [value]="mode">
+              {{mode}}
+            </ng-option>
+          </ng-select>
+          <!-- </mat-form-field> -->
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <!-- Religion -->
+          <mat-form-field>
+            <mat-label>Religion</mat-label>
+            <input matInput placeholder="Religion" formControlName="religion" class="form-control">
+          </mat-form-field>
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <!-- Cast -->
+          <mat-form-field>
+            <mat-label>Caste</mat-label>
+            <input matInput placeholder="Cast" formControlName="caste" class="form-control">
+          </mat-form-field>
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12"></div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Qualification  -->
+          <mat-form-field>
+            <mat-label>Qualification</mat-label>
+            <input matInput placeholder="Qualification" formControlName="qualification" class="form-control">
+
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Teaching levels  -->
+          <!-- <mat-form-field> -->
+          <mat-label>Teaching levels</mat-label>
+          <ng-select placeholder="Teaching levels" formControlName="teachingLevels">
+            <ng-option *ngFor="let mode of teachingLevels" [value]="mode">
+              {{mode}}
+            </ng-option>
+          </ng-select>
+          <!-- </mat-form-field> -->
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Teaching experience -->
+          <mat-form-field>
+            <mat-label>Teaching experience</mat-label>
+            <input matInput placeholder="Teaching experience" formControlName="teachingExperience" class="form-control">
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <label>Curriculum Vitae</label>
+          <input #fileInput type="file" formControlName="cv" (change)="onFileInput($event,'cv')">
+        </div>
+      </div>
+      <!-- Sub Form Educational details  -->
+      <hr>
+      <h1>Educational details</h1>
+      <h3>10th Details</h3>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- School -->
+          <mat-form-field>
+            <mat-label>School</mat-label>
+            <input matInput placeholder="School Name" formControlName="tenthSchool" class="form-control">
+
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Board -->
+          <mat-form-field>
+            <mat-label>Board</mat-label>
+            <input matInput placeholder="Board" formControlName="tenthBoard" class="form-control">
+
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Percentage -->
+          <mat-form-field>
+            <mat-label>Percentage</mat-label>
+            <input type="number" matInput placeholder="Percentage" formControlName="tenthPercentage"
+              class="form-control">
+
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <mat-form-field>
+            <mat-label>Year of Passing</mat-label>
+            <mat-select placeholder="Year of Passing" formControlName="tenthPassedYear">
+              <mat-option *ngFor="let year of yearOfPassing" [value]="year">
+                {{year}}
+              </mat-option>
+            </mat-select>
+
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <label>Upload 10<sup>th</sup> Document</label>
+          <input #fileInput type="file" (change)="onFileInput($event,'10th')" />
+        </div>
+      </div>
+      <!-- Year of Passing -->
+      <!-- Attach Documents -->
+      <!-- <mat-form-field>
+        <mat-label>Attach Documents</mat-label>
+        <input type="file" matInput placeholder="Attach Documents" formControlName="tenthDoc" class="form-control" required>
+    </mat-form-field> -->
+      <hr>
+      <h3>12th Details</h3>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- School -->
+          <mat-form-field>
+            <mat-label>School</mat-label>
+            <input matInput placeholder="School Name" formControlName="twelveSchool" class="form-control">
+
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Board -->
+          <mat-form-field>
+            <mat-label>Board</mat-label>
+            <input matInput placeholder="Board" formControlName="twelveBoard" class="form-control">
+
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Percentage -->
+          <mat-form-field>
+            <mat-label>Percentage</mat-label>
+            <input type="number" matInput placeholder="Percentage" formControlName="twelvePercentage"
+              class="form-control">
+
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Year of Passing -->
+          <mat-form-field>
+            <mat-label>Year of Passing</mat-label>
+            <mat-select placeholder="Year of Passing" formControlName="twelvePassedYear">
+              <mat-option *ngFor="let year of yearOfPassing" [value]="year">
+                {{year}}
+              </mat-option>
+            </mat-select>
+
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <label>Upload 12<sup>th</sup> Document</label>
+          <input #fileInput type="file" (change)="onFileInput($event,'12th')" />
+        </div>
+      </div>
+      <!-- Attach Documents -->
+      <!-- <mat-form-field>
+        <mat-label>Attach Documents</mat-label>
+        <input type="file" matInput placeholder="Attach Documents" formControlName="twelveDoc" class="form-control" required>
+    </mat-form-field> -->
+      <!-- <button (click)="fileInput.click()" class="btn btn-primary">
+        <span>Attach 12th Document</span>
+        <input #fileInput type="file" (change)="onFileInput($event,'12th')" style="display:none;" />
+    </button> -->
+      <hr>
+      <h3>Graduation Details</h3>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- School -->
+          <mat-form-field>
+            <mat-label>School</mat-label>
+            <input matInput placeholder="School Name" formControlName="gradSchool" class="form-control">
+
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Board -->
+          <mat-form-field>
+            <mat-label>Board</mat-label>
+            <input matInput placeholder="Board" formControlName="gradBoard" class="form-control">
+
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Percentage -->
+          <mat-form-field>
+            <mat-label>Percentage</mat-label>
+            <input type="number" matInput placeholder="Percentage" formControlName="gradPercentage"
+              class="form-control">
+
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Year of Passing -->
+          <mat-form-field>
+            <mat-label>Year of Passing</mat-label>
+            <mat-select placeholder="Year of Passing" formControlName="gradPassedYear">
+              <mat-option *ngFor="let year of yearOfPassing" [value]="year">
+                {{year}}
+              </mat-option>
+            </mat-select>
+
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <label>Attach Documents</label>
+          <input #fileInput type="file" (change)="onFileInput($event,'grad')" />
+        </div>
+      </div>
+      <!-- Attach Documents -->
+      <!-- <mat-form-field>
+        <mat-label>Attach Documents</mat-label>
+        <input type="file" matInput placeholder="Attach Documents" formControlName="gradDoc" class="form-control" required>
+    </mat-form-field> -->
+      <hr>
+      <h3>Masters Details</h3>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- School -->
+          <mat-form-field>
+            <mat-label>School</mat-label>
+            <input matInput placeholder="School Name" formControlName="masterSchool" class="form-control">
+
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Board -->
+          <mat-form-field>
+            <mat-label>Board</mat-label>
+            <input matInput placeholder="Board" formControlName="masterBoard" class="form-control">
+
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Percentage -->
+          <mat-form-field>
+            <mat-label>Percentage</mat-label>
+            <input type="number" matInput placeholder="Percentage" formControlName="masterPercentage"
+              class="form-control">
+
+          </mat-form-field>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <!-- Year of Passing -->
+          <mat-form-field>
+            <mat-label>Year of Passing</mat-label>
+            <mat-select placeholder="Year of Passing" formControlName="masterPassedYear">
+              <mat-option *ngFor="let year of yearOfPassing" [value]="year">
+                {{year}}
+              </mat-option>
+            </mat-select>
+
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <label>Attach Document</label>
+          <input #fileInput type="file" (change)="onFileInput($event,'master')" />
+        </div>
+      </div>
+      <!-- Attach Documents -->
+      <!-- <mat-form-field>
+        <mat-label>Attach Documents</mat-label>
+        <input type="file" matInput placeholder="Attach Documents" formControlName="masterDoc" class="form-control" required>
+    </mat-form-field> -->
+      <!--  -->
+      <hr>
+      <h3>Other Degrees</h3>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <label>Other Degrees</label>
+          <input #fileInput type="file" (change)="onFileInput($event,'otherDeg')" />
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <label>Certifications</label>
+          <input #fileInput type="file" (change)="onFileInput($event,'certi')" />
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <label>Extra-Curricular achievements</label>
+          <input #fileInput type="file" (change)="onFileInput($event,'extraCur')" />
+        </div>
+      </div>
+      <!-- Other Degrees -->
+      <!-- <mat-form-field>
+        <mat-label>Other Degrees</mat-label>
+        <input type="file" matInput placeholder="Other Degrees" formControlName="otherDegrees" class="form-control" required>
+    </mat-form-field> -->
+      <!-- Certifications -->
+      <!-- <mat-form-field>
+        <mat-label>Certifications</mat-label>
+        <input type="file" matInput placeholder="Certifications" formControlName="certifications" class="form-control" required>
+    </mat-form-field> -->
+      <div>
+      </div>
+      <!-- Extra-Curricular achievements -->
+      <!--  <mat-form-field>
+        <mat-label>Extra-Curricular achievements</mat-label>
+        <input type="file" matInput placeholder="Extra-Curricular achievements" formControlName="extraCurricularAchievements" class="form-control" required>
+    </mat-form-field> -->
+      <div>
+      </div>
+      <!-- Submit -->
+      <div class="import-btn">
+        <button [disabled]=" userExistFlag" (click)="createTeacher()"
+          class="btn btn-primary">Submit</button>
+      </div>
+      <!-- <button (click)="createTeacher()" class="btn btn-primary">Submit</button> -->
+    </form>
+  </div>
+</div>

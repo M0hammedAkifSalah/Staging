@@ -1,0 +1,18 @@
+.classcontainer{
+    padding: 10px;
+//     display: flex;
+//   flex-direction: column;
+}
+
+::ng-deep .cdk-overlay-container {
+    z-index: 1200 !important;
+  }
+
+  // /deep/ 
+  .cdk-overlay-container {
+    z-index: 1200 !important;
+  }
+
+  .cdk-global-overlay-wrapper, .cdk-overlay-container {
+    z-index: 99999 !important;
+  }

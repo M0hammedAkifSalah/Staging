@@ -1,0 +1,56 @@
+<div *ngIf="dataSource?.data?.length !== 0" style="padding: 50px;">
+  <h3>All Bills</h3>
+  <mat-form-field appearance="standard" style="width: 100%;">
+    <mat-label>Filter</mat-label>
+    <input (keyup)="applyFilter($event)" matInput placeholder="Search columns" #input>
+  </mat-form-field>
+  <div class="mat-elevation-z8" style="overflow: scroll;">
+    <table mat-table [dataSource]="dataSource" style="width: 100%;">
+
+      <!-- Position Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> Order Id </th>
+        <td mat-cell *matCellDef="let element"> {{element.order_id}} </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef> Amount </th>
+        <td mat-cell *matCellDef="let element"> {{element.amount}} </td>
+      </ng-container>
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="duedate">
+        <th mat-header-cell *matHeaderCellDef> Bill of </th>
+        <td mat-cell *matCellDef="let element"> {{element.created_at}} </td>
+      </ng-container>
+
+      <!-- Symbol Column -->
+      <ng-container matColumnDef="payment">
+        <th mat-header-cell *matHeaderCellDef> Payment </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-raised-button color="primary" *ngIf="element.status === 'Paid'"
+            style="background-color: #009879;">
+            <mat-icon>check</mat-icon> Paid
+          </button>
+          <button mat-raised-button color="primary" *ngIf="element.status === 'created'"
+            style="background-color: #cb1939;">
+            <mat-icon>credit_card</mat-icon> Not Paid
+          </button>
+        </td>
+      </ng-container>
+
+
+
+      <tr mat-header-row *matHeaderRowDef=" displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <!-- <mat-paginator style="z-index: 1200;" [pageSizeOptions]="[6, 15, 20]" #paginator2 showFirstLastButtons aria-label="Select page of periodic elements">
+    </mat-paginator> -->
+  </div>
+
+</div>
+<div *ngIf="dataSource?.data?.length === 0" style="width: 100%;height:100%;display: flex;justify-content: center;align-items: center;">
+  <h3>No Bills Found</h3>
+</div>

@@ -1,0 +1,64 @@
+<div class="classcontainer">
+  <div class="modal-header">
+    <h4 class="modal-title">Select Questions</h4>
+  </div>
+
+  <div class="modal-body px-0">
+    <table mat-table [dataSource]="dataSource">
+
+
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <!-- Position Column -->
+      <ng-container matColumnDef="questionTitle">
+        <th mat-header-cell *matHeaderCellDef> Question Title </th>
+        <td mat-cell *matCellDef="let element"> {{element.questionTitle}} </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="questionType">
+        <th mat-header-cell *matHeaderCellDef> Question Type </th>
+        <td mat-cell *matCellDef="let element"> {{element.questionType[0]}} </td>
+      </ng-container>
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="topic">
+        <th mat-header-cell *matHeaderCellDef> Topic </th>
+        <td mat-cell *matCellDef="let element"> {{element.topic}} </td>
+      </ng-container>
+
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="learningOutcome">
+        <th mat-header-cell *matHeaderCellDef> Learning Outcome </th>
+        <td mat-cell *matCellDef="let element"> {{element.learningOutcome}} </td>
+      </ng-container>
+
+      <!-- Weight Column -->
+      <ng-container matColumnDef="repository">
+        <th mat-header-cell *matHeaderCellDef> Repository </th>
+        <td mat-cell *matCellDef="let element"> {{element.repository[0].repository_type}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)">
+      </tr>
+    </table>
+  </div>
+  <div class="modal-body px-0">
+    <div class="col-md-12 import-btn ">
+
+      <button class="btn btn-primary" (click)="submit()">Submit</button>
+    </div>
+  </div>
+</div>

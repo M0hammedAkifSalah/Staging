@@ -1,0 +1,211 @@
+<ng-container *ngIf="!showModel">
+    <div *ngIf="!showChapters" class="learningSub">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group import-btn">
+            <button class="btn btn-primary" (click)="showChaptersFun(true)">Show All Topics</button>
+          </div>
+        </div>
+      </div>
+      <form #topicForm="ngForm" (ngSubmit)="addTopic(topicForm.value,topicForm.valid)">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label><strong>Topic Title</strong></label>
+              <input type="text" name="chapterTitle" class="form-control" placeholder="Chapter Title" [(ngModel)]="chapterTitle" required>
+            </div>
+          </div>
+          <div class="col-md-6"></div>
+        </div>
+        <div class="row" style="margin-bottom:50px">
+          <div class="col-md-9">
+            <div class="uploadFileSection" (click)="uploads.click()" style="cursor: pointer; max-height: 400px;display: flex; align-items: center; justify-content: center;">
+              <input type="file" (change)="uploadImage($event)" style="display:none" #uploads required>
+              <h3 *ngIf="!showImage" style="position: absolute;top: 45%;left: 35%;"><i class="fa fa-picture-o" aria-hidden="true"></i><strong>Upload an image, Files</strong></h3>
+              <img [src]="showImage" *ngIf="showImage" style="width: auto; height: auto; max-width: 100%; max-height: 100%;">
+            </div>
+          </div>
+          <div class="col-md-3 section-right">
+            <div class="form-group">
+              <label>Class / grade</label>
+              <select name="class" [(ngModel)]="class" class="form-control" required>
+                <option *ngFor="let class of classes" [value]="class._id">{{class.name}}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Board</label>
+              <select name="board" [(ngModel)]="board" class="form-control" required>
+                <option *ngFor="let board of boards" [value]="board._id">{{board.name}}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Syllabus</label>
+              <select name="syl" [(ngModel)]="syl" class="form-control" required>
+                <option *ngFor="let syl of syllabus" [value]="syl._id">{{syl.name}}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Subject</label>
+              <select name="subject" [(ngModel)]="subject" class="form-control" required>
+                <option *ngFor="let subject of subjects" [value]="subject._id">{{subject.name}}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Chapter</label>
+              <select name="chapter" [(ngModel)]="chapter" class="form-control" required>
+                <option *ngFor="let chapter of chapters" [value]="chapter._id">{{chapter.name}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label>Description</label>
+            <textarea name="description" id="" cols="120" rows="10" class="form-control" [(ngModel)]="description"></textarea>
+          </div>
+        </div>
+        <!-- All images here -->
+        <ng-container *ngIf="allUploadedFiles">
+          <div class="row" *ngIf="allUploadedFiles.length > 0">
+            <span *ngFor="let item of allUploadedFiles">
+              <img *ngIf="item.file" [src]="showFileLogo(item.file)" alt="" style="width: 150px;">
+              <p style="text-align: center">{{item.file_name}}</p>
+            </span>
+          </div>
+        </ng-container>
+        <div class="row">
+          <div class="btn btn-primary" style="margin-bottom:30px;" (click)="openModel(true)">Upload File</div>
+          <!-- <div class="filesContainer">
+                <div class="form-group">
+                    <label>Upload File</label>
+                    <input type="file" class="btn btn-default" value="File Upload" #fileUpload (change)="onFileUpload($event)" style="display:none">
+                    <div class="btn btn-primary" (click)="fileUpload.click()">Upload File</div>
+                    <br>
+                    <br>
+                    <span>Selected File: &nbsp; {{fileName}}</span>
+                </div>
+            </div> -->
+        </div>
+        <!-- <div class="row">
+                  <div class="form-group">
+                      <label>File Description</label>
+                      <textarea name="aboutFile" [(ngModel)]="aboutFile" id="" cols="30" rows="3" class="form-control"></textarea>
+                  </div>
+              </div> -->
+        <div class="row">
+          <div class="col-md-12 import-btn">
+          <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Add Topic">
+            <input type="reset" id="reset" class="btn btn-primary" value="Reset" hidden>
+            <a href="javascript:void(0);" (click)="cancelEdit()" class="cancelLink" *ngIf="editingTopic">Cancel</a>
+          </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div *ngIf="showChapters">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group import-btn">
+            <button style="margin-right: 5px;" class="btn btn-primary" (click)="showChaptersFun(false)">Add Topic</button>
+            <button style="margin-left: 5px;" class="btn btn-primary" (click)="import()">Import Topic</button>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <table class="table chapterTable">
+            <thead>
+              <tr>
+                <th scope="col">SL No</th>
+                <th scope="col">Name</th>
+                <th scope="col">Subject</th>
+                <th scope="col">Syllabus</th>
+                <th scope="col">Class/grade</th>
+                <th scope="col">Chapter</th>
+                <th scope="col">Author</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let topic of topics; let i = index">
+                <th scope="row">{{i+1}}</th>
+                <!-- <th>{{topic.name ? topic.name : '-'}}</th> -->
+                <th><a href="javascript:void(0);" (click)="editTopic(topics[i])">{{topic.name ? topic.name : '-'}}</a></th>
+                <th>{{topic.subject_id.name ? topic.subject_id.name : '-'}}</th>
+                <th>{{topic.syllabus_id.name ? topic.syllabus_id.name : '-'}}</th>
+                <th>{{topic.class_id.name ? topic.class_id.name : '-'}}</th>
+                <th>{{topic.chapter_id.name ? topic.chapter_id.name : '-'}}</th>
+                <th>{{topic.created_by ? topic.created_by : '-'}}</th>
+                <th><button class="btn btn-primary" (click)="editTopic(topics[i])">Update</button></th>
+  
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+  
+    </div>
+    <!-- <div class="allFiles">
+      <h2>All Topics Files</h2>
+      <div *ngFor="let topic of topics" class="imageDiv">
+        <div *ngFor="let file of topic.file_upload">
+          <a href="{{s3Url}}{{file}}"><img [src]="showFileLogo(file)" alt="">{{file}}</a>
+        </div>
+        <br>
+      </div>
+    </div> -->
+  </ng-container>
+  <ng-container *ngIf="showModel">
+    <div class="modalContainer">
+      <div class="modalHeader">
+        <i class="fa fa-times" (click)="openModel(false)"></i>
+      </div>
+      <form #fileUploadForm="ngForm" (ngSubmit)="uploadFiles(fileUploadForm.value,fileUploadForm.valid)">
+        <div class="modalBody" *ngFor="let item of noOfFile; let i = index">
+          <!-- <div class="modalBody" *ngFor="let item of allUploadedFiles; let i = index"> -->
+          <h2 class="heading">Image</h2>
+          <ng-container *ngIf="allUploadedFiles[i] && allUploadedFiles[i].file; else insert">
+            <input type="file" class="btn btn-default" value="File Upload" name="imageTitle{{i+1}}" [(ngModel)]="allUploadedFiles[i].file" #fileUpload (change)="onFileUpload($event,i)" style="display:none" required>
+            <div class="imageContainer" (click)="fileUpload.click()">
+            <img  [src]="showFileLogo(allUploadedFiles[i].file)" alt="">
+            </div>
+          </ng-container>
+          <ng-template #insert>
+            <input type="file" class="btn btn-default" value="File Upload" name="imageTitle{{i+1}}" [(ngModel)]="this['imageTitle'+i+1]" #fileUpload (change)="onFileUpload($event,i)" style="display:none" required>
+            <div class="imageContainer" (click)="fileUpload.click()">
+            <h3 *ngIf="!imagePreviews[i]">Click To Add File</h3>
+            <img *ngIf="imagePreviews[i]" [src]="imagePreviews[i]" alt="">
+            </div>
+          </ng-template>
+          <!-- <input type="file" class="btn btn-default" value="File Upload" name="imageTitle{{i+1}}" [(ngModel)]="allUploadedFiles[i].file" #fileUpload (change)="onFileUpload($event,i)" style="display:none" required> -->
+          <!-- <ng-container *ngIf="allUploadedFiles[i] && allUploadedFiles[i].file; else imageInsert">
+          </ng-container>
+          <ng-template #imageInsert>
+          </ng-template> -->
+          <p style="text-align: center;">Note: Allowed File type - jpg, jpeg, gif, png, mp4, docx, pdf, xlsx, pptx, mp3</p>
+          <br>
+          <div style="padding: 0 5%;">
+            <div>
+              <div class="form-group">
+                <label>
+                  <h2>File Title</h2>
+                </label>
+                <ng-container *ngIf="allUploadedFiles[i] && allUploadedFiles[i].file_name; else imageNameInsert">
+                  <input type="text" name="file{{i+1}}" [(ngModel)]="allUploadedFiles[i].file_name" class="form-control" required>
+                </ng-container>
+                <ng-template #imageNameInsert>
+                  <input type="text" name="file{{i+1}}" [(ngModel)]="this['file'+i+1]" class="form-control" required>
+                </ng-template>
+              </div>
+            </div>
+            <!-- <button (click)="openModel(false)" class="btn btn-primary">Upload File</button> -->
+          </div>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Upload Files">
+      </form>
+      <div class="modalFooter">
+        <a href="javascript:void(0)" (click)="incrementUpload()" class="addMore btn btn-primary">Add More</a>
+      </div>
+    </div>
+  </ng-container>

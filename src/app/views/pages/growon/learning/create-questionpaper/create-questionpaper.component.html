@@ -1,0 +1,439 @@
+<div [formGroup]="questionPaperForm">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label>Title<span class="reqStar">*</span></label>
+        <input class="form-control" type="text" name="QuestionTitle" formControlName="QuestionTitle">
+        <span class="text-danger"
+          *ngIf="(questionPaperFormControl.QuestionTitle.touched) && questionPaperFormControl.QuestionTitle.errors?.required">Title
+          is required</span>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label>ID<span class="reqStar"></span></label>
+        <input class="form-control" type="text" name="questionPaperId" formControlName="questionPaperId">
+        <!-- <span class="text-danger"
+          *ngIf="(questionPaperFormControl.questionPaperId.touched) && questionPaperFormControl.questionPaperId.errors?.required">ID
+          is required</span> -->
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <div formGroupName="questionPaperDetail">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="form-group">
+          <div *ngIf="!isOwner;else myBoard;">
+            <label>Board<span class="reqStar">*</span></label>
+            <mat-select formControlName="board" name="board" class="form-control" placeholder="-- select an option --">
+              <!-- <option hidden disabled selected value> -- select an option -- </option> -->
+              <mat-option *ngFor="let item of boards" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+              </mat-option>
+              <mat-option *ngIf="boards.length==0" disabled>No Boards Available</mat-option>
+            </mat-select>
+            <span class="text-danger"
+              *ngIf="(questionDetailFormControl.board.touched) && questionDetailFormControl.board.errors?.required">Board
+              is required</span>
+          </div>
+          <ng-template #myBoard>
+            <label>Board<span class="reqStar">*</span></label>
+            <mat-select formControlName="board" name="board" class="form-control" placeholder="-- select an option --">
+              <!-- <option hidden disabled selected value> -- select an option -- </option> -->
+              <mat-option *ngFor="let item of SchoolBoards" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+              </mat-option>
+              <mat-option *ngIf="boards.length==0" disabled>No Boards Available</mat-option>
+            </mat-select>
+            <span class="text-danger"
+              *ngIf="(questionDetailFormControl.board.touched) && questionDetailFormControl.board.errors?.required">Board
+              is required</span>
+
+          </ng-template>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <div *ngIf="!isOwner;else myClass;">
+            <label>Class/Grade<span class="reqStar">*</span></label>
+            <select formControlName="class" name="class" class="form-control">
+              <option hidden disabled selected value> -- select an option -- </option>
+              <option *ngFor="let item of classes" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+              <option *ngIf="classes.length==0" disabled>No Class Available</option>
+            </select>
+            <span class="text-danger"
+              *ngIf="(questionDetailFormControl.class.touched) && questionDetailFormControl.class.errors?.required">Class
+              is required</span>
+          </div>
+          <ng-template #myClass>
+            <label>Class/Grade<span class="reqStar">*</span></label>
+            <select formControlName="class" name="class" class="form-control">
+              <option hidden disabled selected value> -- select an option -- </option>
+              <option *ngFor="let item of class" [value]="item.classId">&nbsp;&nbsp;&nbsp;&nbsp;{{item.className}}
+              </option>
+              <option *ngIf="class.length==0" disabled>No Class Available</option>
+            </select>
+            <span class="text-danger"
+              *ngIf="(questionDetailFormControl.class.touched) && questionDetailFormControl.class.errors?.required">Class
+              is required</span>
+          </ng-template>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>Syllabus<span class="reqStar">*</span></label>
+          <select formControlName="syllabus" name="syllabus" class="form-control">
+            <option hidden disabled selected value> -- select an option -- </option>
+            <option *ngFor="let item of syllabuses" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+            <option *ngIf="syllabuses.length==0" disabled>No Syllabus Available</option>
+          </select>
+          <span class="text-danger"
+            *ngIf="(questionDetailFormControl.syllabus.touched) && questionDetailFormControl.syllabus.errors?.required">Syllabus
+            is required</span>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>Total Questions<span class="reqStar">*</span></label>
+          <input class="form-control" type="number" name="totalQuestion" formControlName="totalQuestion">
+          <span class="text-danger"
+            *ngIf="(questionDetailFormControl.totalQuestion.touched) && questionDetailFormControl.totalQuestion.errors?.required">ID
+            is required</span>
+        </div>
+      </div>
+    </div>
+    <div class="row questionary">
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>Subject<span class="reqStar">*</span></label>
+          <mat-select formControlName="subject" name="subject" class="form-control" placeholder="-- select an option --"
+            multiple>
+            <!-- <option hidden disabled selected value> -- select an option -- </option> -->
+            <mat-option *ngFor="let item of subjects" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+            </mat-option>
+            <mat-option *ngIf="subjects.length==0" disabled>No Subject Available</mat-option>
+          </mat-select>
+          <span class="text-danger"
+            *ngIf="(questionDetailFormControl.subject.touched) && questionDetailFormControl.subject.errors?.required">Title
+            is required</span>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>Language<span class="reqStar">*</span></label>
+          <select formControlName="language" name="language" class="form-control">
+            <option hidden disabled selected value> -- select an option -- </option>
+            <option *ngFor="let item of languages" [value]="item">&nbsp;&nbsp;&nbsp;&nbsp;{{item}}</option>
+            <option *ngIf="languages.length==0" disabled>No Language Available</option>
+          </select>
+          <span class="text-danger"
+            *ngIf="(questionDetailFormControl.language.touched) && questionDetailFormControl.language.errors?.required">ID
+            is required</span>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>Exam Type<span class="reqStar">*</span></label>
+          <mat-form-field appearance="none" class="form-group" [floatLabel]="'never'">
+            <mat-select class="form-control" name="examType" placeholder="" formControlName="examType"
+              placeholder="-- select an option --" multiple>
+              <mat-option *ngFor="let exam of examTypes" [value]="exam._id">
+                {{exam.name}}
+              </mat-option>
+              <mat-option *ngIf="examTypes.length==0" disabled>No Exam Types Available</mat-option>
+            </mat-select>
+            <mat-error
+              *ngIf="(questionDetailFormControl.examType.touched) && questionDetailFormControl.examType.errors?.required">
+              Exam Type is required</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>Student Type<span class="reqStar">*</span></label>
+          <mat-form-field appearance="none" class="form-group" [floatLabel]="'never'">
+            <mat-select class="form-control" name="studentType" placeholder="" formControlName="studentType"
+              placeholder="-- select an option --" multiple>
+              <mat-option *ngFor="let student of studentTypes" [value]="student.value">
+                {{student.name}}
+              </mat-option>
+              <mat-option *ngIf="studentTypes.length==0" disabled>No Student Types Available</mat-option>
+            </mat-select>
+            <mat-error
+              *ngIf="(questionDetailFormControl.studentType.touched) && questionDetailFormControl.studentType.errors?.required">
+              Student Type is required</mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-5">
+        <fieldset class="border p-2" formGroupName="attemptType">
+          <legend class="w-auto">Attempt Type</legend>
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label>Practice<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="practice" formControlName="practice">
+                <span class="text-danger"
+                  *ngIf="(attemptTypeFormControl.practice.touched) && attemptTypeFormControl.practice.errors?.required">Practice
+                  is required</span>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Test<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="test" formControlName="test">
+                <span class="text-danger"
+                  *ngIf="(attemptTypeFormControl.test.touched) && attemptTypeFormControl.test.errors?.required">Test is
+                  required</span>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Practice & Test<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="practiceTest" formControlName="practiceTest">
+                <span class="text-danger"
+                  *ngIf="(attemptTypeFormControl.practiceTest.touched) && attemptTypeFormControl.practiceTest.errors?.required">Practice
+                  & Test is required</span>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <div class="col-md-7">
+        <fieldset class="border p-2" formGroupName="difficultyLevel">
+          <legend class="w-auto">Difficulty Level</legend>
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                <label>Very Easy<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="veryEasy" formControlName="veryEasy">
+                <span class="text-danger"
+                  *ngIf="(difficultLevelFormControl.veryEasy.touched) && difficultLevelFormControl.veryEasy.errors?.required">Practice
+                  is required</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label>Easy<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="easy" formControlName="easy">
+                <span class="text-danger"
+                  *ngIf="(difficultLevelFormControl.easy.touched) && difficultLevelFormControl.easy.errors?.required">Test
+                  is required</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label>Intermediate<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="intermediate" formControlName="intermediate">
+                <span class="text-danger"
+                  *ngIf="(difficultLevelFormControl.intermediate.touched) && difficultLevelFormControl.intermediate.errors?.required">Practice
+                  & Test is required</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label>Hard<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="hard" formControlName="hard">
+                <span class="text-danger"
+                  *ngIf="(difficultLevelFormControl.hard.touched) && difficultLevelFormControl.hard.errors?.required">Practice
+                  & Test is required</span>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label>Very Hard<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="veryHard" formControlName="veryHard">
+                <span class="text-danger"
+                  *ngIf="(difficultLevelFormControl.veryHard.touched) && difficultLevelFormControl.veryHard.errors?.required">Practice
+                  & Test is required</span>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <button mat-raised-button [disabled]="questionPaperFormControl.questionPaperDetail.invalid"
+          (click)="getChaptersForm()" class="btn btn-primary">Next</button>
+      </div>
+    </div>
+    <div class="row">
+
+      <div class="col-md-6" *ngIf="isChapters">
+        <h3>Chapters</h3>
+        <table mat-table [dataSource]="filteredChapters">
+          <!-- Checkbox Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox (change)="$event ? masterToggle() : null"
+                [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let row">
+              <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- Position Column -->
+          <ng-container matColumnDef="chapter">
+            <th mat-header-cell *matHeaderCellDef> Chapters </th>
+            <td mat-cell *matCellDef="let element"> {{element}} </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="subject">
+            <th mat-header-cell *matHeaderCellDef> Subject </th>
+            <td mat-cell *matCellDef="let element"> {{questionDetailFormControl.subject.value}} </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedChapterColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedChapterColumns;" (click)="selection.toggle(row)">
+          </tr>
+        </table>
+        <button mat-raised-button [disabled]="questionPaperFormControl.questionPaperDetail.invalid"
+          (click)="submitChpters()" class="btn btn-primary">Fetch Topics</button>
+      </div>
+      <div class="col-md-6" *ngIf="isTopics">
+        <h3>Chapters</h3>
+        <table mat-table [dataSource]="filteredTopics">
+
+          <!-- Position Column -->
+          <ng-container matColumnDef="chapter">
+            <th mat-header-cell *matHeaderCellDef> Chapters </th>
+            <td mat-cell *matCellDef="let element"> {{element}} </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="topic" formArrayName="chapters">
+            <th mat-header-cell *matHeaderCellDef> Topics </th>
+            <td mat-cell *matCellDef="let index = index" [formGroupName]="index">
+              <mat-form-field appearance="none" class="form-group" [floatLabel]="'never'">
+                <mat-select class="form-control" name="topics" placeholder="" formControlName="topics"
+                  placeholder="-- select an option --" multiple>
+                  <mat-option *ngFor="let item of filteredByTopics[index]" [value]="item">
+                    {{item}}
+                  </mat-option>
+                  <mat-option *ngIf="examTypes.length==0" disabled>No topics Available</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedTopicColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedTopicColumns;">
+          </tr>
+        </table>
+        <button mat-raised-button [disabled]="questionPaperFormControl.questionPaperDetail.invalid"
+          (click)="submitTopics()" class="btn btn-primary">Fetch Learning Outcome</button>
+      </div>
+    </div>
+    <div class="row">
+
+      <div class="col-md-6" *ngIf="isLearningOutCome">
+        <h3>Learning Outcome</h3>
+        <table mat-table [dataSource]="outcomeDataSource">
+
+          <!-- Position Column -->
+          <ng-container matColumnDef="chapter">
+            <th mat-header-cell *matHeaderCellDef> Chapters </th>
+            <td mat-cell *matCellDef="let element"> {{element.chapter}} </td>
+          </ng-container>
+
+          <!-- Position Column -->
+          <ng-container matColumnDef="topic">
+            <th mat-header-cell *matHeaderCellDef> Topic </th>
+            <td mat-cell *matCellDef="let element"> {{element.topic}} </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="learningOutcome" formArrayName="learningOutcome">
+            <th mat-header-cell *matHeaderCellDef> Learning Outcome </th>
+            <td mat-cell *matCellDef="let index = index" [formGroupName]="index">
+              <mat-form-field appearance="none" class="form-group" [floatLabel]="'never'">
+                <mat-select class="form-control" name="outcome" placeholder="" formControlName="outcome"
+                  placeholder="-- select an option --" multiple>
+                  <mat-option *ngFor="let item of filteredByOutcome[index]" [value]="item">
+                    {{item}}
+                  </mat-option>
+                  <mat-option *ngIf="filteredByOutcome[index].length==0" disabled>No Outcomes Available</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedOutcomeColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedOutcomeColumns;">
+          </tr>
+        </table>
+        <button mat-raised-button [disabled]="questionPaperFormControl.questionPaperDetail.invalid"
+          (click)="submitOutcome()" class="btn btn-primary">Fetch Question Category</button>
+      </div>
+      <div class="col-md-6" *ngIf="isQuestionCategories">
+        <h3>Question Category</h3>
+        <div class="form-group">
+          <!-- <label>Question Category<span class="reqStar">*</span></label> -->
+          <mat-form-field appearance="none" class="form-group" [floatLabel]="'never'">
+            <mat-select class="form-control" name="questionCategory" placeholder="" formControlName="questionCategory"
+              placeholder="-- select an option --" multiple>
+              <mat-option *ngFor="let item of filteredByQuestionCategory" [value]="item">
+                {{item}}
+              </mat-option>
+              <mat-option *ngIf="studentTypes.length==0" disabled>No Question Categories Available</mat-option>
+            </mat-select>
+            <mat-error
+              *ngIf="(questionDetailFormControl.questionCategory.touched) && questionDetailFormControl.questionCategory.errors?.required">
+              Student Type is required</mat-error>
+          </mat-form-field>
+        </div>
+        <button mat-raised-button [disabled]="questionPaperFormControl.questionPaperDetail.invalid"
+          (click)="submitQuestionCategory()" class="btn btn-primary">Fetch Questions</button>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="isObjective">
+      <div class="col-md-8">
+        <table mat-table [dataSource]="filteredByQuestionType">
+
+          <!-- Position Column -->
+          <ng-container matColumnDef="questionType">
+            <th mat-header-cell *matHeaderCellDef> Question Type </th>
+            <td mat-cell *matCellDef="let element"> {{element}} </td>
+          </ng-container>
+
+          <!-- Position Column -->
+          <ng-container matColumnDef="totalQuestion">
+            <th mat-header-cell *matHeaderCellDef> Total Questions </th>
+            <td mat-cell *matCellDef="let element"> {{getNumberQuestions(element)}} </td>
+          </ng-container>
+
+          <!-- Position Column -->
+          <ng-container matColumnDef="selectedQuestion">
+            <th mat-header-cell *matHeaderCellDef> Selected Questions </th>
+            <td mat-cell *matCellDef="let element"> {{getNumberSelectedQuestions(element)}} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef> Actions </th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-raised-button (click)="selectQuestions(element)" class="btn btn-primary">Select
+                Questions</button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedQuestionCategoryColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedQuestionCategoryColumns;">
+          </tr>
+        </table>
+      </div>
+      <button mat-raised-button [disabled]="questionPaperForm.invalid" (click)="generateQestionPaper()"
+        class="btn btn-primary">Generate Question List</button>
+    </div>
+  </div>
+</div>

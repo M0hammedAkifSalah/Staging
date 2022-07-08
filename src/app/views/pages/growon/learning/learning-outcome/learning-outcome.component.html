@@ -1,0 +1,325 @@
+<div [style.padding]="isDialogBoxOpen?'33px':'0px'">
+  <div *ngIf="!showChapters" class="learningSub">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group import-btn ">
+          <button class="btn btn-primary" (click)="showChaptersFun(true)">Show All Learning Outcome</button>
+        </div>
+      </div>
+    </div>
+    <form #loForm="ngForm" (ngSubmit)="addLearningOutcome(loForm.value,loForm.valid)">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label><strong>Learning Outcome Title</strong></label>
+            <input type="text" name="chapterTitle" class="form-control" placeholder="Learning Outcome Title"
+              [(ngModel)]="chapterTitle" required>
+          </div>
+        </div>
+        <div class="col-md-6"></div>
+      </div>
+      <div class="row" style="margin-bottom:50px">
+        <div class="col-md-9">
+          <div class="form-group">
+            <div class="form-group tinyMCE">
+              <label>Description</label>
+              <!--Adding tinyMCE-->
+           <editor [init]="({
+        
+            quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+          noneditable_noneditable_class: 'mceNonEditable',
+          toolbar_mode: 'sliding',
+          contextmenu: 'link image imagetools table',
+            base_url: '/tinymce',
+            suffix: '.min',
+             height: 250,
+             plugins: [
+               'advlist autolink lists link image charmap print preview anchor',
+               'searchreplace visualblocks code fullscreen',
+               'insertdatetime media table paste code help wordcount',
+               'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons'
+             ],
+             imagetools_cors_hosts: ['picsum.photos'],
+             menubar: 'file edit view insert format tools table help',
+          toolbar_sticky: true,
+          autosave_ask_before_unload: true,
+          autosave_interval: '30s',
+          autosave_prefix: '{path}{query}-{id}-',
+          autosave_restore_when_empty: false,
+          autosave_retention: '2m',
+          image_advtab: true,
+          external_plugins: { tiny_mce_wiris: 'https://www.wiris.net/demo/plugins/tiny_mce/plugin.js' },
+          
+             toolbar:
+                
+               'undo redo | formatselect | bold italic backcolor | \
+               alignleft aligncenter alignright alignjustify | \
+               bullist numlist outdent indent | removeformat | help | tiny_mce_wiris_formulaEditor tiny_mce_wiris_formulaEditorChemistry'
+           })" [ngModelOptions]="{standalone: true}"
+            [(ngModel)]="description" name="description" rows="10" ></editor>
+          </div>
+          <!--   <textarea name="description" id="" cols="120" rows="10" class="form-control prevDesc"
+              [(ngModel)]="description"></textarea> -->
+          </div>
+        </div>
+        <div class="col-md-3 section-right">
+          <div class="form-group">
+            <div *ngIf="!isOwner;else own;">
+              <label>Class / grade</label>
+              <ng-select [clearable]="false" name="class" [(ngModel)]="class" required
+                (change)="getBoardIdAndSyllabusId($event)">
+                <ng-option>Select</ng-option>
+                <ng-option *ngFor="let class of classes" [value]="class._id">{{class.name}}</ng-option>
+              </ng-select>
+              <div class="form-group">
+                <label>Board</label>
+                <ng-select name="board" [(ngModel)]="board" required [clearable]="false" (change)="setBoardId($event)">
+                  <ng-option>Select</ng-option>
+                  <ng-option *ngFor="let board of boards" [value]="board._id">{{board.name}}</ng-option>
+                </ng-select>
+              </div>
+              <div class="form-group">
+                <label>Syllabus</label>
+                <ng-select [clearable]="false" name="syl" [(ngModel)]="syl" required (change)="setSyllabusId($event)">
+                  <ng-option>Select</ng-option>
+                  <ng-option *ngFor="let syl of syllabus" [value]="syl._id">{{syl.name}}</ng-option>
+                </ng-select>
+              </div>
+              <div class="form-group">
+                <label>Subject</label>
+                <ng-select [clearable]="false" name="subject" [(ngModel)]="subject" required
+                  (change)="getChapterAndSetSubject($event)">
+                  <ng-option>Select</ng-option>
+                  <ng-option *ngFor="let subject of subjects" [value]="subject._id">{{subject.name}}</ng-option>
+                </ng-select>
+              </div>
+              <ng-container *ngIf="chapterFlag">
+                <div class="form-group">
+                  <label>Chapter</label>
+                  <ng-select name="chapter" [(ngModel)]="chapter" required [clearable]="false"
+                    (change)="getTopicsAndSetChapter($event)">
+                    <ng-option>Select</ng-option>
+                    <ng-option *ngFor="let chapter of chapters" [value]="chapter._id">{{chapter.name}}</ng-option>
+                  </ng-select>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="topicFlag">
+                <div class="form-group">
+                  <label>Topic</label>
+                  <ng-select [clearable]="false" name="topic" [(ngModel)]="topic" required>
+                    <ng-option>Select</ng-option>
+                    <ng-option *ngFor="let topic of topics" [value]="topic._id">{{topic.name}}</ng-option>
+                  </ng-select>
+                </div>
+              </ng-container>
+            </div>
+
+            <ng-template #own>
+              <label>Class / grade</label>
+              <ng-select [clearable]="false" name="class" [(ngModel)]="class" required
+                (change)="getBoardIdAndSyllabusId($event)">
+                <ng-option>Select</ng-option>
+                <ng-option *ngFor="let class of classmap" [value]="class.classId">{{class.className}}</ng-option>
+              </ng-select>
+              <!-- <div class="form-group">
+              <label>Board</label>
+              <select name="board" [(ngModel)]="board" class="form-control" required>
+                <option *ngFor="let board of SchoolBoards" [value]="board._id">{{board.name}}</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Syllabus</label>
+              <select name="syl" [(ngModel)]="syl" class="form-control" required>
+                <option *ngFor="let syl of syllabus" [value]="syl._id">{{syl.name}}</option>
+              </select>
+            </div> -->
+
+
+
+              <ng-container *ngIf="subjectFlag">
+                <div class="form-group">
+                  <label>Subject</label>
+                  <ng-select [clearable]="false" name="subject" [(ngModel)]="subject" required
+                    (change)="getChapterAndSetSubject($event)">
+                    <ng-option>Select</ng-option>
+                    <ng-option *ngFor="let subject of subjects" [value]="subject._id">{{subject.name}}</ng-option>
+                  </ng-select>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="chapterFlag">
+                <div class="form-group">
+                  <label>Chapter</label>
+                  <ng-select [clearable]="false" name="chapter" [(ngModel)]="chapter" required
+                    (change)="getTopicsAndSetChapter($event)">
+                    <ng-option>Select</ng-option>
+                    <ng-option *ngFor="let chapter of chapters" [value]="chapter._id">{{chapter.name}}</ng-option>
+                  </ng-select>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="topicFlag">
+                <div class="form-group">
+                  <label>Topic</label>
+                  <ng-select [clearable]="false" name="topic" [(ngModel)]="topic" required>
+                    <ng-option>Select</ng-option>
+                    <ng-option *ngFor="let topic of topics" [value]="topic._id">{{topic.name}}</ng-option>
+                  </ng-select>
+                </div>
+              </ng-container>
+            </ng-template>
+
+          </div>
+
+
+        </div>
+      </div>
+      <!-- All images here -->
+      <!-- <div class="row fileAttachments" *ngFor="let item of noOfFile; let i = index">
+        <ng-container *ngIf="item._id || item.file_btn">
+          <input type="file" style="display:none" #fileUpload (change)="onFileUpload($event,i)">
+          <ng-container *ngIf="item.file == 'Upload a file' && item.file_btn == 'Upload'">
+            <div class="col-md-2 imgUploadDiv" (click)="fileUpload.click()">
+              <img src="/assets/media/growon/logos/upload.png" alt="" style="width: 40px;">
+              <span>{{item.file ? getExtension(item.file) : 'Upload a file'}}</span>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="item.file !== 'Upload a file' && item.file_btn == 'Upload'">
+            <div class="col-md-2 imgUploadDiv" (click)="fileUpload.click()">
+              <img src="/assets/media/growon/logos/upload.png" alt="" style="width: 40px;">
+              <span>{{item.file ? item.file : 'Upload a file'}}</span>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="item.file !== 'Upload a file' && item.file_btn == 'Remove'">
+            <div class="col-md-2 imgUploadDiv" (click)="fileUpload.click()">
+              <img src="/assets/media/growon/logos/upload.png" alt="" style="width: 40px;">
+              <span>{{item.file ? item.file : 'Upload a file'}}</span>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="item.file !== 'Upload a file' && item._id">
+            <div class="col-md-2 imgUploadDiv">
+              <span style="background: #FFEDB7; padding: 12px;"><a href="{{s3Url}}{{item.file}}">{{item.file ?
+                  getExtension(item.file) : 'Upload a file'}}</a></span>
+            </div>
+          </ng-container>
+          <div class="col-md-8">
+            <input type="text" placeholder="Add Title for the file here" class="form-control" #myInput
+              (keyup)="getFileTitle(myInput.value)" value="{{item.file_name}}">
+          </div>
+          <div class="col-md-2" style="text-align: right;">
+            <div class="btn btn-primary" (click)="uploadSelectedFile(i,item.file_btn ? item.file_btn : 'Remove')">
+              {{item.file_btn ? item.file_btn : 'Remove'}}</div>
+          </div>
+        </ng-container>
+      </div> -->
+      <ng-container *ngIf="!editingLearningOutcome">
+        <div class="row c0l-md-12">
+          <button type="button" class="btn btn-primary reset-btn" (click)="resetButton()">Reset</button>
+        </div>
+      </ng-container>
+      <div class="row">
+        <div class="col-md-12 import-btn">
+          <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="{{title}}">
+            <input type="reset" id="reset" class="btn btn-primary" value="Reset" hidden>
+            <a href="javascript:void(0);" (click)="cancelEdit()" class="cancelLink"
+              *ngIf="editingLearningOutcome">Cancel</a>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div *ngIf="showChapters">
+    <div class="row">
+      <div class="col-md-12 import-btn ">
+        <div class="form-group">
+          <button style="margin-right: 5px;" [disabled]="disabledButton" class="btn btn-primary"
+            (click)="showChaptersFun(false)">Add Learning
+            Outcome</button>
+          <!-- <div *ngIf="!isOwner;else myFlagTru;"></div>
+        <ng-template #myFlagTru>
+          <button style="margin-left: 5px;" class="btn btn-primary" (click)="import()">Import Learning Outcome</button>
+        </ng-template> -->
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <mat-form-field>
+          <mat-label>Filter</mat-label>
+          <input matInput placeholder="Search" (keyup)="applyFilter($event)" #input>
+        </mat-form-field>
+
+        <div class=mat-elevation-z8>
+          <table mat-table [dataSource]="dataSource" matSort>
+
+            <!-- name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> name</th>
+              <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+            </ng-container>
+
+            <!-- subject Column -->
+            <ng-container matColumnDef="subject_id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Subject </th>
+              <td mat-cell *matCellDef="let row"> {{row.subject_id.name}} </td>
+            </ng-container>
+
+            <!--syllabus Column -->
+            <ng-container matColumnDef="syllabus_id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Syllabus </th>
+              <td mat-cell *matCellDef="let row"> {{row.syllabus_id.name}} </td>
+            </ng-container>
+
+            <!-- class/grade Column -->
+            <ng-container matColumnDef="class_id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> class/grade </th>
+              <td mat-cell *matCellDef="let row"> {{row.class_id.name}} </td>
+            </ng-container>
+
+            <!-- chapter Column -->
+            <ng-container matColumnDef="chapter_id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> chapter </th>
+              <td mat-cell *matCellDef="let row"> {{row.chapter_id.name}} </td>
+            </ng-container>
+
+            <!-- topic Column -->
+            <ng-container matColumnDef="topic_id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> topic </th>
+              <td mat-cell *matCellDef="let row"> {{row.topic_id.name}} </td>
+            </ng-container>
+
+            <!-- Author Column -->
+            <!-- <ng-container matColumnDef="createdBy">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Author </th>
+            <td mat-cell *matCellDef="let row"> {{row.createdBy}} </td>
+          </ng-container> -->
+
+
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+              <td mat-cell *matCellDef="let row">
+                <button class="btn btn-primary" (click)="editLearningoutcome(row)">
+                  <mat-icon aria-hidden="false" aria-label="Update">edit</mat-icon>
+                </button>
+                <button class="btn btn-primary" (click)="deleteLearningoutcome(row)">
+                  <mat-icon aria-hidden="false" aria-label="Delete">delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <!-- Row shown when there is no matching data. -->
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+            </tr>
+          </table>
+
+          <mat-paginator #paginator [length]="resultLength" [pageIndex]="0" [pageSize]="pageSize"
+            [pageSizeOptions]="[5, 10,  25, 50, 100]" (page)="onPageFired($event)">
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,13 @@
+<div class="p-4">
+  <div class="text center">
+    <span class="delete-text">There is {{totalQuestion}} questions. Are you sure, you want to print questions?</span>
+  </div>
+  <div class="d-flex w-100 btn-space mt-4">
+    <button class="btn btn-primary" (click)="printQuestion('no')">
+      cancel
+    </button>
+    <button class="btn btn-primary" (click)="printQuestion('yes')">
+      Ok
+    </button>
+  </div>
+</div>

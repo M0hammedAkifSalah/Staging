@@ -1,0 +1,522 @@
+<div class="classContainer" autocomplete="off">
+  <h2>Update Role</h2>
+  <div class="row" style="width: 100%;">
+    <div class="col">
+      <!-- <form  [formGroup]="updateRoleForm" (ngSubmit)="updateRole()">
+          <div class="form-group">
+            <label>Display Name*</label>
+            <input type="text" name="name" id="" class="form-control" formControlName="display_name">
+          </div>
+          <div class="form-group">
+              <label>Role Type*</label>
+              <input type="text" name="roletype" id="" class="form-control" formControlName="role_name">
+            </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea name="description" id="" cols="30" rows="5" class="form-control" formControlName="description"></textarea>
+          </div>
+          <div class="form-group" formGroupName="privilege">
+          <div class="row">
+            <div class="switch-div col-3">
+              <label>Add Class</label>
+              <div class="label-div">
+              <label class="switch">
+                <input type="checkbox" formControlName="add_class">
+                <span class="slider round"></span>
+              </label>
+              </div>
+            </div>
+            <div class="switch-div col-3">
+              <label>Add Board</label>
+              <div class="label-div">
+              <label class="switch">
+                <input type="checkbox" formControlName="add_board">
+                <span class="slider round"></span>
+              </label>
+              </div>
+            </div>
+            <div class="switch-div col-3">
+                <label>Create Question</label>
+                <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="create_question">
+                  <span class="slider round"></span>
+                </label>
+                </div>
+              </div>
+              <div class="switch-div col-3">
+                <label>Create Question Paper</label>
+                <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="create_question_paper">
+                  <span class="slider round"></span>
+                </label>
+                </div>
+              </div>
+          </div>
+          <div class="row">
+            <div class="switch-div col-3">
+              <label>View Question Paper</label>
+              <div class="label-div">
+              <label class="switch">
+                <input type="checkbox" formControlName="view_question_paper">
+                <span class="slider round"></span>
+              </label>
+              </div>
+            </div>
+            <div class="switch-div col-3">
+              <label>Add Syllabus</label>
+              <div class="label-div">
+              <label class="switch" >
+                <input type="checkbox" formControlName ="add_syllubus">
+                <span class="slider round"></span>
+              </label>
+              </div>
+            </div>
+            <div class="switch-div col-3">
+                <label>Add Subject</label>
+                <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_subject">
+                  <span class="slider round"></span>
+                </label>
+                </div>
+              </div>
+              <div class="switch-div col-3">
+                <label>Add Chapters</label>
+                <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_chapter">
+                  <span class="slider round"></span>
+                </label>
+                </div>
+              </div>
+          </div>
+
+          <div class="row">
+            <div class="switch-div col-3">
+              <label>Add Topics</label>
+              <div class="label-div">
+              <label class="switch">
+                <input type="checkbox" formControlName="add_topic">
+                <span class="slider round"></span>
+              </label>
+              </div>
+            </div>
+            <div class="switch-div col-3">
+              <label>Add Learning Outcome</label>
+              <div class="label-div">
+              <label class="switch">
+                <input type="checkbox" formControlName="add_learning_outcome">
+                <span class="slider round"></span>
+              </label>
+              </div>
+            </div>
+            <div class="switch-div col-3">
+                <label>Add Question Category</label>
+                <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_question_category">
+                  <span class="slider round"></span>
+                </label>
+                </div>
+              </div>
+              <div class="switch-div col-3">
+                <label>Add Exam Types</label>
+                <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_exam_types">
+                  <span class="slider round"></span>
+                </label>
+                </div>
+              </div>
+          </div>
+
+          <div class="row">
+            <div class="switch-div col-3">
+              <label>Add Q&A</label>
+              <div class="label-div">
+              <label class="switch">
+                <input type="checkbox" formControlName="add_qa">
+                <span class="slider round"></span>
+              </label>
+              </div>
+            </div>
+            <div class="switch-div col-3">
+              <label>Add Assessment</label>
+              <div class="label-div">
+              <label class="switch">
+                <input type="checkbox" formControlName="add_assessment">
+                <span class="slider round"></span>
+              </label>
+              </div>
+            </div>
+            <div class="switch-div col-3">
+                <label>Create School</label>
+                <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="create_school">
+                  <span class="slider round"></span>
+                </label>
+                </div>
+              </div>
+              <div class="switch-div col-3">
+                <label>Create Student</label>
+                <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="create_student">
+                  <span class="slider round"></span>
+                </label>
+                </div>
+              </div>
+          </div>
+
+          <div class="row">
+            <div class="switch-div col-3">
+              <label>Create Teacher</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="create_teacher">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="switch-div col-3">
+              <label>Create Principle</label>
+              <div class="label-div">
+              <label class="switch">
+                <input type="checkbox" formControlName="create_principle">
+                <span class="slider round"></span>
+              </label>
+              </div>
+            </div>
+            <div class="switch-div col-3">
+                <label>Create Management</label>
+                <div class="label-div">
+                  <label class="switch">
+                    <input type="checkbox" formControlName="create_management">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+    
+              </div>
+          </div>
+
+      </div>
+          <div class="form-group import-btn ">
+            <button class="btn btn-primary" [disabled]="!updateRoleForm.valid">Update Role</button>
+            <input type="reset" id="reset" class="btn btn-primary" value="Reset" hidden>
+          </div>
+        </form> -->
+      <form [formGroup]="updateRoleForm" (ngSubmit)="updateRole()">
+        <div class="form-group">
+          <label>Display Name*</label>
+          <input type="text" name="name" id="" class="form-control" formControlName="display_name">
+        </div>
+        <div class="form-group">
+          <label>Role Type*</label>
+          <input type="text" name="roletype" id="" class="form-control" formControlName="role_name">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea name="description" id="" cols="30" rows="5" class="form-control"
+            formControlName="description"></textarea>
+        </div>
+        <div class="form-group" formGroupName="privilege">
+          <!-- <div class="row">
+            <div class="switch-div col-6">
+              <label>Add Class</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_class">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="switch-div col-6">
+              <label>Add Board</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_board">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div> -->
+          <!-- <div class="row">
+            <div class="switch-div col-6">
+              <label>Add Role</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="create_role">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="switch-div col-6">
+              <label>Assign role</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="assign_role">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div> -->
+          <div class="row">
+            <div class="switch-div col-6">
+              <label>Create Question</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="create_question">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="switch-div col-6">
+              <label>Create Question Paper</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="create_question_paper">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="row">
+            <div class="switch-div col-6">
+              <label>Add Subject</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_subject">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="switch-div col-6">
+              <label>Add Syllabus</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_syllubus">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div> -->
+          <div class="row">
+            <div class="switch-div col-6">
+              <label>View Question Paper</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="view_question_paper">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="switch-div col-6">
+              <label>Add Chapters</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_chapter">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="switch-div col-6">
+              <label>Add Topics</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_topic">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="switch-div col-6">
+              <label>Add Learning Outcome</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_learning_outcome">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="switch-div col-6">
+              <label>Add Question Category</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_question_category">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="switch-div col-6">
+              <label>Add Exam Types</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_exam_types">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="switch-div col-6">
+              <label>View School</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="view_school">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="switch-div col-6">
+              <label>View Student</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="view_student">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="switch-div col-6">
+              <label>view Management</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="view_management">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="switch-div col-6">
+              <label>view Question</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="view_question">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="switch-div col-6">
+              <label>view teacher</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="view_teacher">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="switch-div col-6">
+              <label>view principal</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="view_principle">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="switch-div col-6">
+              <label>Add Q&A</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_qa">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="switch-div col-6">
+              <label>Add Assessment</label>
+              <div class="label-div">
+                <label class="switch">
+                  <input type="checkbox" formControlName="add_assessment">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="!isOwner;else myFlag;"></div>
+          <ng-template #myFlag>
+            <div class="row">
+              <div class="switch-div col-6">
+                <label>Create Management</label>
+                <div class="label-div">
+                  <label class="switch">
+                    <input type="checkbox" formControlName="create_management">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="switch-div col-6">
+                <label>Create Student</label>
+                <div class="label-div">
+                  <label class="switch">
+                    <input type="checkbox" formControlName="create_student">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="switch-div col-6">
+                <label>Create Teacher</label>
+                <div class="label-div">
+                  <label class="switch">
+                    <input type="checkbox" formControlName="create_teacher">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="switch-div col-6">
+                <label>Create Principle</label>
+                <div class="label-div">
+                  <label class="switch">
+                    <input type="checkbox" formControlName="create_principle">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- <div class="row">
+              <div class="switch-div col-6">
+                <label>Add section</label>
+                <div class="label-div">
+                  <label class="switch">
+                    <input type="checkbox" formControlName="add_section">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+
+              </div>
+              <div class="switch-div col-6">
+                <label>Mapping </label>
+                <div class="label-div">
+                  <label class="switch">
+                    <input type="checkbox" formControlName="add_mapping">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+            </div> -->
+          </ng-template>
+
+        </div>
+
+        <div class="form-group import-btn ">
+          <button class="btn btn-primary" [disabled]="!updateRoleForm.valid">Update Role</button>
+          <input type="reset" id="reset" class="btn btn-primary" value="Reset" hidden>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

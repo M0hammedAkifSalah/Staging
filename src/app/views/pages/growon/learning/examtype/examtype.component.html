@@ -1,0 +1,140 @@
+<div class="row classContainer" autocomplete="off">
+  <h3 *ngIf="!editingExamTypes">Add Exam Category</h3>
+  <h3 *ngIf="editingExamTypes">Edit Exam Category <strong>{{name}}</strong></h3>
+  <div class="row" style="width: 100%;">
+    <div class="col-md-5 col-sm-5 col-xs-12">
+      <form #update="ngForm" (ngSubmit)="addExamType(update.value)">
+        <!-- <div class="form-group">
+          <div *ngIf="!isOwner;else myFlagTrue;">
+
+          </div>
+          <ng-template #myFlagTrue>
+            <label>Class*</label>
+            <select name="class" id="" [(ngModel)]="class" class="form-control">
+              <option [value]="class.classId" *ngFor="let class of classmap">{{class.className}}</option>
+            </select>
+          </ng-template>
+        </div> -->
+        <div class="form-group">
+          <label>Name*</label>
+          <input type="text" name="name" id="" class="form-control" [(ngModel)]="name">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <!-- <textarea name="description" id="" cols="30" rows="10" class="form-control"
+            [(ngModel)]="description"></textarea> -->
+            <editor [init]="{base_url: '/tinymce', suffix: '.min'}" [ngModelOptions]="{standalone: true}"
+                [(ngModel)]="description"></editor>
+        </div>
+        <div class="form-group import-btn ">
+          <button class="btn btn-primary">{{btnTitle}}</button>
+          <a href="javascript:void(0);" (click)="cancelEdit()" class="cancelLink" *ngIf="editingExamTypes">Cancel</a>
+          <input type="reset" id="reset" class="btn btn-primary" value="Reset" hidden>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-7 col-sm-7 col-xs-12 ">
+      <div class="import-btn">
+        <!-- <div *ngIf="!isOwner;else myFlagTru;"></div>
+        <ng-template #myFlagTru>
+          <button class="btn btn-primary" (click)="import()">Import</button>
+        </ng-template> -->
+      </div>
+      <!-- <div class="allClasses">
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">SL No</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Author</th>
+                  </tr>
+                </thead>
+                <tbody *ngIf="classesLoaded">
+                  <tr *ngFor="let exam of examTypes">
+                      <td scope="row">1</td>
+                      <td>
+                    {{exam.name}}
+                      </td>
+                      <td>{{exam.description}}</td>
+                      <td>Author</td>
+                      <th> <button class="btn btn-primary" (click)="updateExamType(exam._id,exam.name,exam.description)">Update</button></th>
+
+
+                  </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                      <td><span (click)="prev()" *ngIf="index != 0" class="navLinks"><strong>Prev</strong></span></td>
+                      <td></td>
+                      <td></td>
+                      <td><span (click)="next()" *ngIf="index >= 10" class="navLinks"><strong>Next</strong></span></td>
+                    </tr>
+                </tfoot>
+              </table> -->
+
+
+      <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <input matInput placeholder="Search" (keyup)="applyFilter($event)" #input>
+      </mat-form-field>
+
+
+      <div class=mat-elevation-z8>
+        <table mat-table [dataSource]="dataSource" matSort>
+
+          <!--  name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+            <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+          </ng-container>
+
+          <!-- description Column -->
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
+            <td mat-cell *matCellDef="let row" [innerHtml]="row.description"> </td>
+          </ng-container>
+
+          <!-- author Column -->
+          <ng-container matColumnDef="createdBy">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Author </th>
+            <td mat-cell *matCellDef="let row"> {{row.createdBy}} </td>
+          </ng-container>
+
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Action
+            </th>
+            <td mat-cell *matCellDef="let row"><button class="btn btn-primary"
+                (click)="updateExamType(row._id,row.name,row.description,row.repository[0].mapDetails[0]?.classid?row.repository[0].mapDetails[0].classid:'')">
+                <mat-icon aria-hidden="false" aria-label="Update">edit</mat-icon>
+              </button>
+              <button class="btn btn-primary" (click)="deleteUser(row)">
+                <mat-icon aria-hidden="false" aria-label="Delete">delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          <!-- Row shown when there is no matching data. -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+          </tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      </div>
+
+
+
+
+
+      <h3 *ngIf="!classesLoaded" style="text-align: center; margin-top: 40px;"><strong>Loading please
+          wait</strong></h3>
+    </div>
+  </div>
+  <!-- <div class="btn btn-primary"><a href="/create/exam-type">Refresh</a></div> -->
+
+</div>

@@ -1,0 +1,32 @@
+
+
+
+.classcontainer{
+    padding: 10px;
+//     display: flex;
+//   flex-direction: column;
+}
+
+::ng-deep .cdk-overlay-container {
+    z-index: 1200 !important;
+  }
+
+  /* /deep/ */ .cdk-overlay-container {
+    z-index: 1200 !important;
+  }
+
+  .cdk-global-overlay-wrapper, .cdk-overlay-container {
+    z-index: 99999 !important;
+  }
+
+.profile-pic{
+  padding: 35px !important;
+    padding-bottom: 0px !important;
+}
+.close-btn{
+  float: left;
+  padding: 15px;
+  .close-icon{
+    font-size: 36px;
+  }
+}

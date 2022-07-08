@@ -1,0 +1,20 @@
+.mat-form-field {
+  width: 100% !important;
+}
+.mat-form-field-appearance-legacy .mat-form-field-underline {
+  background-color: #111;
+}
+.bg{
+  background-color: white !important;
+  margin: -15px;
+    margin-left: -25px;
+    margin-right: -25px;
+    padding: 25px;
+}
+.close-btn{
+  float: left;
+  padding: 15px;
+  .close-icon{
+    font-size: 36px;
+  }
+}

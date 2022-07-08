@@ -1,0 +1,108 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 col-sm-8 pl-24 pt-26">
+      <span class="heading">Subject / Chapter</span>
+    </div>
+    <div class="col-md-4 col-sm-4">
+      <button class="btn btn-import" (click)="importMediaChapter()">Import media</button>
+    </div>
+  </div>
+  <div class="row col-md-12 col-sm-12 mt-7 pl-24">
+    <span class="fetch-content">Fetch and Import content </span>
+  </div>
+  <div class="row pl-75 mt-29">
+    <div class="col-md-3 col-sm-3 col-xs-12">
+      <ng-container *ngIf="classes">
+        <div class="form-group">
+          <label>Class<span class="reqStar">*</span></label>
+          <ng-select [clearable]="false" [(ngModel)]="importObject.selectedClassId" placeholder="-- select an option --"
+            #className="ngModel" name="class"
+            [ngClass]="{'is-invalid':  className.invalid && (className.touched || validationFlag)}" required
+            (select)="getBoardIdAndSyllabusId(isGlobal?item._id:item.classId)">
+            <ng-option selected value> -- select an option -- </ng-option>
+            <ng-option *ngFor="let item of classes" [value]="isGlobal?item._id:item.classId">
+              &nbsp;&nbsp;&nbsp;&nbsp;{{isGlobal?item.name:item.className}}
+            </ng-option>
+            <option *ngIf="classes.length==0" disabled>No classes Available</option>
+          </ng-select>
+          <span class="text-danger" *ngIf="className.invalid && (className.touched || validationFlag)">Class
+            is
+            required</span>
+        </div>
+      </ng-container>
+    </div>
+    <div class="col-md-3 col-sm-3 col-xs-12">
+      <div class="form-group">
+        <ng-container *ngIf="subjects">
+          <label>Subject<span class="reqStar">*</span></label>
+          <ng-select [clearable]="false" [(ngModel)]="importObject.selectedSubjectId"
+            placeholder="-- select an option --" #subjectName1="ngModel" name="subject"
+            (change)="isGlobal?getGlobalChapters($event):getChapterAndSetSubject($event)"
+            [ngClass]="{'is-invalid':subjectName1.invalid && (subjectName1.touched || validationFlag) }" required>
+            <ng-option selected value> -- select an option -- </ng-option>
+            <ng-option *ngFor="let item of subjects" [value]="item._id">
+              &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+            </ng-option>
+            <ng-option *ngIf="subjects.length==0" disabled>No Subjects Available</ng-option>
+          </ng-select>
+          <span class="text-danger" *ngIf="subjectName1.invalid && (subjectName1.touched || validationFlag)">Subject
+            is
+            required</span>
+        </ng-container>
+      </div>
+    </div>
+    <div class="col-md-3 col-cm-3 col-xs-12">
+      <ng-container *ngIf="chapterFlag && chapters">
+        <label>Chapter<span class="reqStar"></span></label>
+        <ng-select [clearable]="false" [(ngModel)]="importObject.selectedChapters" name="chapter"
+          placeholder="-- select an option -- ">
+          <ng-option selected value> -- select an option -- </ng-option>
+          <ng-option *ngFor="let item of chapters" [value]="item._id"
+            (onSelectionChange)="getTopicsAndSetChapter($event)">
+            &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</ng-option>
+          <ng-option *ngIf="chapters.length==0" disabled>No chapters Available</ng-option>
+        </ng-select>
+      </ng-container>
+    </div>
+    <div class="col-md-3 col-sm-3 col-xs-12">
+      <button class="btn btn-primary" (click)="fetchMedia()">Fetch media</button>
+    </div>
+  </div>
+  <ng-container>
+    <div class="container">
+      <div class="row content-row" *ngFor="let media of chapterMedia;let i =index">
+        <div class="col-md-1 col-sm-1 col-xs-12">
+          <div class="image-icon" *ngIf="media.file_type==='image'">
+            <img src="../../../../../../../assets/media/img/image.png">
+          </div>
+          <div class="image-icon" *ngIf="media.file_type==='video'">
+            <img src="../../../../../../../assets/media/img/video.png">
+          </div>
+          <div class="image-icon" *ngIf="media.file_type==='audio'">
+            <img src="../../../../../../../assets/media/img/audio.png">
+          </div>
+          <div class="image-icon" *ngIf="media.file_type==='application'">
+            <img src="../../../../../../../assets/media/img/archive.png">
+          </div>
+        </div>
+        <div class="col-md-7 col-sm-7 col-xs-12">
+          <div class="row col-md-12 col-sm-12">
+            <span class="file-name">{{media.file_name}}</span>
+          </div>
+          <div class="row col-md-12 col-sm-12">
+            <span class="file-size-type">{{media.file_type}} - {{media.file_size}}</span>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-12">
+          <span class="file-date">
+            {{media.createdAt | date: 'dd/MM/yyyy'}}
+          </span>
+        </div>
+        <div class="col-md-1 col-sm-1 col-xs-12">
+          <input class="check" type="checkbox" type="checkbox" [checked]="media.isChecked"
+            (change)="checkedMediaList(media,$event,i,j)">
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

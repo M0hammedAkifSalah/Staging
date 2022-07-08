@@ -1,0 +1,84 @@
+<div class="row">
+  <div class="col-md-3">
+    <button class="btn add-btn" (click)="importClass()">Import Class</button>
+  </div>
+  <div class="colm-md-3">
+    <button class="btn add-btn" (click)="importBoard()">Import Board</button>
+  </div>
+  <div class="col-md-3">
+    <button class="btn add-btn" (click)="importSyllabus()">
+      Import Syllabus
+    </button>
+  </div>
+  <div class="col-md-3">
+    <button class="btn add-btn" (click)="importSubject()">
+      Import Subject
+    </button>
+  </div>
+</div>
+<br />
+<div class="row" *ngFor="let detail of mappingDataName; let i = index">
+  <div class="col-md-12">
+    <div class="row">
+      <div class="col-md-2">
+        <h4>
+          <b>{{ detail.classs }}</b>
+        </h4>
+      </div>
+      <div class="col-md-10" *ngIf="boardFlag">
+        <h4>
+          <b>{{ detail.board }}</b>
+        </h4>
+      </div>
+    </div>
+    <div class="row col-md-12">
+      <div class="row col-md-12" *ngIf="syllabusFlag">
+        <span>Syllabus - {{ detail.syllabus }}</span
+        ><br />
+      </div>
+      <br />
+      <div class="row col-md-12" *ngIf="subjectFlag">
+        <br /><span>Subject - {{ detail.subject }} </span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+        <button class="btn add-btn" (click)="openBoardModal()">
+          <span *ngIf="!boardFlag">Add Board</span>
+          <span *ngIf="boardFlag">Update Board</span>
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button
+          class="btn add-btn"
+          [disabled]="syllabusButtonDisable"
+          (click)="openSyllabusModal()"
+        >
+          <span *ngIf="!syllabusFlag">Add Syllabus</span>
+          <span *ngIf="syllabusFlag">Update Syllabus</span>
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button
+          class="btn add-btn"
+          [disabled]="subjectButtonDisable"
+          (click)="openSubjectModal()"
+        >
+          <span *ngIf="!subjectFlag">Add Subject</span>
+          <span *ngIf="subjectFlag">Update Subject</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12 text-right">
+    <button
+      class="btn add-btn"
+      [disabled]="mapButtonDisable"
+      (click)="mapData()"
+    >
+      Map
+    </button>
+  </div>
+</div>

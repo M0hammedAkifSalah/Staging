@@ -1,0 +1,810 @@
+<div id="exportContent">
+
+
+  <div *ngIf="showContent; else message">
+
+    <div class='row'>
+      <div class="col-md-4 col-sm-4 col-xs-12">
+        SchoolName:
+        <div>
+          (2020-2021)
+        </div>
+      </div>
+      <div class="col-md-8 col-sm-8 col-xs-12">
+
+        ________________ EXAM
+      </div>
+    </div>
+    <div class='row'>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        NAME:______________
+      </div>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        SUBJECT:______________
+      </div>
+
+    </div>
+
+    <div class='row'>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        Date:______________
+      </div>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        Class:______________
+      </div>
+
+    </div>
+    <div *ngIf="showModel" [formGroup]="questionPaperForm">
+
+      <div>
+        <div>
+          <div class="form-group" style="width: 30%; margin-bottom: 10px;">
+            <label><strong>Title</strong></label>
+            <input type="text" formControlName="question_title" name="question_title" class="form-control">
+          </div>
+        </div>
+        <div>
+          <div class="form-group">
+            <label><i class="fa fa-user" aria-hidden="true"></i>&nbsp;&nbsp;Created by
+              <strong>{{questionPaperForm.get('createdBy').value}}</strong></label>
+          </div>
+        </div>
+      </div>
+      <div formArrayName="section">
+        <div *ngFor="let section of questionPaperForm.get('section').controls as formArray; let index = index"
+          [formGroupName]="index">
+          <fieldset class="border p-2">
+
+            <div class="qpaper" formArrayName="question_list" cdkDropList cdkDropListOrientation="vertical"
+              [cdkDropListData]="questions[index]" (cdkDropListDropped)="dropQuestion($event,index)">
+              <div
+                *ngFor="let question of sectionControl.at(index).get('question_list').controls as formArray; let i = index"
+                class="qContainer" [formGroupName]="i" cdkDrag>
+                <div class="row">
+                  <div class="col-md-8">
+                    <div class="question"><strong>Q</strong>&nbsp;<span
+                        [innerHtml]="question.get('questionTitle').value"></span><br>&nbsp;&nbsp;&nbsp;&nbsp;
+                      <span [innerHtml]="showFib(question.get('question').value[0])"></span>
+                    </div>
+
+                    <div *ngIf="question.get('questionType').value[0] == 'objectives' || question.get('questionType').value[0] == 'mcq' || 
+                  question.get('questionType').value[0] == 'sequencingQuestion'
+                   || question.get('questionType').value[0] == 'sentenceSequencing'">
+
+
+                      <div
+                        [ngClass]="{'mediaContainer' : question.get('optionsType').value == 'image' || question.get('optionsType').value == 'audio' || question.get('optionsType').value == 'video'}"
+                        class="form-group" *ngFor="let option of question.get('options').value;let i = index">
+                        <div class="row">
+
+
+
+                          <span>{{i+1}}.</span>
+                          &nbsp;&nbsp;&nbsp;
+
+                          <span *ngIf="question.get('optionsType').value == 'text'" [innerHtml]="option.value">
+
+                          </span>
+                          <span *ngIf="question.get('optionsType').value == 'image'"><img
+                              src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" alt=""></span>
+                          <span *ngIf="question.get('optionsType').value == 'audio'">
+                            <audio controls>
+                              <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                type="audio/ogg">
+                              <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                type="audio/mpeg">
+                              Your browser does not support the audio element.
+                            </audio>
+                          </span>
+                          <span *ngIf="question.get('optionsType').value == 'video'">
+                            <video width="320" height="240" controls>
+                              <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                type="video/mp4">
+                              <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                type="video/ogg">
+                              Your browser does not support the video tag.
+                            </video>
+                          </span>
+
+                        </div>
+                      </div>
+                      <div
+                        *ngIf="question.get('questionType').value[0] == 'sequencingQuestion' || question.get('questionType').value[0] == 'sentenceSequencing'">
+                        <h3>Arrange the above story in order</h3>
+                        <div *ngFor="let option of question.get('options').value; let j = index" class="form-group"
+                          style="white-space:nowrap; border-bottom: 1px solid #111;margin-bottom: 10px; padding-bottom: 10px; width: 70%;">
+                          {{j+1}}
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="question.get('questionType').value[0] == 'trueOrFalse'">
+                      <div class="form-check">
+                        <p>True</p>
+                        <p>False</p>
+                      </div>
+                    </div>
+                    <div *ngIf="question.get('questionType').value[0] == 'NumericalRange'">
+                      <div class="form-group">
+                        <label>Min Value</label>
+                        <input type="text" [value]="question.get('options').value[0].minValue" class="form-control"
+                          disabled readonly>
+                      </div>
+                      <div class="form-group">
+                        <label>Max Value</label>
+                        <input type="text" [value]="question.get('options').value[0].maxValue" class="form-control"
+                          disabled readonly>
+                      </div>
+                    </div>
+                    <div *ngIf="question.get('questionType').value[0] == 'sorting'">
+                      <p>Options</p>
+                      <div
+                        [ngClass]="{'mediaContainer' : question.get('optionsType').value == 'image' || question.get('optionsType').value == 'audio' || question.get('optionsType').value == 'video'}"
+                        class="form-group"
+                        *ngFor="let option of question.get('options').value[0].sortingOption;let i = index">
+                        {{i+1}}.<span *ngIf="question.get('optionsType').value == 'text'" [innerHtml]="option.value">
+
+                        </span>
+                        <span *ngIf="question.get('optionsType').value == 'image'"><img
+                            src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" alt=""></span>
+                        <span *ngIf="question.get('optionsType').value == 'audio'">
+                          <audio controls>
+                            <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="audio/ogg">
+                            <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                              type="audio/mpeg">
+                            Your browser does not support the audio element.
+                          </audio>
+                        </span>
+                        <span *ngIf="question.get('optionsType').value == 'video'">
+                          <video width="320" height="240" controls>
+                            <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="video/mp4">
+                            <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="video/ogg">
+                            Your browser does not support the video tag.
+                          </video>
+                        </span>
+                      </div>
+                      <p>Sort the above in appropriate Groups</p>
+                      <div
+                        [ngClass]="{'mediaContainer' : question.get('optionsType').value == 'image' || question.get('optionsType').value == 'audio' || question.get('optionsType').value == 'video'}"
+                        class="form-group" *ngFor="let option of question.get('options').value[0].groups;let i = index">
+
+                        {{i+1}}.&nbsp; <span *ngIf="question.get('optionsType').value == 'text'"
+                          [innerHtml]="option.value">
+
+                        </span>
+                        <span *ngIf="question.get('optionsType').value == 'image'"><img
+                            src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" alt=""></span>
+                        <span *ngIf="question.get('optionsType').value == 'audio'">
+                          <audio controls>
+                            <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="audio/ogg">
+                            <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                              type="audio/mpeg">
+                            Your browser does not support the audio element.
+                          </audio>
+                        </span>
+                        <span *ngIf="question.get('optionsType').value == 'video'">
+                          <video width="320" height="240" controls>
+                            <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="video/mp4">
+                            <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="video/ogg">
+                            Your browser does not support the video tag.
+                          </video>
+                        </span>
+                        <p style=" margin: 0; border-bottom: 1px solid;width:50%; display: inline;"></p>
+                      </div>
+                    </div>
+                    <div
+                      *ngIf="question.get('questionType').value[0] == 'twoColMtf' || question.get('questionType').value[0] == 'threeColMtf'">
+                      <p>Match the Options</p>
+
+                      <div class="row">
+                        <div class="row">
+                          <div class="col">
+                            <div *ngFor="let option of question.get('matchOptions').value.column1;let i = index">
+
+                              {{i+1}}.
+
+                              <hr>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col">
+                          <div
+                            [ngClass]="{'mediaContainer' : question.get('optionsType').value == 'image' || question.get('optionsType').value == 'audio' || question.get('optionsType').value == 'video'}"
+                            class="form-group"
+                            *ngFor="let option of question.get('matchOptions').value.column1;let i = index">
+                            <span *ngIf="question.get('optionsType').value == 'text'"></span>
+                            <span [innerHtml]="option.value"></span>
+
+                            <span *ngIf="question.get('optionsType').value == 'image'"><img
+                                src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" alt=""></span>
+                            <span *ngIf="question.get('optionsType').value == 'audio'">
+                              <audio controls>
+                                <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                  type="audio/ogg">
+                                <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                  type="audio/mpeg">
+                                Your browser does not support the audio element.
+                              </audio>
+                            </span>
+                            <span *ngIf="question.get('optionsType').value == 'video'">
+                              <video width="320" height="240" controls>
+                                <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                  type="video/mp4">
+                                <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                  type="video/ogg">
+                                Your browser does not support the video tag.
+                              </video>
+                            </span>
+
+
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <div *ngFor="let option of question.get('matchOptions').value.column2;let i = index">
+                              {{i+1}}.
+
+                              <hr>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col">
+                          <div
+                            [ngClass]="{'mediaContainer' : question.get('optionsType').value == 'image' || question.get('optionsType').value == 'audio' || question.get('optionsType').value == 'video'}"
+                            class="form-group"
+                            *ngFor="let option of question.get('matchOptions').value.column2;let i = index">
+                            <span *ngIf="question.get('optionsType').value == 'text'" [innerHtml]="option.value">
+
+                            </span>
+                            <span *ngIf="question.get('optionsType').value == 'image'"><img
+                                src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" alt=""></span>
+                            <span *ngIf="question.get('optionsType').value == 'audio'">
+                              <audio controls>
+                                <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                  type="audio/ogg">
+                                <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                  type="audio/mpeg">
+                                Your browser does not support the audio element.
+                              </audio>
+                            </span>
+                            <span *ngIf="question.get('optionsType').value == 'video'">
+                              <video width="320" height="240" controls>
+                                <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                  type="video/mp4">
+                                <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                  type="video/ogg">
+                                Your browser does not support the video tag.
+                              </video>
+                            </span>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <div *ngFor="let option of question.get('matchOptions').value.column3;let i = index">
+                              {{i+1}}.
+
+                              <hr>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div *ngIf="question.get('questionType').value[0] == 'threeColMtf'">
+                              <div [ngClass]="{'mediaContainer' : question.get('optionsType').value == 'image' 
+                        || question.get('optionsType').value == 'audio' 
+                        || question.get('optionsType').value == 'video'}" class="form-group"
+                                *ngFor="let option of question.get('matchOptions').value.column3;let i = index">
+                                <span *ngIf="question.get('optionsType').value == 'text'" [innerHtml]="option.value">
+
+                                </span>
+                                <span *ngIf="question.get('optionsType').value == 'image'"><img
+                                    src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" alt=""></span>
+                                <span *ngIf="question.get('optionsType').value == 'audio'">
+                                  <audio controls>
+                                    <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                      type="audio/ogg">
+                                    <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                      type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                  </audio>
+                                </span>
+                                <span *ngIf="question.get('optionsType').value == 'video'">
+                                  <video width="320" height="240" controls>
+                                    <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                      type="video/mp4">
+                                    <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                      type="video/ogg">
+                                    Your browser does not support the video tag.
+                                  </video>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <p>Options</p>
+                      <div class="form-group" *ngFor="let option of question.get('options').value;let i = index">
+                        {{i+1}}.
+                        <span *ngIf="question.get('optionsType').value == 'text'" [innerHtml]="option.value">
+
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+
+
+
+                </div>
+
+
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<ng-template #message>
+  <div *ngIf="showModel" [formGroup]="questionPaperForm">
+
+    <div>
+      <div>
+        <div class="form-group" style="width: 30%; margin-bottom: 10px;">
+          <label><strong>Title</strong></label>
+          <input type="text" formControlName="question_title" name="question_title" class="form-control">
+        </div>
+      </div>
+      <div>
+        <div class="form-group">
+          <label><i class="fa fa-user" aria-hidden="true"></i>&nbsp;&nbsp;Created by
+            <strong>{{questionPaperForm.get('createdBy').value}}</strong></label>
+        </div>
+      </div>
+    </div>
+    <div formArrayName="section">
+      <div *ngFor="let section of questionPaperForm.get('section').controls as formArray; let index = index"
+        [formGroupName]="index">
+        <fieldset class="border p-2">
+          <!-- <legend class="w-auto">{{sectionControl.at(index).get('section_name').value}} <mat-icon (click)="editSection(index)">edit</mat-icon>
+        </legend> -->
+          <div class="qpaper" formArrayName="question_list" cdkDropList cdkDropListOrientation="vertical"
+            [cdkDropListData]="questions[index]" (cdkDropListDropped)="dropQuestion($event,index)">
+            <div
+              *ngFor="let question of sectionControl.at(index).get('question_list').controls as formArray; let i = index"
+              class="qContainer" [formGroupName]="i" cdkDrag>
+              <div class="row">
+                <div class="col-md-8">
+                  <div class="question"><strong>Q</strong>&nbsp;<span
+                      [innerHtml]="question.get('questionTitle').value"></span><br>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span [innerHtml]="showFib(question.get('question').value[0])"></span>
+                  </div>
+
+                  <div *ngIf="question.get('questionType').value[0] == 'objectives' || question.get('questionType').value[0] == 'mcq' || 
+                  question.get('questionType').value[0] == 'sequencingQuestion'
+                   || question.get('questionType').value[0] == 'sentenceSequencing'">
+
+
+                    <div
+                      [ngClass]="{'mediaContainer' : question.get('optionsType').value == 'image' || question.get('optionsType').value == 'audio' || question.get('optionsType').value == 'video'}"
+                      class="form-group" *ngFor="let option of question.get('options').value;let i = index">
+                      <div class="row">
+
+                        <!-- <div class="col-md-1 col-sm-1 col-xs-12"> -->
+
+                        <span>{{i+1}}.</span>
+                        &nbsp;&nbsp;&nbsp;
+                        <!-- </div> -->
+                        <!-- <div class="col-md-11 col-sm-11 col-xs-12"> -->
+                        <span *ngIf="question.get('optionsType').value == 'text'" [innerHtml]="option.value">
+
+                        </span>
+                        <span *ngIf="question.get('optionsType').value == 'image'"><img
+                            src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" alt=""></span>
+                        <span *ngIf="question.get('optionsType').value == 'audio'">
+                          <audio controls>
+                            <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="audio/ogg">
+                            <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                              type="audio/mpeg">
+                            Your browser does not support the audio element.
+                          </audio>
+                        </span>
+                        <span *ngIf="question.get('optionsType').value == 'video'">
+                          <video width="320" height="240" controls>
+                            <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="video/mp4">
+                            <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="video/ogg">
+                            Your browser does not support the video tag.
+                          </video>
+                        </span>
+                        <!-- </div> -->
+                      </div>
+                    </div>
+                    <div
+                      *ngIf="question.get('questionType').value[0] == 'sequencingQuestion' || question.get('questionType').value[0] == 'sentenceSequencing'">
+                      <h3>Arrange the above story in order</h3>
+                      <div *ngFor="let option of question.get('options').value; let j = index" class="form-group"
+                        style="white-space:nowrap; border-bottom: 1px solid #111;margin-bottom: 10px; padding-bottom: 10px; width: 70%;">
+                        {{j+1}}
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="question.get('questionType').value[0] == 'trueOrFalse'">
+                    <div class="form-check">
+                      <p>True</p>
+                      <p>False</p>
+                    </div>
+                  </div>
+                  <div *ngIf="question.get('questionType').value[0] == 'NumericalRange'">
+                    <div class="form-group">
+                      <label>Min Value</label>
+                      <input type="text" [value]="question.get('options').value[0].minValue" class="form-control"
+                        disabled readonly>
+                    </div>
+                    <div class="form-group">
+                      <label>Max Value</label>
+                      <input type="text" [value]="question.get('options').value[0].maxValue" class="form-control"
+                        disabled readonly>
+                    </div>
+                  </div>
+                  <div *ngIf="question.get('questionType').value[0] == 'sorting'">
+                    <p>Options</p>
+                    <div
+                      [ngClass]="{'mediaContainer' : question.get('optionsType').value == 'image' || question.get('optionsType').value == 'audio' || question.get('optionsType').value == 'video'}"
+                      class="form-group"
+                      *ngFor="let option of question.get('options').value[0].sortingOption;let i = index">
+                      {{i+1}}.<span *ngIf="question.get('optionsType').value == 'text'" [innerHtml]="option.value">
+
+                      </span>
+                      <span *ngIf="question.get('optionsType').value == 'image'"><img
+                          src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" alt=""></span>
+                      <span *ngIf="question.get('optionsType').value == 'audio'">
+                        <audio controls>
+                          <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="audio/ogg">
+                          <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="audio/mpeg">
+                          Your browser does not support the audio element.
+                        </audio>
+                      </span>
+                      <span *ngIf="question.get('optionsType').value == 'video'">
+                        <video width="320" height="240" controls>
+                          <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="video/mp4">
+                          <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="video/ogg">
+                          Your browser does not support the video tag.
+                        </video>
+                      </span>
+                    </div>
+                    <p>Sort the above in appropriate Groups</p>
+                    <div
+                      [ngClass]="{'mediaContainer' : question.get('optionsType').value == 'image' || question.get('optionsType').value == 'audio' || question.get('optionsType').value == 'video'}"
+                      class="form-group" *ngFor="let option of question.get('options').value[0].groups;let i = index">
+
+                      {{i+1}}.&nbsp; <span *ngIf="question.get('optionsType').value == 'text'"
+                        [innerHtml]="option.value">
+
+                      </span>
+                      <span *ngIf="question.get('optionsType').value == 'image'"><img
+                          src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" alt=""></span>
+                      <span *ngIf="question.get('optionsType').value == 'audio'">
+                        <audio controls>
+                          <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="audio/ogg">
+                          <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="audio/mpeg">
+                          Your browser does not support the audio element.
+                        </audio>
+                      </span>
+                      <span *ngIf="question.get('optionsType').value == 'video'">
+                        <video width="320" height="240" controls>
+                          <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="video/mp4">
+                          <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="video/ogg">
+                          Your browser does not support the video tag.
+                        </video>
+                      </span>
+                      <p style=" margin: 0; border-bottom: 1px solid;width:50%; display: inline;"></p>
+                    </div>
+                  </div>
+                  <div
+                    *ngIf="question.get('questionType').value[0] == 'twoColMtf' || question.get('questionType').value[0] == 'threeColMtf'">
+                    <p>Match the Options</p>
+
+                    <div class="row">
+                      <div class="row">
+                        <div class="col">
+                          <div *ngFor="let option of question.get('matchOptions').value.column1;let i = index">
+
+                            {{i+1}}.
+
+                            <hr>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div
+                          [ngClass]="{'mediaContainer' : question.get('optionsType').value == 'image' || question.get('optionsType').value == 'audio' || question.get('optionsType').value == 'video'}"
+                          class="form-group"
+                          *ngFor="let option of question.get('matchOptions').value.column1;let i = index">
+                          <span *ngIf="question.get('optionsType').value == 'text'"></span>
+                          <span [innerHtml]="option.value"></span>
+
+                          <span *ngIf="question.get('optionsType').value == 'image'"><img
+                              src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" alt=""></span>
+                          <span *ngIf="question.get('optionsType').value == 'audio'">
+                            <audio controls>
+                              <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                type="audio/ogg">
+                              <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                type="audio/mpeg">
+                              Your browser does not support the audio element.
+                            </audio>
+                          </span>
+                          <span *ngIf="question.get('optionsType').value == 'video'">
+                            <video width="320" height="240" controls>
+                              <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                type="video/mp4">
+                              <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                type="video/ogg">
+                              Your browser does not support the video tag.
+                            </video>
+                          </span>
+
+
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col">
+                          <div *ngFor="let option of question.get('matchOptions').value.column2;let i = index">
+                            {{i+1}}.
+
+                            <hr>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col">
+                        <div
+                          [ngClass]="{'mediaContainer' : question.get('optionsType').value == 'image' || question.get('optionsType').value == 'audio' || question.get('optionsType').value == 'video'}"
+                          class="form-group"
+                          *ngFor="let option of question.get('matchOptions').value.column2;let i = index">
+                          <span *ngIf="question.get('optionsType').value == 'text'" [innerHtml]="option.value">
+
+                          </span>
+                          <span *ngIf="question.get('optionsType').value == 'image'"><img
+                              src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" alt=""></span>
+                          <span *ngIf="question.get('optionsType').value == 'audio'">
+                            <audio controls>
+                              <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                type="audio/ogg">
+                              <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                type="audio/mpeg">
+                              Your browser does not support the audio element.
+                            </audio>
+                          </span>
+                          <span *ngIf="question.get('optionsType').value == 'video'">
+                            <video width="320" height="240" controls>
+                              <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                type="video/mp4">
+                              <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                type="video/ogg">
+                              Your browser does not support the video tag.
+                            </video>
+                          </span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col">
+                          <div *ngFor="let option of question.get('matchOptions').value.column3;let i = index">
+                            {{i+1}}.
+
+                            <hr>
+                          </div>
+                        </div>
+                        <div class="col">
+                          <div *ngIf="question.get('questionType').value[0] == 'threeColMtf'">
+                            <div [ngClass]="{'mediaContainer' : question.get('optionsType').value == 'image' 
+                        || question.get('optionsType').value == 'audio' 
+                        || question.get('optionsType').value == 'video'}" class="form-group"
+                              *ngFor="let option of question.get('matchOptions').value.column3;let i = index">
+                              <span *ngIf="question.get('optionsType').value == 'text'" [innerHtml]="option.value">
+
+                              </span>
+                              <span *ngIf="question.get('optionsType').value == 'image'"><img
+                                  src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" alt=""></span>
+                              <span *ngIf="question.get('optionsType').value == 'audio'">
+                                <audio controls>
+                                  <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                    type="audio/ogg">
+                                  <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                    type="audio/mpeg">
+                                  Your browser does not support the audio element.
+                                </audio>
+                              </span>
+                              <span *ngIf="question.get('optionsType').value == 'video'">
+                                <video width="320" height="240" controls>
+                                  <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                    type="video/mp4">
+                                  <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}"
+                                    type="video/ogg">
+                                  Your browser does not support the video tag.
+                                </video>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <p>Options</p>
+                    <div class="form-group" *ngFor="let option of question.get('options').value;let i = index">
+                      {{i+1}}.
+                      <span *ngIf="question.get('optionsType').value == 'text'" [innerHtml]="option.value">
+
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="questionInfo">
+                    <div class="form-group">
+                      <label>Question Type:</label>
+                      <input type="text" formControlName="questionType" disabled readonly class="form-control">
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6 col-sm-6 col-xs-12">
+                        <div class="form-group">
+                          <label>Total Marks<span class="reqStar">*</span></label>
+                          <input class="form-control" type="text" required formControlName="totalMarks">
+                        </div>
+                      </div>
+                      <div class="col-md-6 col-sm-6 col-xs-12">
+                        <div class="form-group">
+                          <label>Negative Marks<span class="reqStar">*</span></label>
+                          <input class="form-control" type="text" name="negativeMarks" formControlName="negativeMarks">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12 col-sm-12 col-xs-12">
+                        <mat-label>Negative Scoring</mat-label>
+                        <mat-radio-group formControlName="negativeScore" name="negativeScore" color="primary"
+                          (change)="negativeScoreChange()">
+                          <mat-radio-button class="example-radio-button" value="YES">Yes</mat-radio-button>
+                          <mat-radio-button class="example-radio-button" value="NO">No</mat-radio-button>
+                        </mat-radio-group>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <label>Duration</label>
+                        <input type="number" class="form-control" formControlName="duration">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="col-md-12"> -->
+
+
+              </div>
+              <div class="row">
+                <div class="col-md-12 import-btn">
+                  <button class="btn btn-primary" (click)="toggleButton(i)"
+                    *ngIf="!viewQuestions[i]">{{viewQuestions[i]?'Hide Answer':'View Answer'}}</button>
+                  <button class="btn btn-primary"
+                    (click)="changeQuestion(index,i,question.get('questionType').value[0])"
+                    style="margin-left: 20px;">Change Question</button>
+                </div>
+              </div>
+              <div class="row" *ngIf="viewQuestions[i]">
+                <h3>Answers</h3>&nbsp;&nbsp;
+                <div *ngFor="let option of question.get('answer').value ; let i = index">
+                  <div
+                    *ngIf="question.get('questionType').value[0] == 'objectives' || question.get('questionType').value[0] == 'mcq' || question.get('questionType').value[0] == 'sequencingQuestion' || question.get('questionType').value[0] == 'sentenceSequencing'
+                || question.get('questionType').value[0] == 'twoColMtf' || question.get('questionType').value[0] == 'threeColMtf'">
+                    <div
+                      [ngClass]="{'mediaContainer' : question.get('optionsType').value == 'image' || question.get('optionsType').value == 'audio' || question.get('optionsType').value == 'video'}"
+                      class="form-group">
+                      <span *ngIf="question.get('optionsType').value == 'text'" [innerHtml]="option.value">
+
+                      </span>
+                      <span *ngIf="question.get('optionsType').value == 'image'"><img
+                          src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" alt=""></span>
+                      <span *ngIf="question.get('optionsType').value == 'audio'">
+                        <audio controls>
+                          <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="audio/ogg">
+                          <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="audio/mpeg">
+                          Your browser does not support the audio element.
+                        </audio>
+                      </span>
+                      <span *ngIf="question.get('optionsType').value == 'video'">
+                        <video width="320" height="240" controls>
+                          <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="video/mp4">
+                          <source src="https://grow-on.s3.ap-south-1.amazonaws.com/{{option.value}}" type="video/ogg">
+                          Your browser does not support the video tag.
+                        </video>
+                      </span>
+                    </div>
+                  </div>
+
+                  <span *ngIf="question.get('questionType').value[0] == 'fillInTheBlanks'" [innerHtml]="option.value">
+
+
+                  </span>
+                  <div *ngIf="question.get('questionType').value[0] == 'sorting'">
+                    <h5>Selected option for Group
+                      <span class="group-span" *ngIf="question.get('optionsType').value == 'text'"
+                        [innerHtml]="question.get('options').value[0].groups[i].value">
+                      </span>
+                      <span *ngIf="question.get('optionsType').value == 'image'"><img
+                          src="https://grow-on.s3.ap-south-1.amazonaws.com/{{question.get('options').value[0].groups[i].value}}"
+                          alt=""></span>
+                      <span *ngIf="question.get('optionsType').value == 'audio'">
+                        <audio controls>
+                          <source
+                            src="https://grow-on.s3.ap-south-1.amazonaws.com/{{question.get('options').value[0].groups[i].value}}"
+                            type="audio/ogg">
+                          <source
+                            src="https://grow-on.s3.ap-south-1.amazonaws.com/{{question.get('options').value[0].groups[i].value}}"
+                            type="audio/mpeg">
+                          Your browser does not support the audio element.
+                        </audio>
+                      </span>
+                      <span *ngIf="question.get('optionsType').value == 'video'">
+                        <video width="320" height="240" controls>
+                          <source
+                            src="https://grow-on.s3.ap-south-1.amazonaws.com/{{question.get('options').value[0].groups[i].value}}"
+                            type="video/mp4">
+                          <source
+                            src="https://grow-on.s3.ap-south-1.amazonaws.com/{{question.get('options').value[0].groups[i].value}}"
+                            type="video/ogg">
+                          Your browser does not support the video tag.
+                        </video>
+                      </span>
+                    </h5>
+                    <div *ngFor="let ans of option[i]; let j = index">
+                      &nbsp;&nbsp; <span class="image-class" *ngIf="question.optionsType == 'text'"
+                        [innerHtml]="ans.value">
+                        <!-- <li class="answer" [innerHtml]="ans.value"></li> -->
+                      </span>
+                      <!-- <span *ngIf="question.optionsType == 'text'"><li>&nbsp;<span [innerHtml]="question.options[ans]"></span></li></span> -->
+                      <!-- <span *ngIf="question.optionsType == 'image'"><img src="https://grow-on.s3.ap-south-1.amazonaws.com/{{question.options[ans]}}" alt=""></span> -->
+                      <span class="image-class" *ngIf="question.optionsType == 'image'">
+                        <img [src]="s3BucketUrl+ans.value" alt="">
+                        <span>{{ans.file_text}}</span>
+                      </span>
+                      <span class="image-class" *ngIf="question.optionsType == 'audio'">
+                        <audio controls [src]="s3BucketUrl+ans.value"></audio>
+                        <span>{{ans.file_text}}</span>
+                      </span>
+                      <span class="image-class" *ngIf="question.optionsType == 'video'">
+                        <video controls [src]="s3BucketUrl+ans.value"></video>
+                        <span>{{ans.file_text}}</span>
+                      </span>
+                    </div>
+                  </div>
+                  &nbsp;&nbsp;
+                  <span *ngIf="question.get('questionType').value[0] == 'fillInTheBlanks'" [innerHtml]="option.value">
+                  </span>
+                  &nbsp;&nbsp;
+                  <span *ngIf="question.get('questionType').value[0] == 'trueOrFalse' || question.get('questionType').value[0] == 'NumericalRange'
+                   || question.get('questionType').value[0] == 'freeText'" [innerHtml]="option[0]">
+
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+    </div>
+  </div>
+</ng-template>
+<div class="row">
+  <div class="col-md-12 import-btn">
+    <button class="btn btn-primary" (click)="saveQuestionPaper()" [disabled]="showContent">Save Question Paper</button>
+    &nbsp;&nbsp;
+    <button class="btn btn-primary" [useExistingCss]="true" printSectionId="exportContent" ngxPrint
+      [disabled]="!showContent">print</button>
+    <!-- <button class="btn btn-primary" (click)="Export2Doc('exportContent', '');" [disabled]="!showContent">Export as
+      Doc</button> -->
+    <!-- <a href="saveQuestionPaper()" download="aaa.doc">download</a> -->
+    <input [(ngModel)]="showContent" type="checkbox" />Export
+  </div>
+</div>

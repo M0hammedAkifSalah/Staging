@@ -1,0 +1,85 @@
+<div>
+  <h3>Activate Billing</h3>
+  <mat-form-field appearance="standard" style="width: 100%;">
+    <mat-label>Filter</mat-label>
+    <input (keyup)="applyFilter($event)" matInput placeholder="Search columns" #input>
+  </mat-form-field>
+  <div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" style="width: 100%;">
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.schoolName}} </td>
+      </ng-container>
+
+      <!-- Contact Column -->
+      <ng-container matColumnDef="contact">
+        <th mat-header-cell *matHeaderCellDef> Contact </th>
+        <td mat-cell *matCellDef="let element"> {{element.contact_number}} </td>
+      </ng-container>
+
+      <!-- Code Column -->
+      <ng-container matColumnDef="code">
+        <th mat-header-cell *matHeaderCellDef> Code </th>
+        <td mat-cell *matCellDef="let element"> {{element.school_code}} </td>
+      </ng-container>
+
+      <!-- Billing Column -->
+      <ng-container matColumnDef="onboarded">
+        <th mat-header-cell *matHeaderCellDef> Onboarded Date </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-raised-button color="black" *ngIf="!element.onboard"
+            (click)="onboardPopup(element.schoolName,element._id)">
+            <mat-icon>date_range</mat-icon> Set Date
+          </button>
+          <button mat-raised-button color="black" *ngIf="element.onboard">
+            <mat-icon>date_range</mat-icon> {{element.onboard}}
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- View Bills Column -->
+      <ng-container matColumnDef="view">
+        <th mat-header-cell *matHeaderCellDef> View Bills </th>
+        <td mat-cell *matCellDef="let element"> <button mat-raised-button color="primary"
+            (click)="getOrders(element._id)">
+            <mat-icon>visibility</mat-icon> View Bills
+          </button> </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-raised-button style="border-radius: 20px;">
+            {{ element.payment.orders[0] ? (element.payment.status ? 'Pending': 'Paid') : 'No Status' }}
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="activate">
+        <th mat-header-cell *matHeaderCellDef> Activate Billing </th>
+        <td mat-cell *matCellDef="let element;let i = index">
+          <button mat-raised-button style="background-color: #11823b;color:white"
+            [hidden]="!element.payment.activeStatus">
+            <mat-icon>check_circle</mat-icon> Activated
+          </button>
+          <button mat-raised-button color="primary"
+            (click)="open(element.schoolName,element._id,element.payment.activeStatus)"
+            [hidden]="element.payment.activeStatus">
+            <mat-icon>event_available</mat-icon> Activate
+          </button>
+        </td>
+      </ng-container>
+
+
+
+      <tr mat-header-row *matHeaderRowDef=" displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements">
+    </mat-paginator>
+  </div>
+
+</div>

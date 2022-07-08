@@ -1,0 +1,120 @@
+<div *ngIf="this.formLoaded" class="content">
+  <div class="tab-header">
+    <div class="tab-title">Add Multiple Section</div>
+  </div>
+  <div class="row m-0">
+    <div class="col-md-8 p-0 mr-2">
+      <form [formGroup]="addSectionForm" autocomplete="off">
+        <div formArrayName="details">
+          <div *ngFor="let class_details of this.addSectionForm.controls.details.controls; let i=index">
+            <div [formGroupName]="i">
+              <div class="row m-0 p-4">
+                <div class="col-md-5 col-sm-5 col-xs-12 p-0 mr-4">
+                  <!-- School -->
+                  <mat-form-field>
+                    <mat-label>Class*</mat-label>
+                    <input matInput formControlName="className" readonly>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-5 col-sm-5 col-xs-12 p-0 ml-4">
+                  <mat-form-field>
+                    <mat-select placeholder="Section/Division" formControlName="sectionName" multiple>
+                      <mat-option *ngFor="let section of sections" (click)="tosslePerOne(i)" [value]="section">
+                        {{section.name}}
+                      </mat-option>
+                      <mat-option [disabled]="sections.length==0" #allSelected (click)="toggleAllSelection(i)"
+                        [value]="0">All</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align: left;" class="import-btn p-4">
+          <button (click)="mapMultipleSections()" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-3 p-0 m-4">
+      <div class="tab-header">
+        <div class="tab-title">Add Section Details</div>
+      </div>
+      <form class="singleform" [formGroup]="addSingleSectionForm" autocomplete="off">
+        <div class="row m-0 p-4">
+          <div class="col-md-12 col-sm-12 col-xs-12 p-0">
+            <mat-form-field>
+              <mat-label>Section Name*</mat-label>
+              <input matInput formControlName="sectionName">
+              <mat-error *ngIf="addSingleSectionForm.get('sectionName').hasError('required')">Section name
+                required </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-md-12 col-sm-12 col-xs-12 p-0">
+            <mat-form-field>
+              <mat-label>Section Description</mat-label>
+              <input matInput formControlName="sectionDescription">
+              <!-- <mat-error *ngIf="addSingleSectionForm.get('sectionDescription').hasError('required')">
+                                Section description required </mat-error> -->
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="import-btn p-4">
+          <button (click)="addSection()" class="btn btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="tab-header">
+    <div class="tab-title">Section List</div>
+    <div class="tab-input">
+      <label>
+        <input (keyup)="applyFilter($event)" type="search" class="form-control form-control-sm"
+          placeholder="Search by section name or class name" aria-controls="distributorTable">
+      </label>
+    </div>
+  </div>
+  <div class="example-container row m-0 w-100">
+    <div class="innerDiv">
+      <table class="w-100" *ngIf="dataSource.filteredData.length > 0" mat-table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="className">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Class Name </th>
+          <td mat-cell *matCellDef="let row"> {{row.className}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="sectionList">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Section Names </th>
+          <td mat-cell *matCellDef="let row"> {{row.sectionList != '' ? row.sectionList : 'NOT AVAILABLE'}}
+            <button class="btn btn-primary" style="float: right;" (click)="deleteUser(row)">
+              <mat-icon aria-hidden="false" aria-label="Delete">delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+          <button class="btn btn-primary" (click)="deleteUser(row)">
+            <mat-icon aria-hidden="false" aria-label="Delete">delete</mat-icon>
+          </button>
+        </ng-container> -->
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      </table>
+    </div>
+    <div class="norecord" *ngIf="dataSource.filteredData.length==0 ">No records found</div>
+    <mat-toolbar>
+      <mat-toolbar-row>
+        <div class="col-md-12">
+          <mat-paginator class="mat-paginator-sticky" #myPaginator [pageSize]="10" [pageSizeOptions]="[5,10,15]"
+            showFirstLastButtons>
+          </mat-paginator>
+        </div>
+      </mat-toolbar-row>
+    </mat-toolbar>
+  </div>
+</div>

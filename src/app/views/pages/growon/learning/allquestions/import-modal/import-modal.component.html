@@ -1,0 +1,944 @@
+<div class="container mb-3" *ngIf="filterQuestionFlag">
+    <div class="row pt-30 pl-13 mb-30">
+        <h2>Import Question</h2>
+    </div>
+
+    <ng-container *ngIf="schoolId; else admin">
+        <div class="row">
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <label>Class<span class="reqStar"></span></label>
+                    <ng-select [clearable]="false" [(ngModel)]="importObject.selectedClassId" placeholder="-- select an option --"
+                        #className="ngModel" name="class"
+                        (change)="getBoardIdAndSyllabusId($event)">
+                        <ng-option selected value=""> -- select an option -- </ng-option>
+                        <ng-option *ngFor="let item of class" [value]="item.classId">
+                            &nbsp;&nbsp;&nbsp;&nbsp;{{item.className}}
+                        </ng-option>
+                        <ng-option *ngIf="class.length==0" disabled>No classes Available</ng-option>
+                    </ng-select>
+                    <span class="text-danger" *ngIf="(className.touched) && className.errors?.required">Class is
+                        required</span>
+                </div>
+            </div>
+            <ng-container *ngIf="subjectFlag">
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <div class="form-group">
+                        <label>Boards<span class="reqStar"></span></label>
+                        <input type="text" readonly [value]="selectedBoardName" class="form-control" disabled="true">
+                    </div>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="subjectFlag">
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <div class="form-group">
+                        <label>Syllabus<span class="reqStar"></span></label>
+                        <input type="text" readonly [value]="selectedSyllabusName" class="form-control" disabled="true">
+                    </div>
+                </div>
+            </ng-container>
+
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <ng-container *ngIf="subjectFlag">
+                        <label>Subject<span class="reqStar"></span></label>
+                        <ng-select [clearable]="false" [(ngModel)]="importObject.selectedSubjectId" placeholder="-- select an option --"
+                            #subjectName="ngModel" name="subject"
+                            (change)="getChapterAndSetSubject($event)"
+                            [loading]="!subjects || !subjects.length">
+                            <ng-option selected value> -- select an option -- </ng-option>
+                            <ng-option *ngFor="let item of subjects" [value]="item._id">
+                                &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                            </ng-option>
+                            <ng-option *ngIf="subjects.length==0" disabled>No Subjects Available</ng-option>
+                        </ng-select>
+                        <span class="text-danger" *ngIf="(subjectName.touched) && subjectName.errors?.required">Subject
+                            is
+                            required</span>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <ng-template #admin>
+        <div class="row">
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <label>Class<span class="reqStar"></span></label>
+                    <ng-select [clearable]="false" [(ngModel)]="importObject.selectedClassId" placeholder="-- select an option --"
+                        #className="ngModel" name="class">
+                        <ng-option  disabled selected value> -- select an option -- </ng-option>
+                        <ng-option *ngFor="let item of classes" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                        </ng-option>
+                        <ng-option *ngIf="classes.length==0" disabled>No classes Available</ng-option>
+                    </ng-select>
+                    <span class="text-danger" *ngIf="(className.touched) && className.errors?.required">Class is
+                        required</span>
+                </div>
+            </div>
+            <ng-container>
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <div class="form-group">
+                        <label>Board<span class="reqStar"></span></label>
+                        <ng-select [clearable]="false" [multiple]="true" name="borad" [(ngModel)]="importObject.selectedBoardId"
+                            placeholder="-- select an option --" #borad>
+                            <ng-option *ngFor="let board of boards" [value]="board._id">
+                                {{board.name}}
+                            </ng-option>
+                            <ng-option *ngIf="boards.length==0" disabled>No Boards Available</ng-option>
+                        </ng-select>
+                        <!-- <label>Boards<span class="reqStar">*</span></label>
+                    <input type="text" readonly [value]="selectedBoardName" class="form-control" disabled="true"> -->
+                    </div>
+                </div>
+            </ng-container>
+            <ng-container>
+                <div class="col-md-3 col-sm-3 col-xs-12">
+                    <div class="form-group">
+                        <label>Syllabus<span class="reqStar"></span></label>
+                        <ng-select [clearable]="false" [multiple]="true" name="syllabus" [(ngModel)]="importObject.selectedSyllabusId"
+                            placeholder="-- select an option --" #syllabus>
+                            <ng-option *ngFor="let syl of syllabuses" [value]="syl._id">
+                                {{syl.name}}
+                            </ng-option>
+                            <ng-option *ngIf="syllabuses.length==0" disabled>No Syllabus Available</ng-option>
+                        </ng-select>
+                        <!-- <label>Syllabus<span class="reqStar"></span></label>
+                    <input type="text" readonly [value]="selectedSyllabusName" class="form-control" disabled="true"> -->
+                    </div>
+                </div>
+            </ng-container>
+
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <ng-container>
+                        <label>Subject<span class="reqStar"></span></label>
+                        <ng-select [clearable]="false" [(ngModel)]="importObject.selectedSubjectId" placeholder="-- select an option --"
+                            #subjectName="ngModel" name="subject"
+                            (change)="getChapterAndSetSubject($event)"
+                            [loading]="!subjects || !subjects.length">
+                            <ng-option  disabled selected value> -- select an option -- </ng-option>
+                            <ng-option *ngFor="let item of subjects" [value]="item._id">
+                                &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                            </ng-option>
+                            <ng-option *ngIf="subjects.length==0" disabled>No Subjects Available</ng-option>
+                        </ng-select>
+                        <span class="text-danger" *ngIf="(subjectName.touched) && subjectName.errors?.required">Subject
+                            is
+                            required</span>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+
+    <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+            <div class="form-group">
+                <label>Language<span class="reqStar"></span></label>
+                <ng-select [(ngModel)]="importObject.selectedLanguage" #lang="ngModel" name="language"
+                    placeholder="-- select an option --">
+                    <ng-option hidden disabled selected value> -- select an option -- </ng-option>
+                    <ng-option *ngFor="let item of languages" [value]="item">&nbsp;&nbsp;&nbsp;&nbsp;{{item}}</ng-option>
+                    <ng-option *ngIf="languages.length==0" disabled>No Languages Available</ng-option>
+                </ng-select>
+                <!-- <span class="text-danger" *ngIf="(lang.touched) && lang.errors?.required">Language is
+                    required</span> -->
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+            <div class="form-group">
+                <label>Select the Exam Type<span class="reqStar"></span></label>
+
+                <ng-select [clearable]="false" [multiple]="true" name="examType" [(ngModel)]="importObject.selectedExamTypeId"
+                    placeholder="-- select an option --"  #examType>
+                    <ng-option *ngFor="let exam of examTypes" [value]="exam._id">
+                        {{exam.name}}
+                    </ng-option>
+                    <ng-option *ngIf="examTypes.length==0" disabled>No Exam Types Available</ng-option>
+                </ng-select>
+                <!-- <mat-error *ngIf="(examType.touched) && examType.errors?.required">
+                        Exam Type is required</mat-error> -->
+
+            </div>
+
+        </div>
+        <!-- <div class="col-md-3 col-sm-3 col-xs-12">
+            <label>Student Type</label>
+            <ng-select  [multiple]="true" name="studentType" [(ngModel)]="importObject.selectedStudentType"
+                placeholder="-- select an option --" #studentType>
+                <ng-option *ngFor="let stype of studentTypeArray" [value]="stype._id">
+                    {{stype.name}}
+                </ng-option>
+                <ng-option *ngIf="studentTypeArray.length==0" disabled>No Exam Types Available</ng-option>
+            </ng-select>
+        </div> -->
+        <div class="col-md-3 col-sm-3 col-xs-12">
+            <label>Difficulty Level</label>
+            <ng-select name="difficultyLevel" [(ngModel)]="importObject.selectedDifficultyLevel"
+                placeholder="-- select an option --" multiple #difficultyLevel>
+                <ng-option *ngFor="let stype of difficultyLevelArray" [value]="stype._id">
+                    {{stype.name}}
+                </ng-option>
+                <ng-option *ngIf="difficultyLevelArray.length==0" disabled>No Exam Types Available</ng-option>
+            </ng-select>
+            <!-- <mat-radio-group [(ngModel)]="importObject.selectedDifficultyLevel" #diffi="ngModel" name="difficultyLevel"
+                color="primary">
+                <mat-label>
+                    <h3><strong>Set Difficulty Level<span class="reqStar">*</span></strong></h3>
+                </mat-label>
+                <mat-radio-button class="example-radio-button" *ngFor="let item of difficultyLevelArray"
+                    [value]="item.value">
+                    {{item.name}}</mat-radio-button>
+            </mat-radio-group> -->
+            <!-- <span class="text-danger" *ngIf="(diffi.touched) && diffi.errors?.required">Difficulty
+                Level is required</span> -->
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+            <div class="form-group">
+                <ng-container *ngIf="chapterFlag">
+                    <label>Chapter<span class="reqStar"></span></label>
+                    <ng-select [clearable]="false" [multiple]="true" [(ngModel)]="importObject.selectedChapters" name="chapter"
+                        placeholder="-- select an option -- " [compareWith]="compareFn"
+                        (change)="getTopicsAndSetChapter()">
+                        <!-- <mat-option hidden disabled selected value> -- select an option -- </mat-option> -->
+                        <ng-option *ngFor="let item of chapters" [value]="item._id"
+                           >
+                            &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</ng-option>
+                        <ng-option *ngIf="chapters.length==0" disabled>No chapters Available</ng-option>
+                    </ng-select>
+                    <!-- <span class="text-danger" *ngIf="(questionFormControl.chapter.touched) && questionFormControl.chapter.errors?.required">Chapter is
+                    required</span> -->
+                </ng-container>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+            <div class="form-group">
+                <ng-container *ngIf="topicFlag">
+                    <label>Topics<span class="reqStar"></span></label>
+                    <ng-select [clearable]="false" [multiple]="true" [(ngModel)]="importObject.selectedTopics" name="topic"
+                        placeholder="-- select an option -- "[compareWith]="compareFn"
+                        (change)="getLearnOutcomeAndSetTopic()">
+                        <!-- <mat-option hidden disabled selected value> -- select an option -- </mat-option> -->
+                        <ng-option *ngFor="let item of topics" [value]="item._id"
+                           >
+                            &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</ng-option>
+                        <ng-option *ngIf="topics.length==0" disabled>No Topics Available</ng-option>
+                    </ng-select>
+                    <!-- <span class="text-danger" *ngIf="(questionFormControl.topic.touched) && questionFormControl.topic.errors?.required">Topic is
+                    required</span> -->
+                </ng-container>
+            </div>
+        </div>
+        <!-- <div class="col-md-3 col-sm-3 col-xs-12">
+            <div class="form-group">
+                <ng-container *ngIf="learningOutcomeFlag">
+                    <label>Learning Outcome<span class="reqStar"></span></label>
+                    <ng-select [clearable]="false" [multiple]="true" name="learningOutcome" placeholder="-- select an option -- "
+                        [compareWith]="compareFn">
+                        <ng-option *ngFor="let item of learningOutcomes" [value]="item._id">
+                            &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                        </ng-option>
+                        <ng-option *ngIf="learningOutcomes.length==0" disabled>No Learning Outcomes Available
+                        </ng-option>
+                    </ng-select>
+                </ng-container>
+            </div>
+        </div> -->
+    </div>
+    <div class="row">
+        <!-- <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="form-group">
+                <label>Select the Question Category<span class="reqStar"></span></label>
+                <ng-select [clearable]="false" [(ngModel)]="importObject.selectedQuestionCategory" #quesCat="ngModel"
+                    name="questionCategory" >
+                    <ng-option *ngFor="let item of questionCategories" [value]="item._id">
+                        &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                    </ng-option>
+                    <ng-option *ngIf="questionCategories.length==0" disabled>No Question Categories Available
+                    </ng-option>
+                </ng-select>
+                <span class="text-danger" *ngIf="(quesCat.touched) && quesCat.errors?.required">Question
+                    Category is required</span>
+            </div>
+        </div> -->
+        <div class="col-md-12 col-sm-12 col-xs-12 d-flex">
+            <h4 class="submit-content-div">Submit above Query to get Questions from the global Repository</h4>
+            <button type="button" class=" ml-4 btn find-question-btn" (click)="findQuestion()">Submit</button>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="container  mt-3" *ngIf="fetchQuestionFlag">
+    <div class="row heading-row">
+        <div class="col-md-9">
+            <h4 class="heading-text">Question Bank</h4>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group heading-filter">
+                <select class="form-control" (change)="FilterQuestionType($event.target.value)"
+                    [(ngModel)]="selectedQuestionType">
+                    <option hidden selected [value]="all">All</option>
+                    <option *ngFor="let que of questionCount" [value]="que.questionType">{{que.questionTypeValue}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="mt-25 scrollable">
+        <div class="row question-list-row" *ngFor="let question of filteredQuestion; let i=index">
+            <div class="col-md-1 check-div">
+                <input class="checkbox-pos" type="checkbox" [checked]="question.isChecked"
+                    (change)="checkedQuestionList(question,$event,i)">
+            </div>
+            <div class="col-md-7">
+                <div>
+                    <span class="font-weight-bold" *ngIf="question.questionType == 'comprehension'">Story: </span><span [innerHtml]="question.question"></span>
+                </div>
+                <ng-container *ngIf="question.questionType == 'comprehension'; else nonComprehension">
+                <ng-container *ngFor="let ques of question.questions">
+                  <div class="row">
+                    <div class="col-md-12 d-grid">
+                      <span class="font-weight-bold">Question ({{ques.questionTypeValue}})&nbsp;&nbsp;Score - {{ques.totalMarks}}</span>
+                      <span [innerHtml]="ques.question"></span>
+                    </div>
+                  </div>
+                  <ng-container *ngIf="ques.questionType=='threeColMtf' || ques.questionType=='twoColMtf'">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <b>Column 1</b>
+                        <div *ngFor="let column1 of ques.matchOptions['column1']">
+                          <span [innerHtml]="column1.value"></span>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <b>Column 2</b>
+                        <div *ngFor="let column1 of ques.matchOptions['column2']">
+                          <span [innerHtml]="column1.value"></span>
+                        </div>
+                      </div>
+                      <ng-container *ngIf="ques.questionType=='threeColMtf'">
+                        <div class="col-md-3">
+                          <b>Column 3</b>
+                          <div *ngFor="let column1 of ques.matchOptions['column3']">
+                            <span [innerHtml]="column1.value"></span>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                  <ol type="A" class="p-0">
+                      <div *ngFor="let options of ques.options" class="pl-2">
+                          <div class="answer-div" *ngIf="ques.optionsType == 'text'">
+                              <li><span [innerHtml]="options.value"></span></li>
+                          </div>
+                          <div class="" *ngIf="ques.optionsType == 'image'">
+                              <li><img [src]="options.value">
+                                  <span [innerHtml]="options.file_text"></span>
+                              </li>
+                          </div>
+                          <div class="img-height" *ngIf="ques.optionsType == 'audio'">
+                              <li><audio controls [src]="options.value"></audio>
+                                  <span [innerHtml]="options.file_text"></span>
+                              </li>
+                          </div>
+                          <!-- s3BucketUrl+ -->
+                          <div class="img-height" *ngIf="ques.optionsType == 'video'">
+                              <li><video controls [src]="options.value"></video>
+                                  <span [innerHtml]="options.file_text"></span>
+                              </li>
+                          </div>
+                      </div>
+                  </ol>
+                  Answer:
+                  <div *ngFor="let answer of ques.answer">
+                      <div class="answer-div" *ngIf="ques.optionsType == 'text'">
+                          <span [innerHtml]="answer.value"></span>
+                      </div>
+                      <div class="" *ngIf="ques.optionsType == 'image'">
+                          <img [src]="answer.value">
+                          <span [innerHtml]="answer.file_text"></span>
+                      </div>
+                      <div class="img-height" *ngIf="ques.optionsType == 'audio'">
+                          <audio controls [src]="answer.value"></audio>
+                          <span [innerHtml]="answer.file_text"></span>
+                      </div>
+                      <!-- s3BucketUrl+ -->
+                      <div class="img-height" *ngIf="ques.optionsType == 'video'">
+                          <video controls [src]="answer.value"></video>
+                          <span [innerHtml]="answer.file_text"></span>
+                      </div>
+                  </div>
+                </ng-container>
+              </ng-container>
+                <ng-template #nonComprehension>
+                <ng-container *ngIf="question.questionType=='threeColMtf' || question.questionType=='twoColMtf'">
+                  <div class="row">
+                    <div class="col-md-3">
+                      <b>Column 1</b>
+                      <div *ngFor="let column1 of question.matchOptions['column1']">
+                        <span [innerHtml]="column1.value"></span>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <b>Column 2</b>
+                      <div *ngFor="let column1 of question.matchOptions['column2']">
+                        <span [innerHtml]="column1.value"></span>
+                      </div>
+                    </div>
+                    <ng-container *ngIf="question.questionType=='threeColMtf'">
+                      <div class="col-md-3">
+                        <b>Column 3</b>
+                        <div *ngFor="let column1 of question.matchOptions['column3']">
+                          <span [innerHtml]="column1.value"></span>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                </ng-container>
+                <ol type="A" class="p-0">
+                    <div *ngFor="let options of question.options" class="pl-2">
+                        <div class="answer-div" *ngIf="question.optionsType == 'text'">
+                            <li><span [innerHtml]="options.value"></span></li>
+                        </div>
+                        <div class="" *ngIf="question.optionsType == 'image'">
+                            <li><img [src]="options.value">
+                                <span [innerHtml]="options.file_text"></span>
+                            </li>
+                        </div>
+                        <div class="img-height" *ngIf="question.optionsType == 'audio'">
+                            <li><audio controls [src]="options.value"></audio>
+                                <span [innerHtml]="options.file_text"></span>
+                            </li>
+                        </div>
+                        <!-- s3BucketUrl+ -->
+                        <div class="img-height" *ngIf="question.optionsType == 'video'">
+                            <li><video controls [src]="options.value"></video>
+                                <span [innerHtml]="options.file_text"></span>
+                            </li>
+                        </div>
+                    </div>
+                </ol>
+                Answer:
+                <div *ngFor="let answer of question.answer">
+                    <div class="answer-div" *ngIf="question.optionsType == 'text'">
+                        <span [innerHtml]="answer.value"></span>
+                    </div>
+                    <div class="" *ngIf="question.optionsType == 'image'">
+                        <img [src]="answer.value">
+                        <span [innerHtml]="answer.file_text"></span>
+                    </div>
+                    <div class="img-height" *ngIf="question.optionsType == 'audio'">
+                        <audio controls [src]="answer.value"></audio>
+                        <span [innerHtml]="answer.file_text"></span>
+                    </div>
+                    <!-- s3BucketUrl+ -->
+                    <div class="img-height" *ngIf="question.optionsType == 'video'">
+                        <video controls [src]="answer.value"></video>
+                        <span [innerHtml]="answer.file_text"></span>
+                    </div>
+                </div>
+              </ng-template>
+            </div>
+            <div class="col-md-4 mb-21">
+                <table class="table-position">
+                    <tr>
+                        <td class="td">Class/Grade</td>
+                        <td class="td">{{question.className}}</td>
+                    </tr>
+                    <tr>
+                        <td class="td"> Subject</td>
+                        <td class="td">{{question.subjectName}}</td>
+                    </tr>
+                    <tr>
+                        <td class="td">Language</td>
+                        <td class="td">{{question.language}}</td>
+                    </tr>
+                    <tr>
+                        <td class="td">Exam Type</td>
+                        <td class="td">
+                            <ng-container *ngFor="let type of question.examType">
+                                {{type.examTypeName}} ,
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td">Student Type</td>
+                        <td class="td">
+
+                            <ng-container *ngFor="let stud of question.studentType">
+                                {{stud}} ,
+                            </ng-container>
+
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td">Difficult Level</td>
+                        <td class="td">
+                            {{question.difficultyLevel}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td">Score</td>
+                        <td class="td">{{question.totalMarks}}</td>
+                    </tr>
+                    <tr>
+                        <td class="td">Duration(mins)</td>
+                        <td class="td">{{question.duration}}</td>
+                    </tr>
+                </table>
+            </div>
+            <hr>
+        </div>
+        <button mat-raised-button class="btn apply-btn btn-sm btn-primary"
+            (click)="selectedQuestionToImport()">Next</button>
+    </div>
+</div>
+<div class="container" *ngIf="mappingQuestionFlag">
+    <div class="row col-md-12 col-sm-12 pt-28 pl-24">
+        <h3>Map Questions to School repository</h3>
+    </div>
+    <div class="row pl-12 mt-9">
+        <div class="col-md-8 col-sm-8">
+            <span class="select-question-span">Selected questions by type</span>
+        </div>
+        <div class="col-md-4 col-sm-4">
+            <button mat-raised-button class="btn map-back-btn btn-sm btn-primary" (click)="backToSelectQuestion()"><span class="btn-text">Back</span></button>
+            <button mat-raised-button class="btn map-import-btn btn-sm btn-primary" (click)="confirmToImport()"><span class="btn-text">Import</span></button>
+        </div>
+    </div>
+    <div class="row mt-16 pl-10">
+        <span *ngFor="let queCount of questionCount;let i = index">
+            <button id="i" class="btn btn-count" (click)="getSelectedQuestion(queCount.questionType,i)">
+                <span id="'s'+i" class="btn-count-text">
+                {{queCount.questionTypeValue}}
+                ({{queCount.selectCount}})
+                </span>
+            </button>
+        </span>
+    </div>
+    <div class="row mt-34 map-repo-heading">
+        <div class="col-md-6 col-sm-6">
+            <span class="map-repo-heading-text">Questions</span>
+        </div>
+        <div class="col-md-3 col-sm-3">
+            <span class="map-repo-heading-text">Global Repo Mapping</span>
+        </div>
+        <div class="col-md-3 col-sm-3">
+            <span class="map-repo-heading-text">
+                School Repo Mapping
+            </span>
+        </div>
+    </div>
+    <div class="row mt-20" *ngFor="let question of filterSelectedQuestions;let i =index">
+        <div class="col-md-6 col-sm-6">
+            <div>
+              <span class="font-weight-bold" *ngIf="question.questionType == 'comprehension'">Story: </span><span [innerHtml]="question.question"></span>
+            </div>
+
+            <ng-container *ngIf="question.questionType == 'comprehension'; else nonComprehension">
+              <ng-container *ngFor="let ques of question.questions">
+                <div class="row">
+                  <div class="col-md-12 d-grid">
+                    <span class="font-weight-bold">Question ({{ques.questionTypeValue}})&nbsp;&nbsp;Score - {{ques.totalMarks}}</span>
+                    <span [innerHtml]="ques.question"></span>
+                  </div>
+                </div>
+                <ng-container *ngIf="ques.questionType=='threeColMtf' || ques.questionType=='twoColMtf'">
+                  <div class="row">
+                    <div class="col-md-3">
+                      <b>Column 1</b>
+                      <div *ngFor="let column1 of ques.matchOptions['column1']">
+                        <span [innerHtml]="column1.value"></span>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <b>Column 2</b>
+                      <div *ngFor="let column1 of ques.matchOptions['column2']">
+                        <span [innerHtml]="column1.value"></span>
+                      </div>
+                    </div>
+                    <ng-container *ngIf="ques.questionType=='threeColMtf'">
+                      <div class="col-md-3">
+                        <b>Column 3</b>
+                        <div *ngFor="let column1 of ques.matchOptions['column3']">
+                          <span [innerHtml]="column1.value"></span>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </div>
+                </ng-container>
+                <ol type="A" class="p-0">
+                    <div *ngFor="let options of ques.options" class="pl-2">
+                        <div class="answer-div" *ngIf="ques.optionsType == 'text'">
+                            <li><span [innerHtml]="options.value"></span></li>
+                        </div>
+                        <div class="" *ngIf="ques.optionsType == 'image'">
+                            <li><img [src]="options.value">
+                                <span [innerHtml]="options.file_text"></span>
+                            </li>
+                        </div>
+                        <div class="img-height" *ngIf="ques.optionsType == 'audio'">
+                            <li><audio controls [src]="options.value"></audio>
+                                <span [innerHtml]="options.file_text"></span>
+                            </li>
+                        </div>
+                        <!-- s3BucketUrl+ -->
+                        <div class="img-height" *ngIf="ques.optionsType == 'video'">
+                            <li><video controls [src]="options.value"></video>
+                                <span [innerHtml]="options.file_text"></span>
+                            </li>
+                        </div>
+                    </div>
+                </ol>
+                Answer:
+                <div *ngFor="let answer of ques.answer">
+                    <div class="answer-div" *ngIf="ques.optionsType == 'text'">
+                        <span [innerHtml]="answer.value"></span>
+                    </div>
+                    <div class="" *ngIf="ques.optionsType == 'image'">
+                        <img [src]="answer.value">
+                        <span [innerHtml]="answer.file_text"></span>
+                    </div>
+                    <div class="img-height" *ngIf="ques.optionsType == 'audio'">
+                        <audio controls [src]="answer.value"></audio>
+                        <span [innerHtml]="answer.file_text"></span>
+                    </div>
+                    <!-- s3BucketUrl+ -->
+                    <div class="img-height" *ngIf="ques.optionsType == 'video'">
+                        <video controls [src]="answer.value"></video>
+                        <span [innerHtml]="answer.file_text"></span>
+                    </div>
+                </div>
+              </ng-container>
+            </ng-container>
+              <ng-template #nonComprehension>
+              <ng-container *ngIf="question.questionType=='threeColMtf' || question.questionType=='twoColMtf'">
+                <div class="row">
+                  <div class="col-md-3">
+                    <b>Column 1</b>
+                    <div *ngFor="let column1 of question.matchOptions['column1']">
+                      <span [innerHtml]="column1.value"></span>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <b>Column 2</b>
+                    <div *ngFor="let column1 of question.matchOptions['column2']">
+                      <span [innerHtml]="column1.value"></span>
+                    </div>
+                  </div>
+                  <ng-container *ngIf="question.questionType=='threeColMtf'">
+                    <div class="col-md-3">
+                      <b>Column 3</b>
+                      <div *ngFor="let column1 of question.matchOptions['column3']">
+                        <span [innerHtml]="column1.value"></span>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-container>
+              <ol type="A" class="p-0">
+                  <div *ngFor="let options of question.options" class="pl-2">
+                      <div class="answer-div" *ngIf="question.optionsType == 'text'">
+                          <li><span [innerHtml]="options.value"></span></li>
+                      </div>
+                      <div class="" *ngIf="question.optionsType == 'image'">
+                          <li><img [src]="options.value">
+                              <span [innerHtml]="options.file_text"></span>
+                          </li>
+                      </div>
+                      <div class="img-height" *ngIf="question.optionsType == 'audio'">
+                          <li><audio controls [src]="options.value"></audio>
+                              <span [innerHtml]="options.file_text"></span>
+                          </li>
+                      </div>
+                      <!-- s3BucketUrl+ -->
+                      <div class="img-height" *ngIf="question.optionsType == 'video'">
+                          <li><video controls [src]="options.value"></video>
+                              <span [innerHtml]="options.file_text"></span>
+                          </li>
+                      </div>
+                  </div>
+              </ol>
+              Answer:
+              <div *ngFor="let answer of question.answer">
+                  <div class="answer-div" *ngIf="question.optionsType == 'text'">
+                      <span [innerHtml]="answer.value"></span>
+                  </div>
+                  <div class="" *ngIf="question.optionsType == 'image'">
+                      <img [src]="answer.value">
+                      <span [innerHtml]="answer.file_text"></span>
+                  </div>
+                  <div class="img-height" *ngIf="question.optionsType == 'audio'">
+                      <audio controls [src]="answer.value"></audio>
+                      <span [innerHtml]="answer.file_text"></span>
+                  </div>
+                  <!-- s3BucketUrl+ -->
+                  <div class="img-height" *ngIf="question.optionsType == 'video'">
+                      <video controls [src]="answer.value"></video>
+                      <span [innerHtml]="answer.file_text"></span>
+                  </div>
+              </div>
+            </ng-template>
+
+
+
+        </div>
+        <div class="col-md-3 col-sm-3">
+            <table class="table-position">
+                <tr>
+                    <td class="td">Class/Grade</td>
+                    <td class="td">{{question.className}}</td>
+                </tr>
+                <tr>
+                    <td class="td"> Subject</td>
+                    <td class="td">{{question.subjectName}}</td>
+                </tr>
+                <tr>
+                    <td class="td">Language</td>
+                    <td class="td">{{question.language}}</td>
+                </tr>
+                <tr>
+                    <td class="td">Exam Type</td>
+                    <td class="td">
+                        <ng-container *ngFor="let type of question.examType">
+                            {{type.examTypeName}} ,
+                        </ng-container>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td">Student Type</td>
+                    <td class="td">
+
+                        <ng-container *ngFor="let stud of question.studentType">
+                            {{stud}} ,
+                        </ng-container>
+
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td">Difficult Level</td>
+                    <td class="td">
+                        {{question.difficultyLevel}}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td">Score</td>
+                    <td class="td">{{question.totalMarks}}</td>
+                </tr>
+                <tr>
+                    <td class="td">Duration(mins)</td>
+                    <td class="td">{{question.duration}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-3 col-sm-3">
+            <div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <ng-container *ngIf="schoolId; else Gclass">
+                                <label>Class<span class="reqStar">*</span></label>
+                                <select [(ngModel)]="question.mapClass" placeholder="-- select an option --"
+                                    #className1="ngModel" name="class{{i}}" class="form-control"
+                                    (change)="getBoardIdAndSyllabusId($event.target.value, i,'map')"
+                                    [ngClass]="{'is-invalid':  className1.invalid && (className1.touched || validationFlag)}"
+                                    required>
+                                    <option  disabled selected value=""> -- select an option -- </option>
+                                    <option *ngFor="let item of class" [value]="item.classId">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;{{item.className}}
+                                    </option>
+                                    <option *ngIf="class.length==0" disabled>No classes Available</option>
+                                </select>
+                                <span class="text-danger"
+                                    *ngIf="className1.invalid && (className1.touched || validationFlag)">Class is
+                                    required</span>
+                            </ng-container>
+                            <ng-template #Gclass>
+                                <label>Class<span class="reqStar">*</span></label>
+                                <select [(ngModel)]="question.mapClass" placeholder="-- select an option --"
+                                    #className1="ngModel" name="class{{i}}" class="form-control" required>
+                                    <option  selected value> -- select an option -- </option>
+                                    <option *ngFor="let item of classes" [value]="item._id">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                                    </option>
+                                    <option *ngIf="classes.length==0" disabled>No classes Available</option>
+                                </select>
+                                <span class="text-danger"
+                                    *ngIf="(className1.touched) && className1.errors?.required">Class is
+                                    required</span>
+                            </ng-template>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Subject<span class="reqStar">*</span></label>
+                            <select [(ngModel)]="question.mapSubject" placeholder="-- select an option --"
+                                #subjectName1="ngModel" name="subject{{i}}" class="form-control"
+                                (change)="getChapterAndSetSubject($event.target.value,i,'map')"
+                                [ngClass]="{'is-invalid':subjectName1.invalid && (subjectName1.touched || validationFlag) }" required>
+                                <option selected value=""> -- select an option -- </option>
+                                <option *ngFor="let item of subjects" [value]="item._id">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                                </option>
+                                <option *ngIf="subjects.length==0" disabled>No Subjects Available</option>
+                            </select>
+                            <span class="text-danger"
+                                *ngIf="subjectName1.invalid && (subjectName1.touched || validationFlag)">Subject
+                                is
+                                required</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <ng-container *ngIf="chapterFlag">
+                                <label>Chapter<span class="reqStar">*</span></label>
+                                <select [(ngModel)]="question.mapChapter" name="chapter{{i}}"
+                                    #chapter1="ngModel" placeholder="-- select an option -- " class="form-control"
+                                    (change)="getTopicsAndSetChapter($event.target.value,i,'map')"
+                                    required [ngClass]="{'is-invalid':chapter1.invalid && (chapter1.touched || validationFlag)}">
+                                    <option selected value> -- select an option -- </option>
+                                    <option *ngFor="let item of chapters" [value]="item._id">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                                    <option *ngIf="chapters.length==0" disabled>No chapters Available</option>
+                                </select>
+                                <span class="text-danger"
+                                    *ngIf="chapter1.invalid && (chapter1.touched || validationFlag)">Chapter
+                                    is
+                                    required</span>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <ng-container *ngIf="topicFlag">
+                                <label>Topics<span class="reqStar"></span></label>
+                                <select [(ngModel)]="question.mapTopic" name="topic{{i}}" class="form-control"
+                                    placeholder="-- select an option -- "
+                                    #topic1="ngModel" (change)="getLearnOutcomeAndSetTopic()"
+                                    [ngClass]="{'is-invalid':topic1.invalid && (topic1.touched || validationFlag)}">
+                                    <option selected value> -- select an option -- </option>
+                                    <option *ngFor="let item of topics" [value]="item._id"
+                                        (onSelectionChange)="getLearnOutcomeAndSetTopic($event.source.value,i,'map')">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                                    <option *ngIf="topics.length==0" disabled>No Topics Available</option>
+                                </select>
+                                <span class="text-danger" *ngIf="topic1.invalid && (topic1.touched || validationFlag)">Topic
+                                    is
+                                    required</span>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <ng-container *ngIf="learningOutcomeFlag">
+                                <label>Learning Outcome<span class="reqStar"></span></label>
+                                <select name="learningOutcome{{i}}" [(ngModel)]="question.mapLearning" placeholder="-- select an option -- "
+                                     class="form-control">
+                                    <option selected value> -- select an option -- </option>
+                                    <option *ngFor="let item of learningOutcomes" [value]="item._id">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                                    </option>
+                                    <option *ngIf="learningOutcomes.length==0" disabled>No Learning Outcomes
+                                        Available
+                                    </option>
+                                </select>
+                                <!-- <span class="text-danger" *ngIf="(questionFormControl.learningOutcome.touched) && questionFormControl.learningOutcome.errors?.required">Learning
+                                Outcome is required</span> -->
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Question Category<span class="reqStar"></span></label>
+                            <mat-select [(ngModel)]="question.mapQuestionCategory" #quesCat="ngModel"
+                                name="questionCategory{{i}}" class="form-control">
+                                <!-- <option hidden disabled selected value> -- select an option -- </option> -->
+                                <mat-option *ngFor="let item of questionCategories" [value]="item._id">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                                </mat-option>
+                                <mat-option *ngIf="questionCategories.length==0" disabled>No Question Categories
+                                    Available
+                                </mat-option>
+                            </mat-select>
+                            <span class="text-danger" *ngIf="(quesCat.touched) && quesCat.errors?.required">Question
+                                Category is required</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Language<span class="reqStar"></span></label>
+                            <select [(ngModel)]="question.mapLanguage" #lang="ngModel" name="language{{i}}"
+                                class="form-control" placeholder="-- select an option --"
+                                [ngClass]="{'is-invalid':lang.invalid && (lang.touched || validationFlag)}">
+                                <option hidden disabled selected value> -- select an option -- </option>
+                                <option *ngFor="let item of languages" [value]="item">&nbsp;&nbsp;&nbsp;&nbsp;{{item}}
+                                </option>
+                                <option *ngIf="languages.length==0" disabled>No Languages Available</option>
+                            </select>
+                            <span class="text-danger" *ngIf="lang.invalid && (lang.touched || validationFlag)">Language is required</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Exam Type<span class="reqStar"></span></label>
+                            <mat-select class="form-control" name="examType{{i}}"
+                                [(ngModel)]="question.mapExamType" placeholder="-- select an option --"
+                                multiple #examType1="ngModel"
+                                [ngClass]="{'is-invalid':examType1.invalid && (examType1.touched || validationFlag)}" >
+                                <mat-option *ngFor="let exam of examTypes" [value]="exam._id">
+                                    {{exam.name}}
+                                </mat-option>
+                                <mat-option *ngIf="examTypes.length==0" disabled>No Exam Types Available</mat-option>
+                            </mat-select>
+                            <span class="text-danger" *ngIf="examType1.invalid && (examType1.touched || validationFlag)">Exam Type is required</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Student Type</label>
+                            <mat-select class="form-control" name="studentType{{i}}"
+                                [(ngModel)]="question.mapStudentType" placeholder="-- select an option --"
+                                multiple #studentType>
+                                <mat-option *ngFor="let stype of studentTypeArray" [value]="stype._id">
+                                    {{stype.name}}
+                                </mat-option>
+                                <mat-option *ngIf="studentTypeArray.length==0" disabled>No Student Types Available
+                                </mat-option>
+                            </mat-select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Difficulty Level</label>
+                            <select class="form-control" name="difficultyLevel{{i}}"
+                                [(ngModel)]="question.mapDifficultyLevel" placeholder="-- select an option --"
+                                 #difficultyLevel>
+                                <option *ngFor="let stype of difficultyLevelArray" [value]="stype._id">
+                                    {{stype.name}}
+                                </option>
+                                <option *ngIf="difficultyLevelArray.length==0" disabled>No difficultyLevel Available
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

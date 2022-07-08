@@ -1,0 +1,15 @@
+.main{
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-direction: column !important;
+    height: 80%;
+  }
+  .header{
+    padding: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    align-items: flex-end;
+  }
+  

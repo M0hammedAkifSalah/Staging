@@ -1,0 +1,217 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 m-6 margin-l0">
+      <span class="header-import-paper">Import Question Papers</span>
+    </div>
+  </div>
+
+  <ng-container *ngIf="schoolId; else Gadmin">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>Class<span class="reqStar">*</span></label>
+          <select [(ngModel)]="importQPaperObject.selectedClassId" placeholder="-- select an option --"
+            #className="ngModel" name="class" class="form-control"
+            (change)="getBoardIdAndSyllabusId($event.target.value)">
+            <option  selected value> -- select an option -- </option>
+            <option *ngFor="let item of classList" [value]="item.classId">
+              &nbsp;&nbsp;&nbsp;&nbsp;{{item.className}}
+            </option>
+            <option *ngIf="classList.length==0" disabled>No classes Available</option>
+          </select>
+          <span class="text-danger" *ngIf="(className.touched) && className.errors?.required">Class is
+            required</span>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>Boards</label>
+          <input type="text" readonly [(ngModel)]="importQPaperObject.selectedBoardName" class="form-control"
+            disabled="true">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>Syllabus</label>
+          <input type="text" readonly [(ngModel)]="importQPaperObject.selectedSyllabusName" class="form-control"
+            disabled="true">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>Subject</label>
+          <select [(ngModel)]="importQPaperObject.selectedSubjectId" placeholder="-- select an option --"
+            #subjectName="ngModel" name="subject" class="form-control">
+            <!-- (change)="getChapterAndSetSubject($event.target.value)" -->
+            <option  selected value> -- select an option -- </option>
+            <option *ngFor="let item of subjectList" [value]="item._id">
+              &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+            </option>
+            <option *ngIf="subjectList.length==0" disabled>No Subjects Available</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #Gadmin>
+  </ng-template>
+
+  <div class="row">
+    <div class="col-md-3">
+      <div class="form-group">
+        <label>Language</label>
+        <select [(ngModel)]="importQPaperObject.selectedLanguage" #lang="ngModel" name="language" class="form-control"
+          placeholder="-- select an option --">
+          <option hidden disabled selected value> -- select an option -- </option>
+          <option *ngFor="let item of languages" [value]="item">&nbsp;&nbsp;&nbsp;&nbsp;{{item}}
+          </option>
+          <option *ngIf="languages.length==0" disabled>No Languages Available</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <label>Exam Type</label>
+        <mat-select class="form-control" name="examType" [(ngModel)]="importQPaperObject.selectedExamTypeId"
+          placeholder="-- select an option --" multiple>
+          <mat-option *ngFor="let exam of examTypes" [value]="exam._id">
+            {{exam.name}}
+          </mat-option>
+          <mat-option *ngIf="examTypes.length==0" disabled>No Exam Types Available</mat-option>
+        </mat-select>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <label>Student Type</label>
+        <mat-select class="form-control" name="studentType" [(ngModel)]="importQPaperObject.selectedStudentType"
+          placeholder="-- select an option --" multiple #studentType>
+          <mat-option *ngFor="let stype of studentTypeArray" [value]="stype._id">
+            {{stype.name}}
+          </mat-option>
+          <mat-option *ngIf="studentTypeArray.length==0" disabled>No Student Types Available
+          </mat-option>
+        </mat-select>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <label>Difficulty Level</label>
+        <select class="form-control" name="difficultyLevel" [(ngModel)]="importQPaperObject.selectedDifficultyLevel"
+          placeholder="-- select an option --" #difficultyLevel>
+          <option disabled selected value> -- select an option -- </option>
+          <option *ngFor="let stype of difficultyLevelArray" [value]="stype._id">
+            {{stype.name}}
+          </option>
+          <option *ngIf="difficultyLevelArray.length==0" disabled>No difficultyLevel Available
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 mb-3" style="display: flex;">
+      <button type="button" class="btn btn-primary get-btn-text" (click)="getQuestionPapers()">Get Question
+        Papers</button>
+    </div>
+  </div>
+
+  <ng-container *ngIf="qpestionPaperPreviewFlag">
+    <div class="row qp-list-title p-3">
+      <div class="col-md-6 justify-content-start p-3">
+        <span class="qp-list-text">Question Paper List</span>
+      </div>
+      <div class="col-md-6">
+        <!-- space in place holder is for search icon | don't remove it -->
+        <input type="text" placeholder="Search QP UID" (input)="searchQpIdFilter()" [(ngModel)]="searchQP" class="qp-search form-control">
+      </div>
+    </div>
+
+    <div class="row mt-3 mb-1" *ngFor="let list of questionPaperList">
+      <div class="col-md-6">
+        <div class="row">
+          <div class="col-md-1">
+            <input class="checkbox-pos" type="checkbox">
+          </div>
+          <div class="col-md-11">
+            <span class="qp-paper-title mb-3">{{list.question_title}}</span><br>
+            <span class="qp-paper-details">Total Questions - {{list.detail_question_paper.totalQuestion}} | Duration - {{list.duration}} | Score - {{list.coin}}</span><br>
+            <span class="qp-paper-details">QP UID - {{list.question_id}} | Published Dated - {{list.createdAt | date: 'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="row">
+          <div class="col-md-6">
+            <span class="qp-list-grey-text">Chapters</span>
+          </div>
+          <div class="col-md-6">
+            <span class="qp-list-dark-text"></span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <span class="qp-list-grey-text">Topics</span>
+          </div>
+          <div class="col-md-6">
+            <span class="qp-list-dark-text"></span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <span class="qp-list-grey-text">Learning Outcome</span>
+          </div>
+          <div class="col-md-6">
+            <span class="qp-list-dark-text"></span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <span class="qp-list-grey-text">Language</span>
+          </div>
+          <div class="col-md-6">
+            <span class="qp-list-dark-text">{{list.detail_question_paper.language}}</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <span class="qp-list-grey-text">Exam Type</span>
+          </div>
+          <div class="col-md-6">
+            <span class="qp-list-dark-text">
+              <ng-container *ngFor="let stud of list.detail_question_paper.examType">
+                {{stud.examTypeName}} ,
+            </ng-container>
+            </span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <span class="qp-list-grey-text">Student Type</span>
+          </div>
+          <div class="col-md-6">
+            <span class="qp-list-dark-text">
+              <ng-container *ngFor="let stud of list.detail_question_paper.studentType">
+                {{stud}} ,
+            </ng-container>
+            </span>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <span class="qp-list-grey-text">Difficult Level</span>
+          </div>
+          <div class="col-md-6">
+            <span class="qp-list-dark-text"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

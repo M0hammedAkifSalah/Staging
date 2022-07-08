@@ -1,0 +1,16 @@
+<div class="header">
+  <button mat-mini-fab color="primary" aria-label="Example icon button with a delete icon" (click)="close()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<div class="main">
+  <h2 style="text-align: center;"> Bill for {{data.name}} <br /> month
+  </h2>
+  <mat-chip style="padding: 5px 10px;border-radius: 20px;" *ngIf="date">{{date}}</mat-chip>
+  <br />
+  <div style="display: flex;flex-direction: row;align-items: center;justify-content: center;">
+    <h4>Select Date :</h4>
+    <input type="month" [(ngModel)]="date"  placeholder="Select Month">
+    <button mat-raised-button (click)="update()"> Submit</button>
+  </div>
+</div>

@@ -1,0 +1,652 @@
+<div class="classcontainer">
+  <div class="animated fadeIn">
+    <div class="schooltitle">
+      <div *ngIf="!isOwner; else myFlagTru">
+        <div class="ml-auto font-weight-bold mr-2">growOn Dashboard</div>
+        <!-- <span>
+          Schools
+        </span>
+        <span>
+          {{totalSchool}}
+        </span> -->
+      </div>
+      <ng-template #myFlagTru>
+        <!-- <span> {{}}</span> -->
+        <div class="d-flex" style="justify-content: space-between">
+          <div>
+            <span>
+              {{ intersection }}
+            </span>
+            <span class="ml-auto font-weight-bold mr-2">Dashboard</span>
+          </div>
+          <div style="float: right">
+            <ng-container *ngIf="schoolImage">
+              <img style="width: 100px; height: 112px" [src]="schoolImage" />
+            </ng-container>
+          </div>
+        </div>
+        <div style="margin-top: -60px;">
+          <span style="font-size: 14px"> SCHOOL CODE - {{ schoolCode }}</span>
+        </div>
+      </ng-template>
+    </div>
+    <br />
+    <br />
+
+    <div class="row">
+      <div class="col-sm-6 col-lg-3">
+        <div class="containerBox">
+          <div class="text-box">
+            <h4>
+              <div *ngIf="!isOwner; else branch">
+                <div>{{ totalSchool }}</div>
+                <div>Schools</div>
+              </div>
+            </h4>
+            <ng-template #branch>
+              <h4>
+                <div>{{ totalBranchCount }}</div>
+                <div>Branches</div>
+              </h4>
+            </ng-template>
+          </div>
+          <span>
+            <img src="\assets\media\dashboard\Branches.jpg" alt="..." />
+          </span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="containerBox">
+          <div class="text-box">
+            <h4>
+              <div>
+                {{ totalStudent }}
+              </div>
+              <div>Students</div>
+            </h4>
+          </div>
+          <span>
+            <img src="\assets\media\growon\logos\student.png" alt="..." />
+          </span>
+        </div>
+      </div>
+      <!--/.col-->
+      <div class="col-sm-6 col-lg-3">
+        <div class="containerBox">
+          <div class="text-box">
+            <h4>
+              <div>{{ totalFaculty }}</div>
+              <div>Faculty</div>
+            </h4>
+          </div>
+          <span>
+            <img src="\assets\media\dashboard\Faculty.jpg" alt="..." />
+          </span>
+        </div>
+      </div>
+      <!--/.col-->
+      <!-- <div *ngIf="!isOwner;else branch;"> -->
+
+      <!-- </div> -->
+      <!-- <ng-template #branch>
+        <div class="col-sm-6 col-lg-3">
+          <div class="containerBox">
+            <div class="text-box">
+              <h4>
+                <div>{{totalBranchCount}}</div>
+                <div> branches</div>
+              </h4>
+            </div>
+            <span>
+              <img src="\assets\media\dashboard\Branches.jpg" alt="...">
+            </span>
+          </div>
+        </div>
+      </ng-template> -->
+      <!-- <ng-container *ngIf="isOwner">
+      <div class="col-sm-6 col-lg-3">
+        <div class="containerBox">
+          <div class="text-box">
+            <h4>
+              <div>{{totalBranchCount}}</div>
+              <div> branches</div>
+            </h4>
+          </div>
+          <span>
+            <img src="\assets\media\dashboard\Branches.jpg" alt="...">
+          </span>
+        </div>
+      </div>
+    </ng-container> -->
+
+      <!--/.col-->
+      <div class="col-sm-6 col-lg-3">
+        <div class="mat-elevation-z8">
+          <div>
+            <div class="task">
+              <table mat-table [dataSource]="TaskDataSource">
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef class="ml-auto font-weight-bold">
+                    Tasks
+                  </th>
+                  <td mat-cell *matCellDef="let row">{{ row._id }}</td>
+                </ng-container>
+                <ng-container matColumnDef="num">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td mat-cell *matCellDef="let row">{{ row.num }}</td>
+                </ng-container>
+                <ng-container matColumnDef="progress">
+                  <th mat-header-cell *matHeaderCellDef class="d-flex justify-content-end" style="padding: 12px;">
+                    <mat-icon matSuffix class="mr-1">mood</mat-icon>
+                    <mat-icon matSuffix>mood_bad</mat-icon>
+                  </th>
+                  <td mat-cell *matCellDef="let row">
+                    <div class="progress-group-bars">
+                      <div class="progress progress-xs">
+                        <div class="announcement" role="progressbar" [ngStyle]="{ 'width.%': row.num }"></div>
+                      </div>
+                    </div>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="taskDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: taskDisplayedColumns"></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-5">
+    <div class="gender">
+      <div>Students</div>
+      <span>Boys </span>
+      <span class="ml-auto font-weight-bold">
+        {{ boysCount }}
+      </span>
+      <span> &nbsp;&nbsp;|&nbsp;&nbsp; Girls </span>
+      <span class="ml-auto font-weight-bold">
+        {{ girlsCount }}
+      </span>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-9 col-lg-9">
+    <div class="mat-elevation-z8">
+      <div *ngIf="!isOwner; else myFlag">
+        <mat-tab-group>
+          <mat-tab label="School">
+            <table mat-table [dataSource]="schoolDataSource" matSort>
+              <ng-container matColumnDef="school">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  School
+                </th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.school.schoolName }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="schoolCode">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  School Code
+                </th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.school.schoolCode }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="students">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Students
+                </th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.totalStudentInSchool }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="boys">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Boys</th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.boys }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="girls">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Girls</th>
+                <td mat-cell *matCellDef="let row">{{ row.girls }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="schoolDisplayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: schoolDisplayedColumns"></tr>
+            </table>
+            <mat-paginator #MatPaginator1 [length]="schoolDataSource.data.length" [pageSizeOptions]="[5, 10, 25, 100]">
+            </mat-paginator>
+          </mat-tab>
+
+          <mat-tab label="Teachers">
+            <table mat-table [dataSource]="teacherDataSource" matSort>
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="mobile">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Mobile
+                </th>
+                <td mat-cell *matCellDef="let row">{{ row.mobile }}</td>
+              </ng-container>
+              <ng-container matColumnDef="gender">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Gender
+                </th>
+                <td mat-cell *matCellDef="let row">{{ row.gender }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="class">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Class</th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.primaryClassName ? row.primaryClassName : '-' }}
+                </td>
+              </ng-container>
+              <!-- <ng-container matColumnDef="branch_id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Branch
+                </th>
+                <td mat-cell *matCellDef="let row" >{{ row.branch_id ? row.branch_id.n2ame  : '-'}}</td>
+              </ng-container> -->
+
+              <ng-container matColumnDef="school">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  School
+                </th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.school_id ? row.school_id.schoolName : ''  }}
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="teachersDisplayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: teachersDisplayedColumns"></tr>
+            </table>
+            <mat-paginator class="mat-paginator-sticky" #paginator [length]="teacherResultLength" [pageIndex]="0"
+              [pageSize]="teacherPageSize" [pageSizeOptions]="[5, 10, 25, 50, 100]" (page)="teacheronPageFired($event)">
+            </mat-paginator>
+          </mat-tab>
+          <mat-tab label="Parents">
+            <div class="content">
+              <div class="tab-header">
+                <div class="tab-title">Parent Details</div>
+                <div class="tab-input">
+                  <label>
+                    <input (keyup)="applyFilter($event)" type="search" class="form-control form-control-sm"
+                      placeholder="Search by parent name ,number,or student name" aria-controls="distributorTable" />
+                  </label>
+                </div>
+              </div>
+              <div class="example-container row m-0 w-100">
+                <div class="innerDiv">
+                  <table *ngIf="parentDataSource.filteredData.length > 0" mat-table [dataSource]="parentDataSource"
+                    matSort>
+                    <ng-container matColumnDef="name">
+                      <th mat-header-cell *matHeaderCellDef>Parent Name</th>
+                      <td mat-cell *matCellDef="let row">
+                        {{ row.parentName }}
+                      </td>
+                    </ng-container>
+                    <ng-container matColumnDef="mobile">
+                      <th mat-header-cell *matHeaderCellDef>Mobile</th>
+                      <td mat-cell *matCellDef="let row">
+                        {{ row.parentNumber }}
+                      </td>
+                    </ng-container>
+                    <ng-container matColumnDef="student">
+                      <th mat-header-cell *matHeaderCellDef>Student Name</th>
+                      <td mat-cell *matCellDef="let row">
+                        {{ row.studentName }}
+                      </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="parentsDisplayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: parentsDisplayedColumns"></tr>
+                  </table>
+                </div>
+                <div class="norecord" *ngIf="parentDataSource.filteredData.length == 0">
+                  No records found
+                </div>
+                <mat-toolbar>
+                  <mat-toolbar-row>
+                    <div class="col-md-12">
+                      <!-- <mat-paginator class="mat-paginator-sticky" #myPaginator [pageSizeOptions]="[5, 10, 25, 100]"
+                        showFirstLastButtons>
+                      </mat-paginator> -->
+                      <mat-paginator class="mat-paginator-sticky" #paginator [length]="parentResultLength"
+                        [pageIndex]="0" [pageSize]="parentPageSize" [pageSizeOptions]="[5, 10, 25, 50, 100]"
+                        (page)="onPageFired($event)">
+                      </mat-paginator>
+                    </div>
+                  </mat-toolbar-row>
+                </mat-toolbar>
+              </div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+      <ng-template #myFlag>
+        <mat-tab-group>
+          <mat-tab label="Student">
+            <table mat-table [dataSource]="dataSource">
+              <ng-container matColumnDef="class">
+                <th mat-header-cell *matHeaderCellDef>Class</th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row ? row.className : '' }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="student">
+                <th mat-header-cell *matHeaderCellDef>Students</th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row?.students }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="boys">
+                <th mat-header-cell *matHeaderCellDef>boys</th>
+                <td mat-cell *matCellDef="let row">{{ row?.boys }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="girls">
+                <th mat-header-cell *matHeaderCellDef>girls</th>
+                <td mat-cell *matCellDef="let row">{{ row?.girls }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns2"></tr>
+            </table>
+            <mat-paginator class="mat-paginator-sticky" #MatPaginator2 [length]="studentResultLength" [pageIndex]="0"
+              [pageSize]="studentPageSize" [pageSizeOptions]="[5, 10, 25, 50, 100]" (page)="studentonPageFired($event)">
+            </mat-paginator>
+          </mat-tab>
+          <mat-tab label="Teachers">
+            <table mat-table [dataSource]="teacherDataSource" matSort>
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="mobile">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  mobile
+                </th>
+                <td mat-cell *matCellDef="let row">{{ row.mobile }}</td>
+              </ng-container>
+              <ng-container matColumnDef="gender">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  gender
+                </th>
+                <td mat-cell *matCellDef="let row">{{ row.gender }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="class">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>class</th>
+                <td mat-cell *matCellDef="let row">
+                  <span *ngIf="row.primary_class">{{
+                    row.primary_class.name
+                    }}</span><span *ngIf="!row.primary_class">-</span>
+                </td>
+              </ng-container>
+             <!--  <ng-container matColumnDef="branch_id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Branch
+                </th>
+                <td mat-cell *matCellDef="let row"> <span *ngIf="row.branch_id"> e {{  row.branch_id.namWe }}</span></td>
+              </ng-container> -->
+
+              <ng-container matColumnDef="school">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  school
+                </th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.school_id.schoolName }}
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="teachersDisplayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: teachersDisplayedColumns"></tr>
+            </table>
+            <mat-paginator class="mat-paginator-sticky" #paginator [length]="teacherResultLength" [pageIndex]="0"
+              [pageSize]="teacherPageSize" [pageSizeOptions]="[5, 10, 25, 50, 100]" (page)="teacheronPageFired($event)">
+            </mat-paginator>
+          </mat-tab>
+          <mat-tab label="Parents">
+            <table mat-table [dataSource]="parentDataSource">
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Parent Name</th>
+                <td mat-cell *matCellDef="let row">{{ row.parentName }}</td>
+              </ng-container>
+              <ng-container matColumnDef="mobile">
+                <th mat-header-cell *matHeaderCellDef>mobile</th>
+                <td mat-cell *matCellDef="let row">{{ row.parentNumber }}</td>
+              </ng-container>
+              <ng-container matColumnDef="student">
+                <th mat-header-cell *matHeaderCellDef>student name</th>
+                <td mat-cell *matCellDef="let row">{{ row.studentName }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="parentsDisplayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: parentsDisplayedColumns"></tr>
+            </table>
+            <mat-paginator class="mat-paginator-sticky" #paginator [length]="parentResultLength" [pageIndex]="0"
+              [pageSize]="parentPageSize" [pageSizeOptions]="[5, 10, 25, 50, 100]" (page)="onPageFired($event)">
+            </mat-paginator>
+          </mat-tab>
+        </mat-tab-group>
+      </ng-template>
+      <div *ngIf="!isOwner?(!schoolDataSource.data.length) :
+      (!dataSource.data.length)">
+        loading please wait
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-3 col-lg-3">
+    <div class="mat-elevation-z8">
+      <mat-form-field appearance="fill">
+        <mat-label>Filter By</mat-label>
+        <mat-select [(value)]="selected">
+          <mat-option value="caste">Caste</mat-option>
+          <mat-option value="motherTongue">Mother Tongue</mat-option>
+          <mat-option value="bloodGroup">Blood Group</mat-option>
+          <mat-option value="transport">Mode of Transport</mat-option>
+          <mat-option value="illness">Illness</mat-option>
+          <mat-option value="wearGlass">Student with Glasses</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div [ngSwitch]="selected">
+        <div *ngSwitchCase="'caste'">
+          <table mat-table [dataSource]="casteDataSource" matSort>
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td mat-cell *matCellDef="let row">{{ row._id }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="num">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td mat-cell *matCellDef="let row">{{ row.num }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="progress">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let row">
+                <div class="progress-group-bars">
+                  <div class="progress progress-xs">
+                    <div class="announcement" [ngStyle]="{ 'width.%': row.num }"></div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="filterDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: filterDisplayedColumns"></tr>
+          </table>
+        </div>
+        <div *ngSwitchCase="'motherTongue'">
+          <table mat-table [dataSource]="motherTongueDataSource" matSort>
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td mat-cell *matCellDef="let row">{{ row._id }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="num">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td mat-cell *matCellDef="let row">{{ row.num }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="progress">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let row">
+                <div class="progress-group-bars">
+                  <div class="progress progress-xs">
+                    <div class="announcement" [ngStyle]="{ 'width.%': row.num }"></div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="filterDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: filterDisplayedColumns"></tr>
+          </table>
+        </div>
+        <div *ngSwitchCase="'bloodGroup'">
+          <table mat-table [dataSource]="bloodGroupDataSource" matSort>
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td mat-cell *matCellDef="let row">{{ row._id }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="num">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td mat-cell *matCellDef="let row">{{ row.num }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="progress">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let row">
+                <div class="progress-group-bars">
+                  <div class="progress progress-xs">
+                    <div class="announcement" [ngStyle]="{ 'width.%': row.num }"></div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="filterDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: filterDisplayedColumns"></tr>
+          </table>
+        </div>
+        <div *ngSwitchCase="'transport'">
+          <table mat-table [dataSource]="transportDataSource" matSort>
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td mat-cell *matCellDef="let row">{{ row._id }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="num">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td mat-cell *matCellDef="let row">{{ row.num }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="progress">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let row">
+                <div class="progress-group-bars">
+                  <div class="progress progress-xs">
+                    <div class="announcement" [ngStyle]="{ 'width.%': row.num }"></div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="filterDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: filterDisplayedColumns"></tr>
+          </table>
+        </div>
+        <div *ngSwitchCase="'illness'">
+          <table mat-table [dataSource]="illnessDataSource" matSort>
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td mat-cell *matCellDef="let row">{{ row._id }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="num">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td mat-cell *matCellDef="let row">{{ row.num }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="progress">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let row">
+                <div class="progress-group-bars">
+                  <div class="progress progress-xs">
+                    <div class="announcement" [ngStyle]="{ 'width.%': row.num }"></div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="filterDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: filterDisplayedColumns"></tr>
+          </table>
+        </div>
+        <div *ngSwitchCase="'wearGlass'">
+          <table mat-table [dataSource]="wearGlassDataSource" matSort>
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td mat-cell *matCellDef="let row">{{ row._id }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="num">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+              <td mat-cell *matCellDef="let row">{{ row.num }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="progress">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let row">
+                <div class="progress-group-bars">
+                  <div class="progress progress-xs">
+                    <div class="announcement" [ngStyle]="{ 'width.%': row.num }"></div>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="filterDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: filterDisplayedColumns"></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-6">
+                  <div>Questions</div>
+                  <div>{{ totalQuestions }}</div>
+                  <div>
+                    <canvas id="myChart"> </canvas>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div>Active users</div>
+                  <div>
+                    <canvas id="myChart2"> </canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

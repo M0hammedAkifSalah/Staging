@@ -1,0 +1,427 @@
+<form autocomplete="off" #questionForm="ngForm" (ngSubmit)="addQuestion(questionForm.value,questionForm.valid)">
+    <div class="row">
+        <div class="col-md-8 col-sm-8 col-xs-12">
+            <div class="form-group">
+                <label>Select the learning Outcome<span class="reqStar">*</span></label>
+                <select name="learningOutcome" id="" [(ngModel)]="learningOutcome" class="form-control" required>
+                    <option *ngFor="let item of learningOutcomes" [value]="item.name" >{{item.name}}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Select the Question Category<span class="reqStar">*</span></label>
+                <select name="questionCategory" id="" [(ngModel)]="questionCategory" class="form-control" required>
+                    <option *ngFor="let item of questionCategories" [value]="item.name" >{{item.name}}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Select the Exam Type<span class="reqStar">*</span></label>
+                <ng-multiselect-dropdown #multiSelect
+                    [placeholder]="" 
+                    [data]="examTypes"
+                    [settings]="settings"
+                    [(ngModel)]="examType"
+                    name="examType"
+                    [disabled]="false"
+                    required
+                    >
+                </ng-multiselect-dropdown>
+            </div>
+            <div class="form-group">
+                <label>Select the Question Type<span class="reqStar">*</span></label>
+                <select [(ngModel)]="questionType" name="questionType" class="form-control" (change)="changeQuestionType($event.target.value)" required>
+                    <option *ngFor="let item of questionTypes" [value]="item.value" >{{item.name}}</option>
+                </select>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <h3><strong>Pratice/Test Question<span class="reqStar">*</span></strong></h3>
+                    <div class="form-check" *ngFor="let item of praticTestQuestionArray">
+                        <label class="form-check-label">
+                           <input type="checkbox" [value]="item.value" name="praticTest" [ngModel]="praticTest" (change)="selectPraticTestQuestion(item.value)" required>&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                        </label>
+                    </div>                   
+                </div>       
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <h3><strong>Student Type<span class="reqStar">*</span></strong></h3>
+                    <div class="form-check" *ngFor="let item of studentTypeArray">
+                        <label class="form-check-label">
+                           <input type="checkbox" [value]="item.value" name="studentType" [ngModel]="studentType" (change)="selectStudentType(item.value)" required>&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                        </label>
+                    </div> 
+                </div>       
+            </div>
+            <div class="row">
+                <h3><strong>Set Difficulty Level<span class="reqStar">*</span></strong></h3>
+                <div class="form-check" *ngFor="let item of difficultyLevelArray">
+                    <label class="form-check-label">
+                       <input type="radio" [value]="item.value" name="questionDifficulty" [(ngModel)]="questionDifficulty" required>&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="classGrade">
+                <div class="form-group">
+                    <label>Class/Grade<span class="reqStar">*</span></label>
+                    <select name="class" id="" [(ngModel)]="class" class="form-control" required>
+                        <option *ngFor="let item of classes" [value]="item.name" >&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Board<span class="reqStar">*</span></label>
+                    <select name="board" id="" [(ngModel)]="board" class="form-control" required>
+                        <option *ngFor="let item of boards" [value]="item.name" >&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Syllabus<span class="reqStar">*</span></label>
+                    <select name="syl" id="" [(ngModel)]="syl" class="form-control" required>
+                        <option *ngFor="let item of syllabus" [value]="item.name" >&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Subject<span class="reqStar">*</span></label>
+                    <select name="subject" id="" [(ngModel)]="subject" class="form-control" required>
+                        <option *ngFor="let item of subjects" [value]="item.name" >&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Chapter<span class="reqStar">*</span></label>
+                    <select name="chapter" id="" [(ngModel)]="chapter" class="form-control" required>
+                        <option *ngFor="let item of chapters" [value]="item.name" >&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Topic<span class="reqStar">*</span></label>
+                    <select name="topic" id="" [(ngModel)]="topic" class="form-control" required>
+                        <option *ngFor="let item of topics" [value]="item.name" >&nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="row">
+                <div class="col-md-8 col-sm-8 col-xs-12">
+                    <h3>Your question title here<span class="reqStar">*</span></h3>
+                    <input type="text" class="form-control" name="questionTitle" [(ngModel)]="questionTitle" required>
+                    <div style="background: #fff;">
+                        <h3 *ngIf="questionType == 'fillInTheBlanks'"><strong>Instruction:</strong>Add {{fibText}} for the blank the 'Answer' will need to be provide in the answer section See example below <br /> EX:{{fibText}} is the capital city of India</h3>
+			 <!-- <editor
+			   apiKey="0lfouqtjtrp2c1nepn6ddxid9xxegx5hw082cmy8ds0co9xj"
+			   [init]="{
+			     height: 500,
+			     menubar: true,
+                 plugins: [
+                    'mathjax': '/node_modules/@dimakorotkov/tinymce-mathjax/plugin.min.js'
+                    'mathjax': '/no'
+			       'advlist autolink lists link image charmap print preview anchor',
+			       'searchreplace visualblocks code fullscreen',
+			       'insertdatetime media table paste code help wordcount'
+			     ],
+			     toolbar:
+			       'undo redo | formatselect | bold italic backcolor | \
+			       alignleft aligncenter alignright alignjustify | \
+			       bullist numlist outdent indent | removeformat | help'
+			   }"
+             ></editor> -->
+             <!-- <editor
+			   apiKey="0lfouqtjtrp2c1nepn6ddxid9xxegx5hw082cmy8ds0co9xj"
+			   [init]="{
+			     height: 500,
+			     menubar: true,
+                 plugins: [
+                    'mathjax': '/node_modules/@dimakorotkov/tinymce-mathjax/plugin.min.js'
+			     ],
+                 toolbar: 'mathjax',
+			   }"
+             ></editor> -->
+             <!-- <div id="append"></div> -->
+             
+             <kt-editor [editordata]="htmlContent" (valuechanges)="valuechanged($event)"></kt-editor>
+
+                        <!-- <textarea id="myTextarea" [(ngModel)]="htmlContent" name="htmlContent" required></textarea> -->
+                        <!-- <ckeditor [editor]="Editor" [config]="editorconfig"></ckeditor> -->
+                        <!-- <angular-editor [(ngModel)]="htmlContent" [config]="config" name="htmlContent" required></angular-editor> -->
+                    </div>
+                    <!-- <h3>Preview</h3>
+                    <div [innerHtml]="htmlContent | sanitizeResourceUrl | sanitizeUrl | sanitizeScript | sanitizeStyle | sanitizeHtml"></div> -->
+                    <div class="btn btn-primary" *ngIf="questionType == 'fillInTheBlanks' && htmlContent" (click)='validateFib(htmlContent)'>Next</div>
+                </div>
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                           <div class="form-group">
+                               <label>Total Marks<span class="reqStar">*</span></label>
+                               <input class="form-control" type="text" name="totalMarks" [(ngModel)]="totalMarks" required>
+                           </div>     
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                           <div class="form-group">
+                               <label>Negative Marks<span class="reqStar">*</span></label>
+                               <input class="form-control" type="text" name="negativeMarks" [(ngModel)]="negativeMarks" [disabled]="negativeScoring == 'no'" required>
+                           </div> 
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <span>Negative Scoring<span class="reqStar">*</span></span>
+                            <div>
+                                <input type="radio" value="yes" name="negativeScoring" [(ngModel)]="negativeScoring" required>
+                                <label for="female">Yes</label>
+                            </div>
+                            <div>
+                                <input type="radio" value="no" name="negativeScoring" [(ngModel)]="negativeScoring" required>
+                                <label for="female">No</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <div class="form-group">
+                                <label>Language<span class="reqStar">*</span></label>
+                                <!-- <input class="form-control" type="text" name="language" [(ngModel)]="language" required> -->
+                                <select name="language" [(ngModel)]="language" class="form-control">
+                                    <option *ngFor="let language of languages" [value]="language">{{language}}</option>
+                                </select>
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <label>Duration<span class="reqStar">*</span></label>
+                                <input class="form-control" type="number" name="duration" [(ngModel)]="duration" required>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="questionType == 'objectives' || questionType == 'mcq'">
+                Objectives
+                <div class="form-group">
+                    <label>Select Option Type<span class="reqStar">*</span></label>
+                    <select name="objTypeVal" [(ngModel)]="objTypeVal" class="form-control" (change)="selectObjType($event.target.value)" required>
+                        <option *ngFor="let type of objType" value="{{type.value}}">{{type.name}}</option>
+                    </select>
+                </div>
+                <div *ngIf="objTypeVal"><h1>{{ objTypeVal | titlecase }}</h1></div>
+                <form #obj="ngForm" (ngSubmit)="collectObj(obj.value)" *ngIf="objTypeVal" enctype="multipart/form-data">
+                    <div class="form-group" *ngFor="let obj of objectives; let i = index">
+                        <span class="formSpan">{{obj}}</span>
+                        <input *ngIf="objTypeVal == 'text'" type="text" name="option{{obj}}" class="customFormControl" [(ngModel)]="this['option'+obj]" placeholder="Choice {{obj}}">
+                        <input *ngIf="objTypeVal == 'image'" type="file" accept="image/*" name="option{{obj}}" [(ngModel)]="this['option'+obj]" (change)="onFileChanged($event,i)">
+                        <input *ngIf="objTypeVal == 'audio'" type="file" accept="audio/*" name="option{{obj}}" [(ngModel)]="this['option'+obj]" (change)="onFileChanged($event,i)">
+                        <input *ngIf="objTypeVal == 'video'" type="file" accept="video/*" name="option{{obj}}" [(ngModel)]="this['option'+obj]" (change)="onFileChanged($event,i)">
+                        <div style="height: 250px; width: 250px" *ngIf="objTypeVal !== 'text' && oqImages[i]">
+                            <img *ngIf="objTypeVal !== 'text'" style="width: 100%; height: 100%;" [src]="oqImages[i]">
+                        </div>
+                    </div>
+                    <div (click)="addObj()" class="divLink">Add Option</div>
+                    <div (click)="removeAction('last','objective')" class="divLink">Remove Last</div>
+                    <div (click)="removeAction('all','objective')" class="divLink">Remove All</div>
+                    <div><input type="submit" value="Next" class="btn btn-primary"></div>
+                </form>
+                <!--  -->
+                <div class="form-group">
+                    <h3 *ngIf="objectiveQuestions.length > 1">Please select the correct answer option for the above question<span class="reqStar">*</span></h3>
+                    <span *ngFor="let question of objectiveQuestions; let i = index" class="answeSpan">
+                        <span *ngIf="questionType == 'objectives'">
+                            <input type="radio" name="answer" [(ngModel)]="answer" [value]="i+1" required> Option {{i+1}}
+                        </span>
+                        <span *ngIf="questionType == 'mcq'">
+                            <input type="checkbox" name="answer" [ngModel]="answer" [value]="i+1" required (change)="getMcqAnswerFun(i+1)"> Option {{i+1}}
+                        </span>
+                    </span>
+                </div>
+            </div>
+            <div *ngIf="questionType == 'fillInTheBlanks'">
+                <form #fibForm="ngForm" (ngSubmit)="fillInTheBlanksForm(fibForm.value)">
+                    <div class="form-group" *ngFor="let len of fibAnsLength; let i = index">
+                        <label *ngIf="i+1 == 1">Anser for {{i+1}}st blank</label>
+                        <label *ngIf="i+1 == 2">Anser for {{i+1}}nd blank</label>
+                        <label *ngIf="i+1 == 3">Anser for {{i+1}}rd blank</label>
+                        <label *ngIf="i+1 > 3">Anser for {{i+1}}th blank</label>
+                        <input type="text" class="form-control" [(ngModel)]="this['fibAnswer'+i]" name="fibAnswer{{i}}">
+                    </div>
+                    <div *ngIf="fibAnsLength.length > 0"><input type="submit" value="Submit Answers" class="btn btn-primary"></div>
+                </form>
+            </div>
+            <div *ngIf="questionType == 'twoColMtf' || questionType == 'threeColMtf'">
+                <form #MtfForm="ngForm" (ngSubmit)="twoColMtf(MtfForm.value)">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4 col-xs-4">
+                            <h4><strong>Column1</strong></h4>
+                            <div class="form-group" *ngFor="let obj of mtfColOneOptions; let i = index" style="white-space:nowrap">
+				                <label style="margin-right: 5px; font-size: 18px;">{{capitalAlpha[i]}}</label>
+                                <input type="text" name="mtfColOneOption-{{capitalAlpha[i]}}" class="customFormControl mtfInputQuestion" [(ngModel)]="this['mtfColOneOption-'+capitalAlpha[i]]" placeholder="Option {{obj}}">
+                            </div>
+                            <div (click)="addMtfOpt('colOne')" class="divLink">Add Option</div>
+                            <div (click)="removeAction('last','mtfColOne')" class="divLink">Remove Last</div>
+                            <div (click)="removeAction('all','mtfColOne')" class="divLink">Remove All</div>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-4">
+                            <h4><strong>Column2</strong></h4>
+                            <div class="form-group" *ngFor="let obj of mtfColTwoOptions; let i = index" style="white-space:nowrap">
+				                <label style="margin-right: 5px; font-size: 18px;">{{smallAlpha[i]}}.</label>
+                                <input type="text" name="mtfColTwoOption-{{smallAlpha[i]}}" class="customFormControl mtfInputQuestion" [(ngModel)]="this['mtfColTwoOption-'+smallAlpha[i]]" placeholder="Option {{obj}}">
+                            </div>
+                            <div (click)="addMtfOpt('colTwo')" class="divLink">Add Option</div>
+                            <div (click)="removeAction('last','mtfColTwo')" class="divLink">Remove Last</div>
+                            <div (click)="removeAction('all','mtfColTwo')" class="divLink">Remove All</div>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-4" *ngIf="questionType == 'threeColMtf'">
+                            <h4><strong>Column3</strong></h4>
+                            <div class="form-group" *ngFor="let obj of mtfColThreeOptions; let i = index" style="white-space:nowrap">
+				                <label style="margin-right: 5px; font-size: 18px;">{{i+1}}.</label>
+                                <input type="text" name="mtfColThreeOption-{{i+1}}" class="customFormControl mtfInputQuestion" [(ngModel)]="this['mtfColThreeOption-'+i+1]" placeholder="Option {{i+1}}">
+                            </div>
+                            <div (click)="addMtfOpt('colThree')" class="divLink">Add Option</div>
+                            <div (click)="removeAction('last','mtfColThree')" class="divLink">Remove Last</div>
+                            <div (click)="removeAction('all','mtfColThree')" class="divLink">Remove All</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <input type="submit" value="Create Match The Following" class="btn btn-primary">
+                        </div>
+                    </div>
+                </form>
+                <form *ngIf="twoColMtfAnsCount.length > 0" #twoColMtfAns="ngForm" (ngSubmit)="mtfAns(twoColMtfAns.value)">
+                    <div class="row">
+                        <div class="col-md-2 col-sm-2 col-xs-12">
+                            <h4><strong>Please enter correct matches</strong></h4>
+                            <!-- <h6>Comment : make matches dropdown</h6> -->
+                            <div class="form-group" *ngFor="let item of twoColMtfAnsCount; let i = index" style="white-space:nowrap">
+                                <label style="margin-right: 5px; font-size: 18px;">{{capitalAlpha[i]}}.</label>
+                                <input type="text" name="matchForCol1Option{{i+1}}" class="form-control mtfInput" [(ngModel)]="this['matchForCol1Option'+i+1]" placeholder="Match for column 1 option{{capitalAlpha[i]}}">
+                                <input *ngIf="questionType == 'threeColMtf'" type="number" name="matchForCol2Option{{i+1}}" class="form-control mtfInput" [(ngModel)]="this['matchForCol2Option'+i+1]" placeholder="Match for column 2 option{{capitalAlpha[i]}}">
+                            </div>
+                        </div>
+                    </div>
+                    <input type="submit" value="Submit answers" class="btn btn-primary">
+                </form>
+            </div>
+            <div *ngIf="questionType == 'sequencingQuestion' || questionType == 'sentenceSequencing'">
+                <form #seqForm="ngForm" (ngSubmit)="sequencingForm(seqForm.value,seqForm.valid)">
+                    <!-- <div class="row">
+                        <div class="col-md-4 col-sm-4 col-xs-12"> -->
+                            <h4><strong>Options</strong></h4>
+                            <div class="form-group" *ngFor="let obj of mtfColThreeOptions; let i = index" style="white-space:nowrap">
+				                <label style="margin-right: 5px; font-size: 18px;">{{i+1}}.</label>
+                                <input *ngIf="questionType == 'sequencingQuestion'" type="text" name="sequencingQuestionOption-{{i+1}}" class="customFormControl mtfInputQuestion" [(ngModel)]="this['sequencingQuestionOption-'+i+1]" placeholder="Option {{i+1}}" required>
+                                <textarea *ngIf="questionType == 'sentenceSequencing'" name="sequencingQuestionOption-{{i+1}}" class="customFormControl mtfInputQuestion" [(ngModel)]="this['sequencingQuestionOption-'+i+1]" placeholder="Option {{i+1}}" cols="100" rows="70" required></textarea>
+                            </div>
+                            <div (click)="addMtfOpt('colThree')" class="divLink">Add Option</div>
+                            <div (click)="removeAction('last','mtfColThree')" class="divLink">Remove Last</div>
+                            <div (click)="removeAction('all','mtfColThree')" class="divLink">Remove All</div>
+                        <!-- </div>
+                    </div> -->
+                    <div>
+                    	<input type="submit" value="Add Answer" class="btn btn-primary">
+                    </div>
+                </form>
+                <form #seqAns="ngForm" (ngSubmit)="seqAnswerForm(seqAns.value,seqAns.valid)" *ngIf="sequencingArrayQuestion.length > 0">
+                    <div class="row">
+                        <div class="col-md-2 col-sm-2 col-xs-12">
+                            <div class="form-group" *ngFor="let sequencing of sequencingArrayQuestion; let i = index" style="white-space:nowrap">
+                                <label>{{i+1}}</label>
+                                <select name="sequence{{i+1}}" id="" [(ngModel)]="this['sequence-'+i+1]" class="form-control mtfInput" required>
+                                    <option *ngFor="let sequencing of sequencingArrayQuestion" [value]="sequencing.value" >{{sequencing.value}}</option>
+                                </select>
+                            </div> 
+                        </div>
+                    </div>
+                    <input *ngIf="sequencingArrayQuestion.length > 1" type="submit" value="Submit Answers" class="btn btn-primary">
+                </form>
+            </div>
+            <div class="row" *ngIf="questionType == 'trueOrFalse'" style="margin-top: 20px;">
+                <div class="form-check" *ngFor="let item of trueOrFalse">
+                    <label class="form-check-label">
+                       <input type="radio" [value]="item.value" name="answer" [(ngModel)]="answer" required>{{item.name}}
+                    </label>
+                </div>
+            </div>
+            <div *ngIf="questionType == 'sorting'">
+                <form #sortingFrm="ngForm" (ngSubmit)="sortingForm(sortingFrm.value,sortingFrm.valid)">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-4 col-xs-4">
+                            <h4><strong>Options</strong></h4>
+                            <div class="form-group" *ngFor="let obj of mtfColOneOptions; let i = index" style="white-space:nowrap">
+				                <label style="margin-right: 5px; font-size: 18px;">{{i+1}}.</label>
+                                <input type="text" name="sortingOption{{i+1}}" class="customFormControl mtfInputQuestion" [(ngModel)]="this['sortingOption'+i+1]" placeholder="Option {{i+1}}" required>
+                            </div>
+                            <div (click)="addMtfOpt('colOne')" class="divLink">Add Option</div>
+                            <div (click)="removeAction('last','mtfColOne')" class="divLink">Remove Last</div>
+                            <div (click)="removeAction('all','mtfColOne')" class="divLink">Remove All</div>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-4">
+                            <h4><strong>Groups</strong></h4>
+                            <div class="form-group" *ngFor="let obj of mtfColTwoOptions; let i = index" style="white-space:nowrap">
+				                <label style="margin-right: 5px; font-size: 18px;">{{i+1}}.</label>
+                                <input type="text" name="sortingGroup{{i+1}}" class="customFormControl mtfInputQuestion" [(ngModel)]="this['sortingGroup'+i+1]" placeholder="Group {{i+1}}" required>
+                            </div>
+                            <div (click)="addMtfOpt('colTwo')" class="divLink">Add Group</div>
+                            <div (click)="removeAction('last','mtfColTwo')" class="divLink">Remove Last</div>
+                            <div (click)="removeAction('all','mtfColTwo')" class="divLink">Remove All</div>
+                        </div>
+                    </div>
+                    <input type="submit" value="Add Answers" class="btn btn-primary">
+                </form>
+                <form #gpAnsForm="ngForm" (ngSubmit)="groupAnswersForm(gpAnsForm.value,gpAnsForm.valid)" *ngIf="sortingQuestionsGroupAns.length > 0">
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
+                            <h4><strong>Select Options for each group</strong></h4>
+                            <div class="form-group" *ngFor="let obj of noOfSortingGroups; let i = index" style="white-space:nowrap">
+                                <label style="margin-right: 5px; font-size: 18px;">Options for Group {{noOfSortingGroups[i].value}}.</label>
+                                <ng-multiselect-dropdown #multiSelect
+                                    [placeholder]="'Select Options for group'" 
+                                    [data]="sortingQuestionsGroupAns"
+                                    [settings]="settingsTwo"
+                                    [(ngModel)]="this['optionsOfsortingGroup'+i+1]"
+                                    name="optionsOfsortingGroup{{i+1}}"
+                                    [disabled]="false"
+                                    required>
+                                </ng-multiselect-dropdown>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="submit" value="Submit Answers" class="btn btn-primary">
+                </form>
+            </div>
+            <div *ngIf="questionType == 'NumericalRange'">
+                <form #numrange="ngForm" (ngSubmit)="numericalRangeFun(numrange.value,numrange.valid)">
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Enter Min Value</label>
+                            <input type="number" name="minRange" [(ngModel)]="minRange" id="" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Enter Max Value</label>
+                            <input type="number" name="maxRange" [(ngModel)]="maxRange" id="" required class="form-control">
+                        </div>
+                    </div>
+                    <input type="submit" value="Add Range" class="btn btn-primary">
+                </form>
+                <form #minmaxans="ngForm" (ngSubmit)="minMaxAnsFun(minmaxans.value,minmaxans.valid)" *ngIf="numRangeMinMax.length > 0">
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Enter correct range for above values</label>
+                            <!-- {{numRangeAns}} -->
+                            <!-- <input type="range" min="{{numRangeMinMax.minValue}}" max="{{numRangeMinMax.maxValue}}" name="numRangeAns" [(ngModel)]="numRangeAns"> -->
+                            <input type="number" name="numRangeAns" [(ngModel)]="numRangeAns" class="form-control" required>
+                        </div>
+                    </div>
+                    <input type="submit" value="submit answer" name="" id="" class="btn btn-primary">
+                </form>
+            </div>
+            <div *ngIf="questionType == 'freeText'">
+                <p style="color: red">Note : This Question Type cannot be auto corrected</p>
+                <p>Add Answer in the below box</p>
+                <textarea name="" id="" cols="200" rows="20" name="answer" [(ngModel)]="answer"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" *ngIf="answersForFib.length > 0 || getMcqAnswer.length > 0 || answer || answerForTwoColMtf || sortingAnswers.length > 0 || sequencingArrayAnswer.length > 0 || numRangeMinMaxAns.length > 0">
+        <input type="submit" name="" id="" value="Submit Question" class="btn btn-primary" style="float:right">
+    </div>
+</form>

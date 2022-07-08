@@ -1,0 +1,455 @@
+<div class="row" class="generateQPaper" *ngIf="!openModal">
+    <form #getChapters="ngForm" (ngSubmit)="getChaptersForm(getChapters.value,getChapters.valid)">
+      <!-- <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let field of fieldArray; let i = index">
+                <td>
+                  three
+                </td>
+                <td>
+                    <button class="btn btn-default"  type="button" (click)="deleteFieldValue(i)">Delete</button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                  two
+                </td>
+                <td>
+                    <button class="btn btn-default" type="button" (click)="addFieldValue()">Add</button>
+                </td>
+            </tr>
+        </tbody>
+    </table> -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group diffcultyLevenContainer" style="white-space:nowrap; text-align: right; float: left;">
+          <label>Name</label>
+          <input type="text" name="questionPName" id="" [(ngModel)]="questionPName" class="form-control" style="width: 100%;">
+        </div>
+        <div class="form-group diffcultyLevenContainer" style="white-space:nowrap; float: right; text-align: right;">
+          <!-- &nbsp;&nbsp;&nbsp;<label>Id</label> -->
+          <label>Id</label>
+          <input type="text" name="questionPId" id="" [(ngModel)]="questionPId" class="form-control" style="width: 50%;">
+        </div>
+      </div>
+    </div>
+    <hr>
+        <div class="row">
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <label><strong>Class/Grade</strong><span class="reqStar">*</span></label>
+                <select name="class" id="" [(ngModel)]="class" class="form-control" required>
+                    <option *ngFor="let item of classes" [value]="item.name" >{{item.name}}</option>
+                </select>
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <label><strong>Board</strong><span class="reqStar">*</span></label>
+                <select name="board" id="" [(ngModel)]="board" class="form-control" required>
+                    <option *ngFor="let item of boards" [value]="item.name" >{{item.name}}</option>
+                </select>
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <label><strong>Syllabus</strong><span class="reqStar">*</span></label>
+                <select name="syl" id="" [(ngModel)]="syl" class="form-control" required>
+                    <option *ngFor="let item of syllabus" [value]="item.name" >{{item.name}}</option>
+                </select>
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <label><strong>Total Questions</strong><span class="reqStar">*</span></label>
+                    <input class="form-control" type="text" name="totalQuestions" [(ngModel)]="totalQuestions" required>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <label><strong>Subject</strong><span class="reqStar">*</span></label>
+                <select name="subject" id="" [(ngModel)]="subject" class="form-control" required>
+                    <option *ngFor="let item of subjects" [value]="item.name" >{{item.name}}</option>
+                </select>
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <label><strong>Language</strong><span class="reqStar">*</span></label>
+                    <!-- <input class="form-control" type="text" name="language" [(ngModel)]="language" required> -->
+                    <select name="language" [(ngModel)]="language" class="form-control">
+                      <option *ngFor="let language of languages" [value]="language">{{language}}</option>
+                  </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <div class="form-group">
+                    <label><strong>Select the Exam Type</strong><span class="reqStar">*</span></label>
+                    <ng-multiselect-dropdown #multiSelect
+                        [placeholder]="'Select the Exam Type'" 
+                        [data]="examTypes"
+                        [settings]="settings"
+                        [(ngModel)]="examType"
+                        name="examType"
+                        [disabled]="false"
+                        required
+                        >
+                    </ng-multiselect-dropdown>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-3 col-xs-12">
+                <label><strong>Student Type</strong><span class="reqStar">*</span></label>
+                <ng-multiselect-dropdown #multiSelect
+                    [placeholder]="'Select Student Type'" 
+                    [data]="studentTypeArray"
+                    [settings]="settingsTwo"
+                    [(ngModel)]="studentType"
+                    name="studentType"
+                    [disabled]="false"
+                    required
+                    >
+                </ng-multiselect-dropdown>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5 col-sm-5 col-xs-12">
+              <label><strong>Attempt Type</strong></label>
+              <div class="form-group qTypeContainer" style="white-space:nowrap">
+                  <label>Practice<span class="reqStar">*</span></label>
+                  <input class="form-control" type="number" name="practice" [(ngModel)]="practice">
+                  &nbsp;&nbsp;&nbsp;<label>Test<span class="reqStar">*</span></label>
+                  <input class="form-control" type="number" name="test" [(ngModel)]="test">
+                  &nbsp;&nbsp;&nbsp;<label>Practice & Test<span class="reqStar">*</span></label>
+                  <input class="form-control" type="number" name="practiceAndTest" [(ngModel)]="practiceAndTest">
+              </div>
+            </div>
+            <div class="col-md-7 col-sm-7 col-xs-12">
+              <label><strong>Difficulty Level</strong></label>
+              <div class="form-group diffcultyLevenContainer" style="white-space:nowrap">
+                <label>Very Easy<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="veryEasy" [(ngModel)]="veryEasy">
+                &nbsp;&nbsp;&nbsp;<label>Easy<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="easy" [(ngModel)]="easy">
+                &nbsp;&nbsp;&nbsp;<label>Intermediate<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="intermediate" [(ngModel)]="intermediate">
+                &nbsp;&nbsp;&nbsp;<label>Hard<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="hard" [(ngModel)]="hard">
+                &nbsp;&nbsp;&nbsp;<label>Very Hard<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="veryHard" [(ngModel)]="veryHard">
+              </div>
+            </div>
+        </div>
+        <input type="submit" value="Next" class="btn btn-primary">
+    </form>
+        <!-- Chapters and topics -->
+        <!-- <div class="row">
+          <div class="col-md-2">#</div><div class="col-md-4">Subject</div><div class="col-md-4">Chapters</div><div class="col-md-2">Select</div>
+        </div>
+        <div class="row" *ngFor="let chapter of filteredChapters; let i = index">
+          <div class="col-md-2">{{i+1}}</div><div class="col-md-4">{{chapter.subject}}</div><div class="col-md-4">{{chapter.chapter}}</div>
+          <div class="col-md-2"><input type="checkbox"  id="isCheckBox" (change)="checkedChapter(chapter.chapter)"/></div>
+        </div> -->
+        <!-- {{ filteredChapters | json }} -->
+        <div class="row" *ngIf="filteredChapters.length > 0">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <!-- <test-paper></test-paper> -->
+              <!-- <div *ngIf="loadingChapters == false"> -->
+		              <!-- <kt-test-component [data]="filteredChapters"></kt-test-component> -->
+                  <h4>Chapters</h4>
+                  <!-- {{testString}} -->
+                  <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Subject</th>
+                          <th scope="col">Chapters</th>
+                          <th scope="col">Select</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let chapter of filteredChapters; let i = index" (click) = "checkVisited()">
+                          <th scope="row">{{i+1}}</th>
+                          <td>{{chapter.subject}}</td>
+                          <td>{{chapter.chapter}}</td>
+                          <td>
+                            <input type="checkbox"  id="isCheckBox" (change)="checkedChapter(chapter.chapter)"/>
+                            <!-- <div (click)="checkedChapter(chapter.chapter)">
+                              <i class="fa fa-plus" aria-hidden="true"></i>
+                            </div> -->
+                          </td>
+                        </tr>
+                    </tbody>
+                    <div class="btn btn-primary" (click)="callTopics()">Fetch Topic</div>
+                  </table>
+              <!-- </div> -->
+                <button class="loadingMsg" id="loadingMsg" *ngIf="loadingChapters">Fetching Chapters please wait...</button>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div *ngIf="loadingTopics == false">
+                <form autocomplete="off" #tpcForm="ngForm" (ngSubmit)="topicForm(tpcForm.value,tpcForm.valid)">
+                  <h4>Topics</h4>
+                  <table class="table">
+                      <thead class="thead-dark">
+                        <tr>
+                          <th scope="col">Chapters</th>
+                          <th scope="col">Topics</th>
+                          <th scope="col">No Of Questions</th>
+                          <th scope="col">Select</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of countOfTopicsList; let i = index">
+                          <td>
+                            <select name="" id="" (change)="getTopicList($event,i)" class="form-control" required>
+                              <option value="" selected disabled>Select Chapter</option>
+                              <option value="{{chapter.chapter}}" *ngFor="let chapter of filteredChapters; let i = index">{{chapter.chapter}}</option>
+                            </select>
+                          </td>
+                          <td>
+                            <ng-multiselect-dropdown #multiSelect
+                              [placeholder]="'Select topics'" 
+                              [data]="chapterTopics[i]"
+                              [settings]="settingsForTopics"
+                              [(ngModel)]="this['chapterTopicsName'+i]"
+                              name="chapterTopicsName{{i}}"
+                              [disabled]="false"
+                              required
+                              >
+                          </ng-multiselect-dropdown>
+                          </td>
+                          <td><span *ngIf="chapterTopics[i]">{{chapterTopics[i].length}}</span></td>
+                          <td><input type="checkbox"  id="isCheckBox" (change)="checkedTopics()" required></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!-- <div class="btn btn-primary" (click)="callQuestionCat()">Fetch Question Categories</div> -->
+                    <input type="submit" name="" id="" value="Fetch Question Categories" class="btn btn-primary">
+                </form>
+              </div>
+                  <button class="loadingMsg" id="loadingMsg" *ngIf="loadingTopics">Fetching Topics please wait...</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div *ngIf="loadingQuestionCategories == false">
+                <form autocomplete="off" #qcForm="ngForm" (ngSubmit)="qCategorieForm(qcForm.value,qcForm.valid)">
+                  <h4>Question Categories</h4>
+                  <table class="table">
+                      <thead class="thead-dark">
+                        <tr>
+                          <th scope="col">Topics</th>
+                          <th scope="col">Question Category</th>
+                          <td scope="col" style="background-color: #2A3F54; color:#fff">No Of Questions</td>
+                          <th scope="col">Select</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of countOfQC; let i = index">
+                          <td>
+                            <select name="" id="" (change)="getQCList($event,i)" class="form-control">
+                              <option value="" selected disabled>Select Topic</option>
+                              <option value="{{topic}}" *ngFor="let topic of selectedTopics; let i = index" class="form-control">{{topic}}</option>
+                            </select>
+                          </td>
+                          <td>
+                            <ng-multiselect-dropdown #multiSelect
+                              [placeholder]="'Select Question Category'" 
+                              [data]="qCategories[i]"
+                              [settings]="settingsForQa"
+                              [(ngModel)]="this['qCategorieName'+i]"
+                              name="qCategorieName{{i}}"
+                              [disabled]="false"
+                              required
+                              >
+                          </ng-multiselect-dropdown>
+                          </td>
+                          <td><span *ngIf="qCategories[i]">{{qCategories[i].length}}</span></td>
+                          <td><input type="checkbox"  id="isCheckBox" (change)="appendQC('qc')"/></td>
+                        </tr>
+                      </tbody>
+                      <!-- <div class="btn btn-primary" (click)="callLearningOutcome()">Fetch Question Type</div> -->
+                    </table>
+                    <input type="submit" class="btn btn-primary" value="Fetch Learning Outcome">
+                </form>
+              </div>
+                  <h3 class="loadingMsg" *ngIf="loadingQuestionCategories">Fetching Question Categories please wait...</h3>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div *ngIf="loadingLearningOutcome == false">
+                <form #locForm="ngForm" (ngSubmit)="learningOutcomeForm(locForm.value,locForm.valid)">
+                  <h4>Learning Outcome</h4>   
+                  <table class="table">
+                      <thead class="thead-dark">
+                        <tr>
+                          <th scope="col">Question Category</th>
+                          <th scope="col">Learning Outcome</th>
+                          <th scope="col">No Of Questions</th>
+                          <th scope="col">Select</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let loc of countOfLOC; let i = index" (click) = "checkVisited()">
+                          <td>
+                            <select name="" id="" (change)="getLOCList($event,i)" class="form-control">
+                              <option value="" selected disabled>Select Topic</option>
+                              <option value="{{qc}}" *ngFor="let qc of selectedQuestionCat; let i = index" class="form-control">{{qc}}</option>
+                            </select>
+                          </td>
+                          <td>
+                            <ng-multiselect-dropdown #multiSelect
+                                [placeholder]="'Select Question Category'" 
+                                [data]="qCategories[i]"
+                                [settings]="settingsForLOC"
+                                [(ngModel)]="this['LearningOC'+i]"
+                                name="LearningOC{{i}}"
+                                [disabled]="false"
+                                required
+                                >
+                            </ng-multiselect-dropdown>
+                          </td>
+                          <td><span *ngIf="qCategories[i]">{{qCategories[i].length}}</span></td>
+                          <td><input type="checkbox"  id="isCheckBox" (change)="appendQC('loc')"/></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!-- <div class="btn btn-primary" (click)="callQuestionType()">Fetch Question Type</div> -->
+                    <input type="submit" value="Fetch Questions" class="btn btn-primary fetch" id="fetchQuestionsbtn" style="display:none">
+                  </form>
+                </div>
+                <h3 class="loadingMsg" *ngIf="loadingLearningOutcome">Fetching Learning outcome please wait...</h3>
+              </div>
+            </div>
+        <div class="createQpaperDiv" *ngIf="loadingLearningOutcome == false">
+          <input type="submit" value="Fetch Questions" class="btn btn-primary fetch" (click)="clickFetchQuestionBtn()">
+          <input type="submit" value="Auto Generate Questions" class="btn btn-primary create">
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-sm-8 col-xs-12">
+              <div *ngIf="loadingQuestionType == false">
+                <h4>Question Type</h4>
+                <table class="table">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th scope="col">Question Type</th>
+                        <th scope="col">Question List</th>
+                        <th scope="col">Selected Question</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let qType of filteredQuestionType; let i = index" (click) = "checkVisited()">
+                        <td *ngIf="qType.value">{{qType.key}}</td>
+                        <td *ngIf="qType.value">{{qType.value}}</td>
+                        <td *ngIf="qType.value">{{getQTypeCount(qType.key)}}</td>
+                        <td *ngIf="qType.value"><div class="btn btn-primary" (click)="modalAction(true,qType.key)">Selected Questions</div></td>
+                      </tr>
+                    </tbody>
+                    <!-- <div class="btn btn-primary" (click)="callQuestionList()">Generate Question List</div> -->
+                  </table>
+                  <div class="btn btn-primary" (click)="generateQestionPaper()">Generate Question List</div>
+              </div>
+                  <h3 class="loadingMsg" *ngIf="loadingQuestionType">Fetching Question Types please wait...</h3>
+            </div>
+        </div>
+        <!-- <div class="row">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div *ngIf="loadingQuestions == false">
+              <h4>Select the Questions</h4>
+              <table class="table">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">Question Type</th>
+                    <th scope="col">Question List</th>
+                    <th scope="col">Selected Question</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let question of loadingQuestions; let i = index" (click) = "checkVisited()">
+                    <td>{{question.questionType}}</td>
+                    <td>{{loadingQuestions.length}}</td>
+                    <td>{{getQTypeCount(question.questionType)}}</td>
+                    <td>{{testArray.length}}</td>
+                    <td><div class="btn btn-primary">Selected Questions</div></td>
+                    <td><input type="checkbox"  id="isCheckBox" (change)="checkedQType(qType.questionType)"/></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="btn btn-primary" (click)="callQuestionType()">Generate Question Paper</div>
+            <button class="loadingMsg" *ngIf="loadingQuestions">Generating Question List please wait...</button>
+          </div>
+        </div> -->
+        <!-- --------------------------------------Modal Div below -------------------------------------------- -->
+        <!-- <div class="row" *ngIf="loadingQuestions == false">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div>
+              <h4>Select Questions</h4>
+              <table class="table">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">Topics</th>
+                    <th scope="col">Learning Outcome</th>
+                    <th scope="col">Question Type</th>
+                    <th scope="col">Question Title</th>
+                    <th scope="col">Repository</th>
+                    <th scope="col">Select</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let question of filteredQuestions; let i = index">
+                    <td>{{question.topic}}</td>
+                    <td>{{question.learningOutcome}}</td>
+                    <td>{{question.questionType[0]}}</td>
+                    <td>{{question.questionTitle}}</td>
+                    <td>Global</td>
+                    <td><input type="checkbox" (change)="addFQuestion(question.questionType[0],question._id)"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <h3 class="loadingMsg" *ngIf="loadingQuestions">Generating Question List please wait...</h3> -->
+        <!-- -------------------------------------Ends----------------------------------------------------------- -->
+    <!-- </form> -->
+        <!-- <kt-modal-popup *ngIf="openModal"></kt-modal-popup> -->
+</div>
+<div *ngIf="openModal" class="modalPopUp">
+  <div class="mHeader"><h1>Select Questions</h1></div>
+  <div class="mBody">
+    <div class="row" *ngIf="loadingQuestions == false">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div>
+          <!-- <h4>Select the Questions</h4> -->
+          <table class="table">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Topics</th>
+                <th scope="col">Learning Outcome</th>
+                <th scope="col">Question Type</th>
+                <th scope="col">Question Title</th>
+                <th scope="col">Repository</th>
+                <th scope="col">Select</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let question of filteredQuestions; let i = index">
+                <td>{{question.topic}}</td>
+                <td>{{question.learningOutcome}}</td>
+                <td>{{question.questionType[0]}}</td>
+                <td>{{question.questionTitle}}</td>
+                <td>{{question.repository[0].repository_type}}</td>
+                <td><input [checked]="finalSelectedQuestions[question.questionType[0]].includes(question._id)" type="checkbox" (change)="addFQuestion(question.questionType[0],question._id)"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <h3 class="loadingMsg" *ngIf="loadingQuestions">Generating Question List please wait...</h3>
+  </div>
+  <div class="mFooter"><button (click)="modalAction(false)" class="btn btn-primary">Close</button></div>
+</div>

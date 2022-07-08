@@ -1,0 +1,22 @@
+<div class="classcontainer">
+    <div class="modal-header">
+        <h4 class="modal-title">bulk upload</h4>
+    </div>
+    <div class="modal-body px-0">
+        <form action="/" method="POST" encType="multipart/form-data">
+
+
+            <input type="file" name="file" accept="*.csv" (change)="handleFileSelect($event)" /><br /><br />
+            <input type="submit" value="Upload " />
+
+
+            <!-- <input type="file" name="file" accept=".csv" #fileUpload (change)="handleFileSelect($event)">
+            <div class=" import-btn">
+                <button class="btn btn-primary" (click)="fileUpload.click()">Upload Authors </button>
+
+            </div> -->
+        </form>
+
+
+    </div>
+</div>

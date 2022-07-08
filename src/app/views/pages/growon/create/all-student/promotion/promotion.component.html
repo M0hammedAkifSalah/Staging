@@ -1,0 +1,28 @@
+<h3>Promotion</h3>
+
+<div class="filter-group">
+  <!-- Class Filter -->
+  <div>
+    <label>Class<span class="reqStar">*</span></label>
+    <ng-select [(ngModel)]="selectedclass">
+     
+      <ng-option *ngFor="let item of classes" [value]="item.id"  >&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+      </ng-option>
+      <ng-option *ngIf="classes.length == 0" disabled>No classes Available</ng-option>
+    </ng-select>
+
+  </div>
+ 
+
+  <!-- Section -->
+  <div>
+    <label>Section<span class="reqStar">*</span></label>
+    <ng-select [(ngModel)]="selectedsection">
+     
+      <ng-option *ngFor="let item of section" [value]="item.id"  >&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+      </ng-option>
+      <ng-option *ngIf="section.length == 0" disabled>No classes Available</ng-option>
+    </ng-select>
+
+  </div>
+</div>

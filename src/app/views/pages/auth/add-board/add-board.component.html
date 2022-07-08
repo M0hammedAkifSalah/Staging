@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 heading">
+      <span>
+        <h4>Map Board to your Classes </h4>
+      </span>
+    </div>
+  </div>
+</div>
+<div [formGroup]="boardForm">
+  <table mat-table class="tbl" [dataSource]="dataSource" matSort formArrayName="boardMap">
+    <ng-container matColumnDef="Class">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> class </th>
+      <td mat-cell *matCellDef="let row">{{row.className}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Board">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Board</th>
+      <td mat-cell *matCellDef="let index = index" [formGroupName]="index">
+        <select name="board" class="form-control" (change)="checkValidation()" formControlName="board" placeholder="-- select an option --">
+          <option *ngFor="let bor of board; let i =index" [value]="bor.name">
+            {{bor.name}}
+          </option>
+        </select>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+  <div class="row">
+    <div class="col-md-12">
+      <button class="btn add-btn" [disabled]="boardFlag" (click)="addBoard()">
+        <span *ngIf="updateFlag">Update Board</span>
+        <span *ngIf="!updateFlag">Add Board</span>
+      </button>
+    </div>
+  </div>
+</div>

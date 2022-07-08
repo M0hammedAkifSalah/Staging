@@ -1,0 +1,208 @@
+
+
+
+
+.schooltitle{
+
+
+font-family: Poppins;
+font-style: normal;
+font-weight: bold;
+font-size: 24px;
+line-height: 36px;
+
+color: #000000;
+
+
+
+}
+// .a{
+//   padding-left: 10px;
+//   padding-top: 10px;
+//   padding-bottom: 10px;
+// }
+.task{
+//   position: absolute;
+// width: 102px;
+// height: 18px;
+// left: 15.02px;
+// top: 132.2px;
+
+font-family: Poppins;
+font-style: normal;
+font-weight: 300;
+font-size: 12px;
+line-height: 18px;
+/* identical to box height */
+
+
+color: #494949;
+
+}
+.classcontainer{
+   padding: 20px;
+  background-color:#FFFFFF;
+width: 100%;
+}
+
+
+.progress-group-bars{
+
+
+background: rgba(165, 126, 180, 0.2);
+
+}
+
+.gender{
+
+
+
+font-family: Poppins;
+font-style: normal;
+font-weight: 300;
+font-size: 18px;
+line-height: 27px;
+
+color: #000000;
+}
+
+
+
+.containerBox {
+    position: relative;
+    display: inline-block;
+}
+.text-box {
+    position: absolute;
+    padding: 20px;
+    height: 100%;
+    // text-align: center;
+     text-align: right;
+    width: 100%;
+}
+.text-box:before {
+   content: '';
+   display: inline-block;
+   height: 100%;
+   vertical-align: middle;
+}
+
+
+
+h4 {
+   display: inline-block;
+//    font-family: poppins;
+//    font-size: 20px; /*or whatever you want*/
+//    color: #FFF;
+//    position: absolute;
+width: 84px;
+height: 27px;
+left: 1022.6px;
+top: 173.84px;
+
+font-family: Poppins;
+font-style: normal;
+font-weight: 300;
+font-size: 18px;
+line-height: 27px;
+/* identical to box height */
+
+text-align: right;
+
+color: #FFFFFF;
+}
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+
+
+
+
+.announcement {
+
+  background: #A57EB4;
+ background: #2182C4;
+  background: #C396FF;
+background: #2182C4;
+ background: #f38d8c;
+}
+.switch-div {
+  display: flex;
+  align-items: center;
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: 0.4s;
+      transition: 0.4s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      -webkit-transition: 0.4s;
+      transition: 0.4s;
+    }
+    input:checked + .slider {
+      background-color: #2196f3;
+    }
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2196f3;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(26px);
+      -ms-transform: translateX(26px);
+      transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+  }
+}
+
+.label-div {
+  width: 100%;
+  text-align: end;
+}
+
+table {
+  width: 100%;
+}
+
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+.norecord {
+    margin: 10px 20px;
+    font-size: 15px;
+}

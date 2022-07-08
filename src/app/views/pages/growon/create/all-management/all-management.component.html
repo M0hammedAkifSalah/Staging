@@ -1,0 +1,111 @@
+<h3>All Management</h3>
+<!-- <div class=" import-btn">
+    <button class="btn btn-primary" (click)="openManagement(managements)">{{title}}</button>
+
+</div> -->
+
+
+
+<mat-form-field>
+  <mat-label>Filter</mat-label>
+  <input matInput placeholder="Search " (keyup)="applyFilter($event)" #input>
+</mat-form-field>
+
+<div class="mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource" matSort>
+
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+      <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="mobile">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> mobile </th>
+      <td mat-cell *matCellDef="let row"> {{row.mobile}} </td>
+    </ng-container> -->
+
+
+    <ng-container matColumnDef="gender">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> gender</th>
+      <td mat-cell *matCellDef="let row"> {{row.gender}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="branch_id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> branch </th>
+      <td mat-cell *matCellDef="let row"> {{row.branch_id?.name}} </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="school">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> school </th>
+      <td mat-cell *matCellDef="let row"> {{row.school_id?.schoolName}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="schoolCode">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> school Code </th>
+      <td mat-cell *matCellDef="let row"> {{row.school_id?.school_code}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+
+
+      <div *ngIf="!isOwner;else myFlagTrue;">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          Action
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <button class="btn btn-primary" [disabled]="!this.canEdit">
+            <mat-icon aria-hidden="false" aria-label="Update">edit</mat-icon>
+          </button>
+        </td>
+      </div>
+      <ng-template #myFlagTrue>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+        <td mat-cell *matCellDef="let row">
+          <button class="btn btn-primary" (click)="updateManagement(row)" [disabled]="!this.canEdit">
+            <mat-icon aria-hidden="false" aria-label="Update">edit</mat-icon>
+          </button>
+          <button class="btn btn-primary" (click)="deleteUser(row)">
+            <mat-icon aria-hidden="false" aria-label="Delete">delete</mat-icon>
+          </button>
+        </td>
+      </ng-template>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef> Status </th>
+      <td mat-cell *matCellDef="let row">
+        <ng-container >
+          <!-- *ngIf="actionFlag; else ownToggle;" -->
+          <mat-slide-toggle [checked]="row.activeStatus" (click)="deactivateAccount(row)">
+          </mat-slide-toggle>
+        </ng-container>
+        <!-- <ng-template #ownToggle>
+          <mat-slide-toggle [disabled]="!actionFlag">
+          </mat-slide-toggle>
+        </ng-template> -->
+      </td>
+    </ng-container>
+
+    <!-- <ng-container *ngIf="actionFlag">
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-slide-toggle [checked]="row.activeStatus" (click)="deactivateAccount(row)"></mat-slide-toggle>
+        </td>
+      </ng-container>
+    </ng-container> -->
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <!-- Row shown when there is no matching data. -->
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+    </tr>
+
+  </table>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+</div>

@@ -1,0 +1,1765 @@
+<div class="bg">
+  <!--Select question-->
+  <ng-container *ngIf="selectQuestion">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" name="questionPaperTitle" class="form-control" [(ngModel)]="questionPaper.question_title"
+            #qtitle="ngModel" [ngClass]="{'is-invalid':(qtitle.invalid) &&(fetchQuestionFlag || qtitle.touched) }"
+            required>
+          <span class="text-danger" *ngIf="(qtitle.invalid) &&(fetchQuestionFlag || qtitle.touched)">
+            Required</span>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label>Id</label>
+          <input type="text" name="questionPaperTitle" class="form-control" [(ngModel)]="questionPaper.question_id"
+            #qid="ngModel" [ngClass]="{'is-invalid':(qid.invalid) &&(fetchQuestionFlag || qid.touched) }" required>
+          <span class="text-danger" *ngIf="(qid.invalid) &&(fetchQuestionFlag || qid.touched)">
+            Required</span>
+        </div>
+      </div>
+    </div>
+
+    <!--For Global Users-->
+    <ng-container *ngIf="!isOwner;else mySchool;">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Class<span class="reqStar">*</span></label>
+            <ng-select [clearable]="false" (change)="classChanged()"
+              [(ngModel)]="questionPaper.detail_question_paper.class" name="class" #cls="ngModel"
+              [ngClass]="{'is-invalid':(cls.invalid) &&(fetchQuestionFlag || cls.touched) }" required>
+              <ng-option selected value> -- select an option -- </ng-option>
+              <ng-option *ngFor="let item of globalClasses" [value]="item._id">
+                &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+              </ng-option>
+              <ng-option *ngIf="globalClasses.length==0" disabled>No classes Available</ng-option>
+            </ng-select>
+            <span class="text-danger" *ngIf="(cls.invalid) &&(fetchQuestionFlag || cls.touched)">
+              Required</span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Boards<span class="reqStar"></span></label>
+            <!-- <mat-form-field appearance="none" class="form-group" [floatLabel]="'never'"> -->
+            <ng-select [(ngModel)]="questionPaper.detail_question_paper.board" [closeOnSelect]="false"
+              clearAllText="Clear" [clearSearchOnAdd]="true" [multiple]="true" (change)="boardsChanged()"
+              [ngClass]="{'is-invalid':(boardss.invalid) &&(fetchQuestionFlag || boardss.touched) }" required
+              name="board" placeholder="-- select an option --" #boardss="ngModel" [items]="globalBoard"
+              [bindLabel]="'name'" [bindValue]="'_id'">
+              <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                <div class="row pl-3 pr-1">
+                  <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+                    [ngModelOptions]="{standalone: true}" />
+                  {{item['name']}}
+                </div>
+              </ng-template>
+              <ng-template ng-multi-label-tmp let-items="items">
+                <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                  {{item['name']}}
+                </div>
+                <div class="ng-value" *ngIf="items.length > 3">
+                  <span class="ng-value-label">{{items.length - 3}} more...</span>
+                </div>
+              </ng-template>
+              <ng-option *ngIf="globalBoard.length==0" disabled>No Boards Available</ng-option>
+            </ng-select>
+            <!-- <ng-select [clearable]="false" [multiple]="true" [(ngModel)]="questionPaper.detail_question_paper.board"
+              name="board" placeholder="-- select an option --" #boardss="ngModel"
+              [ngClass]="{'is-invalid':(boardss.invalid) &&(fetchQuestionFlag || boardss.touched) }" required>
+              <ng-option *ngFor="let item of globalBoard" [value]="item._id">
+                &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+              </ng-option>
+              <ng-option *ngIf="globalBoard.length==0" disabled>No Boards Available</ng-option>
+            </ng-select> -->
+            <span class="text-danger" *ngIf="(boardss.invalid) &&(fetchQuestionFlag || boardss.touched)">
+              Required</span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Syllabus<span class="reqStar"></span></label>
+            <!-- <ng-select [clearable]="false" [multiple]="true" [(ngModel)]="questionPaper.detail_question_paper.syllabus"
+              name="syllabus" placeholder="-- select an option --" #syl="ngModel"
+              [ngClass]="{'is-invalid':(syl.invalid) &&(fetchQuestionFlag || syl.touched) }" required>
+              <ng-option *ngFor="let item of globalSyllabus" [value]="item._id">
+                &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+              </ng-option>
+              <ng-option *ngIf="globalSyllabus.length==0" disabled>No syllabuses Available</ng-option>
+            </ng-select> -->
+            <ng-select [(ngModel)]="questionPaper.detail_question_paper.syllabus" [closeOnSelect]="false"
+              clearAllText="Clear" [clearSearchOnAdd]="true" [multiple]="true" (change)="syllabusChanged()"
+              [ngClass]="{'is-invalid':(syl.invalid) &&(fetchQuestionFlag || syl.touched) }" required name="syllabus"
+              placeholder="-- select an option --" #syl="ngModel" [items]="globalSyllabus" [bindLabel]="'name'"
+              [bindValue]="'_id'">
+              <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                <div class="row pl-3 pr-1">
+                  <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+                    [ngModelOptions]="{standalone: true}" />
+                  {{item['name']}}
+                </div>
+              </ng-template>
+              <ng-template ng-multi-label-tmp let-items="items">
+                <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                  {{item['name']}}
+                </div>
+                <div class="ng-value" *ngIf="items.length > 3">
+                  <span class="ng-value-label">{{items.length - 3}} more...</span>
+                </div>
+              </ng-template>
+              <ng-option *ngIf="globalSyllabus.length==0" disabled>No syllabuses Available</ng-option>
+            </ng-select>
+            <span class="text-danger" *ngIf="(syl.invalid) &&(fetchQuestionFlag || syl.touched)">
+              Required</span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Subject<span class="reqStar"></span></label>
+            <!-- <ng-select [multiple]="true" [clearable]="false" [(ngModel)]="questionPaper.detail_question_paper.subject"
+              name="subject" (change)="getChpterAndSetSubjectGlobal()" #sub="ngModel"
+              [ngClass]="{'is-invalid':(sub.invalid) &&(fetchQuestionFlag || sub.touched) }" required>
+              <ng-option hidden disabled selected value> -- select an option -- </ng-option>
+              <ng-option *ngFor="let item of globalSubjects" [value]="item._id">
+                &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</ng-option>
+              <ng-option *ngIf="globalSubjects.length==0" disabled>No Subjects Available</ng-option>
+            </ng-select> -->
+            <ng-select [(ngModel)]="questionPaper.detail_question_paper.subject" [closeOnSelect]="false"
+              clearAllText="Clear" [clearSearchOnAdd]="true" [multiple]="true" name="subject"
+              (change)="getChpterAndSetSubjectGlobal()" #sub="ngModel"
+              [ngClass]="{'is-invalid':(sub.invalid) &&(fetchQuestionFlag || sub.touched) }" required
+              [items]="globalSubjects" [loading]="subjectLoader" [bindLabel]="'name'" [bindValue]="'_id'">
+              <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                <div class="row pl-3 pr-1">
+                  <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+                    [ngModelOptions]="{standalone: true}" />
+                  {{item['name']}}
+                </div>
+              </ng-template>
+              <ng-template ng-multi-label-tmp let-items="items">
+                <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                  {{item['name']}}
+                </div>
+                <div class="ng-value" *ngIf="items.length > 3">
+                  <span class="ng-value-label">{{items.length - 3}} more...</span>
+                </div>
+              </ng-template>
+              <ng-option *ngIf="globalSubjects.length==0" disabled>No Subjects Available</ng-option>
+            </ng-select>
+            <span class="text-danger" *ngIf="(sub.invalid) &&(fetchQuestionFlag || sub.touched)">
+              Required</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="form-group">
+            <ng-container *ngIf="chapterFlag">
+              <label>Chapter<span class="reqStar"></span></label>
+              <!-- <ng-select [clearable]="false" [multiple]="true"
+                [(ngModel)]="questionPaper.detail_question_paper.chapters[0].chapter" name="chapter"
+                placeholder="-- select an option -- " [compareWith]="compareFn"
+                (change)="getTopicAndSetChapterGlobal()">
+                <ng-option *ngFor="let item of globalChapters" [value]="item._id">
+                  &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</ng-option>
+                <ng-option *ngIf="globalChapters.length==0" disabled>No chapters Available</ng-option>
+              </ng-select> -->
+              <ng-select [(ngModel)]="this.questionPaper.detail_question_paper.chapters" [closeOnSelect]="false"
+                clearAllText="Clear" [clearSearchOnAdd]="true" [multiple]="true"
+                (change)="getTopicAndSetChapterGlobal()" name="chapter" placeholder="-- select an option -- "
+                [compareWith]="compareFn" [items]="globalChapters" [bindLabel]="'name'" [bindValue]="'_id'">
+                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                  <div class="row pl-3 pr-1">
+                    <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+                      [ngModelOptions]="{standalone: true}" />
+                    {{item['name']}} - {{item.subject_id?.name}}
+                  </div>
+                </ng-template>
+                <ng-template ng-multi-label-tmp let-items="items">
+                  <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                    {{item['name']}} - {{item.subject_id?.name}}
+                  </div>
+                  <div class="ng-value" *ngIf="items.length > 3">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+                <ng-option *ngIf="globalChapters.length==0" disabled>No chapters Available</ng-option>
+              </ng-select>
+              <!-- <span class="text-danger" *ngIf="(questionFormControl.chapter.touched) && questionFormControl.chapter.errors?.required">Chapter is
+                        required</span> -->
+            </ng-container>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <ng-container *ngIf="topicFlag">
+              <label>Topics<span class="reqStar"></span></label>
+              <!-- <ng-select [clearable]="false" [multiple]="true"
+                [(ngModel)]="questionPaper.detail_question_paper.chapters[0].topic" name="topic"
+                placeholder="-- select an option -- " [compareWith]="compareFn"
+                (change)="getLearningAndSetTopicGlobal()">
+                <ng-option *ngFor="let item of globalTopics" [value]="item._id">
+                  &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</ng-option>
+                <ng-option *ngIf="globalTopics.length==0" disabled>No Topics Available</ng-option>
+              </ng-select> -->
+              <ng-select [(ngModel)]="questionPaper.detail_question_paper.topic" [closeOnSelect]="false"
+                clearAllText="Clear" [clearSearchOnAdd]="true" [multiple]="true"
+                (change)="getLearningAndSetTopicGlobal()" name="topic" placeholder="-- select an option -- "
+                [compareWith]="compareFn" [items]="globalTopics" [bindLabel]="'name'" [bindValue]="'_id'">
+                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                  <div class="row pl-3 pr-1">
+                    <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+                      [ngModelOptions]="{standalone: true}" />
+                    {{item['name']}} - {{item.chapter_id?.name}} - {{item.subject_id?.name}}
+                  </div>
+                </ng-template>
+                <ng-template ng-multi-label-tmp let-items="items">
+                  <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                    {{item['name']}} - {{item.chapter_id?.name}} - {{item.subject_id?.name}}
+                  </div>
+                  <div class="ng-value" *ngIf="items.length > 3">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+                <ng-option *ngIf="globalTopics.length==0" disabled>No Topics Available</ng-option>
+              </ng-select>
+              <!-- <span class="text-danger" *ngIf="(questionFormControl.topic.touched) && questionFormControl.topic.errors?.required">Topic is
+                        required</span> -->
+            </ng-container>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <ng-container *ngIf="learningOutcomeFlag">
+              <label>Learning Outcome<span class="reqStar"></span></label>
+              <ng-select [clearable]="false" [multiple]="true"
+                [(ngModel)]="questionPaper.detail_question_paper.learningOutcome" name="learningOutcome"
+                placeholder="-- select an option -- " [compareWith]="compareFn">
+                <ng-option *ngFor="let item of globalLearningOutcome" [value]="item._id">
+                  &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                </ng-option>
+                <ng-option *ngIf="globalLearningOutcome.length==0" disabled>No Learning Outcomes Available
+                </ng-option>
+              </ng-select>
+            </ng-container>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Total Questions</label>
+            <input class="form-control" type="number" name="totalQuestion"
+              [(ngModel)]="questionPaper.detail_question_paper.totalQuestion" readonly>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!--For School-->
+    <ng-template #mySchool>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Class<span class="reqStar">*</span></label>
+            <ng-select [clearable]="false" [(ngModel)]="questionPaper.detail_question_paper.class" name="class"
+              (change)="getBoardIdAndSyllabusId($event)" #cls="ngModel"
+              [ngClass]="{'is-invalid':(cls.invalid) &&(fetchQuestionFlag || cls.touched) }" required>
+              <ng-option hidden selected value> -- select an option -- </ng-option>
+              <ng-option *ngFor="let item of schoolClasses" [value]="item.classId">
+                &nbsp;&nbsp;&nbsp;&nbsp;{{item.className}}
+              </ng-option>
+              <ng-option *ngIf="schoolClasses.length==0" disabled>No classes Available</ng-option>
+            </ng-select>
+            <span class="text-danger" *ngIf="(cls.invalid) &&(fetchQuestionFlag || cls.touched)">
+              Required</span>
+          </div>
+        </div>
+        <ng-container *ngIf="subjectFlag">
+          <div class="col-md-3 col-sm-3 col-xs-12">
+            <div class="form-group">
+              <label>Boards<span class="reqStar"></span></label>
+              <input type="text" readonly [value]="selectedBoardName" class="form-control" disabled="true">
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="subjectFlag">
+          <div class="col-md-3 col-sm-3 col-xs-12">
+            <div class="form-group">
+              <label>Syllabus<span class="reqStar"></span></label>
+              <input type="text" readonly [value]="selectedSyllabusName" class="form-control" disabled="true">
+            </div>
+          </div>
+        </ng-container>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <div class="form-group">
+            <ng-container *ngIf="subjectFlag">
+              <label>Subject<span class="reqStar">*</span></label>
+              <ng-select [(ngModel)]="questionPaper.detail_question_paper.subject" [closeOnSelect]="false"
+                clearAllText="Clear" [clearSearchOnAdd]="true" [multiple]="true" name="subject"
+                (change)="getChpterAndSetSubjectGlobal()" #sub="ngModel"
+                [ngClass]="{'is-invalid':(sub.invalid) &&(fetchQuestionFlag || sub.touched) }" required
+                [items]="allSubjects" [loading]="subjectLoader" [bindLabel]="'name'" [bindValue]="'_id'">
+                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                  <div class="row pl-3 pr-1">
+                    <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+                      [ngModelOptions]="{standalone: true}" />
+                    {{item['name']}}
+                  </div>
+                </ng-template>
+                <ng-template ng-multi-label-tmp let-items="items">
+                  <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                    {{item['name']}}
+                  </div>
+                  <div class="ng-value" *ngIf="items.length > 3">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+                <ng-option *ngIf="allSubjects.length==0" disabled>No Subjects Available</ng-option>
+              </ng-select>
+              <!-- <ng-select [multiple]="true" [clearable]="false" [(ngModel)]="questionPaper.detail_question_paper.subject"
+                name="subject" (change)="getChpterAndSetSubjectGlobal()" #sub="ngModel"
+                [ngClass]="{'is-invalid':(sub.invalid) &&(fetchQuestionFlag || sub.touched) }" required>
+                <ng-option hidden disabled selected value> -- select an option -- </ng-option>
+                <ng-option *ngFor="let item of allSubjects" [value]="item._id">
+                  &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}</ng-option>
+                <ng-option *ngIf="allSubjects.length==0" disabled>No Subjects Available</ng-option>
+              </ng-select> -->
+              <span class="text-danger" *ngIf="(sub.invalid) &&(fetchQuestionFlag || sub.touched)">
+                Required</span>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <div class="form-group">
+            <ng-container *ngIf="chapterFlag">
+              <label>Chapter<span class="reqStar"></span></label>
+              <ng-select [(ngModel)]="questionPaper.detail_question_paper.chapters" [closeOnSelect]="false"
+                clearAllText="Clear" [clearSearchOnAdd]="true" [multiple]="true"
+                (change)="getTopicAndSetChapterGlobal()" name="chapter" placeholder="-- select an option -- "
+                [compareWith]="compareFn" [items]="globalChapters" [bindLabel]="'name'" [bindValue]="'_id'">
+                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                  <div class="row pl-3 pr-1">
+                    <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+                      [ngModelOptions]="{standalone: true}" />
+                    {{item['name']}} - {{item.subject_id?.name}}
+                  </div>
+                </ng-template>
+                <ng-template ng-multi-label-tmp let-items="items">
+                  <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                    {{item['name']}} - {{item.subject_id?.name}}
+                  </div>
+                  <div class="ng-value" *ngIf="items.length > 3">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+                <ng-option *ngIf="globalChapters.length==0" disabled>No chapters Available</ng-option>
+              </ng-select>
+              <!-- <ng-select [clearable]="false" [multiple]="true"
+                [(ngModel)]="questionPaper.detail_question_paper.chapters[0].chapter" name="chapter"
+                (change)="getTopicAndSetChapterGlobal()">
+                <ng-option hidden selected value> -- select an option -- </ng-option>
+                <ng-option *ngFor="let item of globalChapters" [value]="item._id">
+                  &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}} - {{item.subject_id?.name}}</ng-option>
+                <ng-option *ngIf="globalChapters.length==0" disabled>No chapters Available</ng-option>
+              </ng-select> -->
+              <!-- <span class="text-danger" *ngIf="(questionFormControl.chapter.touched) && questionFormControl.chapter.errors?.required">Chapter is
+                      required</span> -->
+            </ng-container>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <div class="form-group">
+            <ng-container *ngIf="topicFlag">
+              <label>Topics<span class="reqStar"></span></label>
+              <ng-select [(ngModel)]="questionPaper.detail_question_paper.topic" [closeOnSelect]="false"
+                clearAllText="Clear" [clearSearchOnAdd]="true" [multiple]="true"
+                (change)="getLearningAndSetTopicGlobal()" name="topic" placeholder="-- select an option -- "
+                [compareWith]="compareFn" [items]="globalTopics" [bindLabel]="'name'" [bindValue]="'_id'">
+                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                  <div class="row pl-3 pr-1">
+                    <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+                      [ngModelOptions]="{standalone: true}" />
+                    {{item['name']}} - {{item.chapter_id?.name}} - {{item.subject_id?.name}}
+                  </div>
+                </ng-template>
+                <ng-template ng-multi-label-tmp let-items="items">
+                  <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                    {{item['name']}} - {{item.chapter_id?.name}} - {{item.subject_id?.name}}
+                  </div>
+                  <div class="ng-value" *ngIf="items.length > 3">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+                <ng-option *ngIf="globalTopics.length==0" disabled>No Topics Available</ng-option>
+              </ng-select>
+              <!-- <ng-select [clearable]="false" [multiple]="true"
+                [(ngModel)]="questionPaper.detail_question_paper.chapters[0].topic" name="topic"
+                (change)="getLearningAndSetTopicGlobal()">
+                <ng-option hidden selected value> -- select an option -- </ng-option>
+                <ng-option *ngFor="let item of globalTopics" [value]="item._id">
+                  &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}} - {{item.chapter_id?.name}} - {{item.subject_id?.name}}
+                </ng-option>
+                <ng-option *ngIf="globalTopics.length==0" disabled>No Topics Available</ng-option>
+              </ng-select> -->
+              <!-- <span class="text-danger" *ngIf="(questionFormControl.topic.touched) && questionFormControl.topic.errors?.required">Topic is
+                      required</span> -->
+            </ng-container>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <div class="form-group">
+            <ng-container *ngIf="learningOutcomeFlag">
+              <label>Learning Outcome<span class="reqStar"></span></label>
+              <ng-select [clearable]="false" [multiple]="true"
+                [(ngModel)]="questionPaper.detail_question_paper.learningOutcome" name="learningOutcome">
+                <ng-option hidden selected value> -- select an option -- </ng-option>
+                <ng-option *ngFor="let item of globalLearningOutcome" [value]="item._id">
+                  &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                </ng-option>
+                <ng-option *ngIf="globalLearningOutcome.length==0" disabled>No Learning Outcomes Available
+                </ng-option>
+              </ng-select>
+            </ng-container>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Total Questions</label>
+            <input class="form-control" type="number" name="totalQuestion"
+              [(ngModel)]="questionPaper.detail_question_paper.totalQuestion" readonly>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <!--Language ,exam Type ,Student Type-->
+    <div class="row">
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>Language<span class="reqStar"></span></label>
+          <ng-select [clearable]="false" [(ngModel)]="questionPaper.detail_question_paper.language" name="language">
+            <ng-option hidden selected value> -- select an option -- </ng-option>
+            <ng-option *ngFor="let item of languages" [value]="item">&nbsp;&nbsp;&nbsp;&nbsp;{{item}}</ng-option>
+            <ng-option *ngIf="languages.length==0" disabled>No Language Available</ng-option>
+          </ng-select>
+          <!-- <span class="text-danger"
+              *ngIf="(questionDetailFormControl.language.touched) && questionDetailFormControl.language.errors?.required">ID
+              is required</span> -->
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label>Exam Type<span class="reqStar"></span></label>
+          <!-- <mat-form-field appearance="none" class="form-group" [floatLabel]="'never'"> -->
+          <ng-select [clearable]="false" [multiple]="true" name="examType" placeholder=""
+            [(ngModel)]="questionPaper.detail_question_paper.examType" placeholder="-- select an option --">
+            <ng-option *ngFor="let exam of allExamTypes" [value]="exam._id">
+              {{exam.name}}
+            </ng-option>
+            <ng-option *ngIf="allExamTypes.length==0" disabled>No Exam Types Available</ng-option>
+          </ng-select>
+          <!-- <mat-error
+                        *ngIf="(questionDetailFormControl.examType.touched) && questionDetailFormControl.examType.errors?.required">
+                        Exam Type is required</mat-error> -->
+          <!-- </mat-form-field> -->
+        </div>
+      </div>
+      <!-- <div class="col-md-3">
+        <div class="form-group">
+          <label>Student Type<span class="reqStar"></span></label>
+          <ng-select [clearable]="false" [multiple]="true" name="studentType" placeholder=""
+            [(ngModel)]="questionPaper.detail_question_paper.studentType" placeholder="-- select an option --">
+            <ng-option *ngFor="let student of studentTypes" [value]="student.value">
+              {{student.name}}
+            </ng-option>
+            <ng-option *ngIf="studentTypes.length==0" disabled>No Student Types Available</ng-option>
+          </ng-select>
+        </div>
+      </div> -->
+    </div>
+
+    <div class="row">
+      <div class="col-md-5">
+        <fieldset class="border p-2">
+          <legend class="w-auto">Attempt Type</legend>
+          <div class="row">
+            <div class="col-4">
+              <div class="form-group">
+                <label>Practice {{(questionAttemptCounts && questionAttemptCounts.practiceCount)? ('(' +
+                  questionAttemptCounts.practiceCount + ')') : '0'}}</label>
+                <input class="form-control" type="number" name="practice"
+                  [(ngModel)]="questionPaper.attemptType.practice">
+                <!-- <span class="text-danger"
+                      *ngIf="(attemptTypeFormControl.practice.touched) && attemptTypeFormControl.practice.errors?.required">Practice
+                      is required</span> -->
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Test {{(questionAttemptCounts && questionAttemptCounts.testCount)? ('(' +
+                  questionAttemptCounts.testCount + ')') : '0'}}</label>
+                <input class="form-control" type="number" name="test" [(ngModel)]="questionPaper.attemptType.test">
+                <!-- <span class="text-danger"
+                      *ngIf="(attemptTypeFormControl.test.touched) && attemptTypeFormControl.test.errors?.required">Test is
+                      required</span> -->
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="form-group">
+                <label>Practice & Test {{(questionAttemptCounts && questionAttemptCounts.practiceAndTestCount)? ('(' +
+                  questionAttemptCounts.practiceAndTestCount + ')') : '0'}}</label>
+                <input class="form-control" type="number" name="practiceTest"
+                  [(ngModel)]="questionPaper.attemptType.practiceTest">
+                <!-- <span class="text-danger"
+                      *ngIf="(attemptTypeFormControl.practiceTest.touched) && attemptTypeFormControl.practiceTest.errors?.required">Practice
+                      & Test is required</span> -->
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <div class="col-md-7">
+        <fieldset class="border p-2">
+          <legend class="w-auto">Difficulty Level</legend>
+          <div class="row">
+            <div class="col">
+              <div class="form-group">
+                <label>Very Easy {{(questionAttemptCounts && questionAttemptCounts.veryEasyCount)? ('(' +
+                  questionAttemptCounts.veryEasyCount + ')') : '0'}}</label>
+                <input class="form-control" type="number" name="veryEasy"
+                  [(ngModel)]="questionPaper.difficultyLevel.veryEasy">
+                <!-- <span class="text-danger"
+                      *ngIf="(difficultLevelFormControl.veryEasy.touched) && difficultLevelFormControl.veryEasy.errors?.required">Practice
+                      is required</span> -->
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label>Easy {{(questionAttemptCounts && questionAttemptCounts.easyCount)? ('(' +
+                  questionAttemptCounts.easyCount + ')') : '0'}}</label>
+                <input class="form-control" type="number" name="easy" [(ngModel)]="questionPaper.difficultyLevel.easy">
+                <!-- <span class="text-danger"
+                      *ngIf="(difficultLevelFormControl.easy.touched) && difficultLevelFormControl.easy.errors?.required">Test
+                      is required</span> -->
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label>Intermediate {{(questionAttemptCounts && questionAttemptCounts.intermediateCount)? ('(' +
+                  questionAttemptCounts.intermediateCount + ')') : '0'}}</label>
+                <input class="form-control" type="number" name="intermediate"
+                  [(ngModel)]="questionPaper.difficultyLevel.intermediate">
+                <!-- <span class="text-danger"
+                      *ngIf="(difficultLevelFormControl.intermediate.touched) && difficultLevelFormControl.intermediate.errors?.required">Practice
+                      & Test is required</span> -->
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label>Hard {{(questionAttemptCounts && questionAttemptCounts.hardCount)? ('(' +
+                  questionAttemptCounts.hardCount + ')') : '0'}}</label>
+                <input class="form-control" type="number" name="hard" [(ngModel)]="questionPaper.difficultyLevel.hard">
+                <!-- <span class="text-danger"
+                      *ngIf="(difficultLevelFormControl.hard.touched) && difficultLevelFormControl.hard.errors?.required">Practice
+                      & Test is required</span> -->
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label>Very Hard {{(questionAttemptCounts && questionAttemptCounts.veryHardCount)? ('(' +
+                  questionAttemptCounts.veryHardCount + ')') : '0'}}</label>
+                <input class="form-control" type="number" name="veryHard"
+                  [(ngModel)]="questionPaper.difficultyLevel.veryHard">
+                <!-- <span class="text-danger"
+                      *ngIf="(difficultLevelFormControl.veryHard.touched) && difficultLevelFormControl.veryHard.errors?.required">Practice
+                      & Test is required</span> -->
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-md-12">
+        <button class="btn btn-sm btn-primary fetch-btn" (click)="fetchQuestion()">Fetch Questions</button>
+        <button class="btn btn-sm btn-primary auto-btn" (click)="autogenerateQuestion()">Auto Generate
+          Questions</button>
+      </div>
+    </div>
+  </ng-container>
+
+  <!--Filter question-->
+  <ng-container *ngIf="filterQuestion">
+    <div class="filterHeading">
+      <h2>Question Type</h2>
+      <div class="font-class">
+        <span>
+          <h6>Total Question</h6> - {{questionPaper.detail_question_paper.totalQuestion}}
+        </span>
+        <span>
+          <h6>Total Marks</h6> - {{totalScore}}
+        </span>
+      </div>
+    </div>
+
+    <ng-container *ngIf="questionCount && questionCount.length;else NoQue">
+
+      <div class="row">
+        <div class="col-md-8">
+          <table>
+            <tr>
+              <th>Question Type</th>
+              <th>Total Question</th>
+              <th>Selected Question</th>
+              <th>Actions</th>
+            </tr>
+            <tr *ngFor="let que of questionCount">
+              <td>{{que.questionTypeValue}}</td>
+              <td><span class="count">{{que.count}}</span></td>
+              <td><span class="count">{{que.selectCount}}</span></td>
+              <td><button mat-raised-button (click)="selectQuestions(que.questionType)" class="btn btn-primary">Select
+                  Questions</button></td>
+
+            </tr>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #NoQue>
+      <span>
+        <h3>No Questions Based On These Filter</h3>
+      </span>
+    </ng-template>
+
+    <div class="row">
+      <div class="col-md-12">
+        <button class="btn btn-sm btn-primary generate-que" (click)="generateQuestionList()">Generate Question
+          List</button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="autoGenerateQuestionFlag">
+    <div class="filterHeading">
+      <h2>Question Type</h2>
+      <div class="font-class">
+        <span>
+          <h6>Total Question</h6> - {{questionPaper.detail_question_paper.totalQuestion}}
+        </span>
+        <!-- <span>
+          <h6>Total Marks</h6> - {{totalScore}}
+        </span> -->
+      </div>
+    </div>
+
+    <ng-container *ngIf="questionCount && questionCount.length;else NoQue">
+
+      <div class="row">
+        <div class="col-md-8">
+          <table>
+            <tr>
+              <th>Question Type</th>
+              <th>Total Question</th>
+              <th>Selected Question</th>
+              <!-- <th>Actions</th> -->
+            </tr>
+            <tr *ngFor="let que of questionCount; let i=index;">
+              <td>{{que.questionTypeValue}}</td>
+              <td><span class="count">{{que.count}}</span></td>
+              <td><input type="number" name="i" id="i" [(ngModel)]="inputAutoQuestionCount[que.questionType]"
+                  (blur)="autoSelectQuestion(que.questionType,que.count,$event.target.value,i)"></td>
+              <!-- <td><button mat-raised-button (click)="selectQuestions(que.questionType)" class="btn btn-primary">Select
+                  Questions</button></td> -->
+
+            </tr>
+          </table>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #NoQue>
+      <span>
+        <h3>No Questions Based On These Filter</h3>
+      </span>
+    </ng-template>
+
+    <div class="row">
+      <div class="col-md-12">
+        <button class="btn btn-sm btn-primary generate-que"
+          (click)="generateQuestionList('autoSelectQuestion')">Generate Question
+          List</button>
+      </div>
+    </div>
+  </ng-container>
+
+</div>
+<!--Preview Question-->
+<div class="preview-div font-style" *ngIf="previewQuestion">
+  <div class="row">
+    <div class="col-md-12">
+      <ng-container *ngIf="autoQuestionFlag; else filter">
+        <button class="btn btn-sm btn-primary btn-back"
+          (click)="backToSelectFilterQuestion('autoSelectQuestion')">&lt;-</button>
+      </ng-container>
+      <ng-template #filter>
+        <button class="btn btn-sm btn-primary btn-back" (click)="backToSelectFilterQuestion()">&lt;-</button>
+      </ng-template>
+    </div>
+  </div>
+  <ng-container *ngIf="selectedQuestionList && selectedQuestionList.length; else noQues">
+    <div class="row preview-head">
+      <div class="col-md-6">
+        <div><span class="preview-title">Title</span></div>
+        <div><span class="preview-question-title">{{questionPaper.question_title}}</span></div>
+        <div class="create-div"><span>Created By: <span class="preview-createdBy">{{userName}}</span></span>
+        </div>
+      </div>
+      <div class="col-md-6 ">
+        <div class="btn-groups">
+          <button class="btn btn-sm btn-primary btn-submit-asses" (click)="submitAssessment()">Submit
+            Assessment</button>
+         <!--  <button class="btn btn-sm btn-primary btn-print-paper"
+            (click)="Export2Doc('contentToPrintWithoutVideoAudio','TestDoc')">Print
+            Question Paper</button> -->
+
+          <button class="btn btn-sm btn-primary btn-print-paper" printSectionId="contentToPrintWithoutVideoAudio" ngxPrint>Print
+            Question Paper</button>
+        </div>
+      </div>
+    </div>
+    <div class="row preview-total">
+      <div class="font-class">
+        <span>
+          <h6>Total Question</h6> - {{questionPaper.detail_question_paper.totalQuestion}}
+        </span>
+        <span>
+          <h6>Total Marks</h6> - {{totalScore}}
+        </span>
+      </div>
+    </div>
+
+    <div *ngFor="let queList of selectedQuestionList;let i=index">
+      <ng-container *ngIf="queList.instruction;else ins">
+        <span class="instruction-span">{{queList.instruction}}</span>
+      </ng-container>
+      <ng-template #ins>
+        <div class="row col-md-3" (click)="addInstruction(i,queList)">
+          <button type="button" class="btn btn-instruction">+</button> <span class="instruction-span">Add a
+            Instruction here</span>
+        </div>
+      </ng-template>
+      <div class="row question-card">
+        <div class="vr">
+        </div>
+        <div class="col-md-7">
+          <div>
+            <span class="Q"> Q{{i+1}} :</span><span class="span-Question"
+              [innerHTML]="queList.question[0] | htmlSanitize ">
+            </span>
+          </div>
+
+          <ng-container *ngIf="queList.questionType == 'comprehension'; else nonComp">
+            <div *ngFor="let ques of queList.questions;first as first;" [ngClass]="{'mrt-30':!first}">
+              <b>Question {{(ques.questionTypeValue)? '(' + ques.questionTypeValue + ')':''}} - {{'Marks-' +
+                ques.totalMarks}}:</b><span [innerHtml]="ques.question"></span>
+              <ol type="A" class="Q-ans" style="padding-left: 18px;">.
+                <ng-container
+                  *ngIf="ques.questionType[0]=='threeColMtf' || ques.questionType[0]=='twoColMtf' || ques.questionType[0] == '3colOptionLevelScoring'">
+                  <table>
+                    <colgroup span="3">
+                      <div class="row mb-2" style="display: flex;flex-direction: row;">
+
+                        <div class="col-md-3">
+                          <col>
+                          <b>Column 1 </b>
+                          <div *ngFor="let column1 of ques.matchOptions['column1']" class="d-flex">
+                            <span class="d-flex" [innerHtml]="column1.type"></span>.
+                            <ng-container *ngIf="ques.optionsType == 'text'">
+                              <span class="d-flex" [innerHtml]="column1.value"></span>
+                            </ng-container>
+                            <ng-container *ngIf="ques.optionsType == 'image'">
+                              <div class="d-flex answer-div">
+                                <img [src]="column1.value" height="60px" style="height: 50px;" class="ml-2 mr-2" />
+                                <span>{{ column1.file_text }}</span>
+                              </div>
+                            </ng-container>
+                            <ng-container *ngIf="ques.optionsType == 'audio'">
+                              <div class="d-flex answer-div">
+                                <audio controls [src]="column1.value"></audio>
+                                <span>{{ column1.file_text }}</span>
+                              </div>
+                            </ng-container>
+
+                          </div>
+
+                        </div>
+
+                        <div class="col-md-3">
+                          <col>
+                          <b>Column 2</b>
+
+                          <div *ngFor="let column1 of ques.matchOptions['column2']" class="d-flex">
+                            <span class="d-flex" [innerHtml]="column1.type"></span>
+                            <ng-container *ngIf="ques.optionsType == 'text'">
+                              <span class="d-flex" [innerHtml]="column1.value"></span>
+                            </ng-container>
+                            <ng-container *ngIf="ques.optionsType == 'image'">
+                              <div class="d-flex answer-div">
+                                <img [src]="column1.value" height="50px" style="height: 50px;" class="ml-2 mr-2" />
+                                <span>{{ column1.file_text }}</span>
+                              </div>
+                            </ng-container>
+                            <ng-container *ngIf="ques.optionsType == 'audio'">
+                              <div class="d-flex answer-div">
+                                <audio controls [src]="column1.value"></audio>
+                                <span>{{ column1.file_text }}</span>
+                              </div>
+                            </ng-container>
+                          </div>
+                        </div>
+
+                        <ng-container *ngIf="ques.questionType[0]=='threeColMtf'">
+                          <div class="col-md-3">
+                            <col>
+                            <b>Column 3</b>
+                            <div *ngFor="let column1 of ques.matchOptions['column3']" class="d-flex">
+                              <span class="d-flex" [innerHtml]="column1.type"></span>.
+                              <ng-container *ngIf="ques.optionsType == 'text'">
+                                <span class="d-flex" [innerHtml]="column1.value"></span>
+                              </ng-container>
+                              <ng-container *ngIf="ques.optionsType == 'image'">
+                                <div class="d-flex answer-div">
+                                  <img [src]="column1.value" height="50px" style="height: 50px;" class="ml-2 mr-2" />
+                                  <span>{{ column1.file_text }}</span>
+                                </div>
+                              </ng-container>
+                              <ng-container *ngIf="ques.optionsType == 'audio'">
+                                <div class="d-flex answer-div">
+                                  <audio controls [src]="column1.value"></audio>
+                                  <span>{{ column1.file_text }}</span>
+                                </div>
+                              </ng-container>
+                            </div>
+                          </div>
+                        </ng-container>
+                      </div>
+                    </colgroup>
+                  </table>
+                </ng-container>
+                <div *ngFor="let options of ques.options">
+                  <div class="answer-div"
+                    *ngIf="ques.optionsType == 'text' || ques.questionType == 'threeColMtf' || ques.questionType == 'twoColMtf' || ques.questionType == '3colOptionLevelScoring'">
+                    <li><span [innerHtml]="options.valueSvg ? options.valueSvg : options.value | htmlSanitize"></span>
+                    </li>
+                  </div>
+                  <div class="answer-div"
+                    *ngIf="ques.optionsType == 'image' && !(ques.questionType == 'threeColMtf' || ques.questionType == 'twoColMtf' || ques.questionType == '3colOptionLevelScoring')">
+                    <li>
+                      <img [src]="options.value" height="50px" style="height: 50px;" class="mr-2 mb-2">
+                      <span [innerHtml]="options.file_text"></span>
+                    </li>
+                  </div>
+                  <div class="answer-div"
+                    *ngIf="ques.optionsType == 'audio' && !(ques.questionType == 'threeColMtf' || ques.questionType == 'twoColMtf' || ques.questionType == '3colOptionLevelScoring')">
+                    <li>
+                      <audio controls [src]="options.value"></audio>
+                      <span [innerHtml]="options.file_text"></span>
+                    </li>
+                  </div>
+                  <!-- s3BucketUrl+ -->
+                  <div class="answer-div"
+                    *ngIf="ques.optionsType == 'video' && !(ques.questionType == 'threeColMtf' || ques.questionType == 'twoColMtf' || ques.questionType == '3colOptionLevelScoring')">
+                    <li>
+                      <video controls [src]="options.value"></video>
+                      <span [innerHtml]="options.file_text"></span>
+                    </li>
+                  </div>
+                </div>
+              </ol>
+              <span> Answer: </span>
+              <div *ngFor="let answer of ques.answer">
+                <ng-container *ngIf="ques.questionType[0]=='trueOrFalse'; else other">
+                  <span [innerHtml]="answer"></span>
+                </ng-container>
+                <ng-template #other>
+
+                  <div class="answer-div Q-ans"
+                    *ngIf="ques.optionsType == 'text' || ques.questionType == 'threeColMtf' || ques.questionType == 'twoColMtf' || ques.questionType == '3colOptionLevelScoring'">
+                    <span class="answer"
+                      [innerHtml]="answer.valueSvg ? answer.valueSvg : answer.value | htmlSanitize"></span>
+                  </div>
+                  <div class="answer-div Q-ans"
+                    *ngIf="ques.optionsType == 'image' && !(ques.questionType == 'threeColMtf' || ques.questionType == 'twoColMtf' || ques.questionType == '3colOptionLevelScoring')">
+                    <img [src]="answer.value" height="50px" style="height: 50px;">
+                    <span class="answer" [innerHtml]="answer.file_text"></span>
+                  </div>
+                  <div class="answer-div Q-ans"
+                    *ngIf="ques.optionsType == 'audio' && !(ques.questionType == 'threeColMtf' || ques.questionType == 'twoColMtf' || ques.questionType == '3colOptionLevelScoring')">
+                    <audio controls [src]="answer.value"></audio>
+                    <span class="answer" [innerHtml]="answer.file_text"></span>
+                  </div>
+                  <!-- s3BucketUrl+ -->
+                  <div class="answer-div Q-ans"
+                    *ngIf="ques.optionsType == 'video' && !(ques.questionType == 'threeColMtf' || ques.questionType == 'twoColMtf' || ques.questionType == '3colOptionLevelScoring')">
+                    <video controls [src]="answer.value"></video>
+                    <span class="answer" [innerHtml]="answer.file_text"></span>
+                  </div>
+                </ng-template>
+
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #nonComp>
+            <ol type="A" class="Q-ans" style="padding-left: 18px;">.
+              <ng-container
+                *ngIf="queList.questionType[0]=='threeColMtf' || queList.questionType[0]=='twoColMtf' || queList.questionType[0] == '3colOptionLevelScoring'">
+                <div class="row mb-2">
+                  <div class="col-md-3">
+                    <b>Column 1</b>
+                    <div *ngFor="let column1 of queList.matchOptions['column1']" class="d-flex">
+                      <span class="d-flex" [innerHtml]="column1.type"></span>.
+                      <ng-container *ngIf="queList.optionsType == 'text'">
+                        <span class="d-flex" [innerHtml]="column1.value"></span>
+                      </ng-container>
+                      <ng-container *ngIf="queList.optionsType == 'image'">
+                        <div class="d-flex answer-div">
+                          <img [src]="column1.value" height="50px" style="height: 50px;" class="ml-2 mr-2" />
+                          <span>{{ column1.file_text }}</span>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngIf="queList.optionsType == 'audio'">
+                        <div class="d-flex answer-div">
+                          <audio controls [src]="column1.value"></audio>
+                          <span>{{ column1.file_text }}</span>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <b>Column 2</b>
+                    <div *ngFor="let column1 of queList.matchOptions['column2']" class="d-flex">
+                      <span class="d-flex" [innerHtml]="column1.type"></span>.
+                      <ng-container *ngIf="queList.optionsType == 'text'">
+                        <span class="d-flex" [innerHtml]="column1.value"></span>
+                      </ng-container>
+                      <ng-container *ngIf="queList.optionsType == 'image'">
+                        <div class="d-flex answer-div">
+                          <img [src]="column1.value" height="50px" style="height: 50px;" class="ml-2 mr-2" />
+                          <span>{{ column1.file_text }}</span>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngIf="queList.optionsType == 'audio'">
+                        <div class="d-flex answer-div">
+                          <audio controls [src]="column1.value"></audio>
+                          <span>{{ column1.file_text }}</span>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div>
+                  <ng-container *ngIf="queList.questionType[0]=='threeColMtf'">
+                    <div class="col-md-3">
+                      <b>Column 3</b>
+                      <div *ngFor="let column1 of queList.matchOptions['column3']" class="d-flex">
+                        <span class="d-flex" [innerHtml]="column1.type"></span>.
+                        <ng-container *ngIf="queList.optionsType == 'text'">
+                          <span class="d-flex" [innerHtml]="column1.value"></span>
+                        </ng-container>
+                        <ng-container *ngIf="queList.optionsType == 'image'">
+                          <div class="d-flex answer-div">
+                            <img [src]="column1.value" height="50px" style="height: 50px;" class="ml-2 mr-2" />
+                            <span>{{ column1.file_text }}</span>
+                          </div>
+                        </ng-container>
+                        <ng-container *ngIf="queList.optionsType == 'audio'">
+                          <div class="d-flex answer-div">
+                            <audio controls [src]="column1.value"></audio>
+                            <span>{{ column1.file_text }}</span>
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-container>
+              <ng-container
+                *ngIf="queList.questionType[0] != 'freeText' && queList.questionType[0] != 'NumericalRange'">
+                <div *ngFor="let options of queList.options">
+                  <div class="answer-div"
+                    *ngIf="queList.optionsType == 'text' || queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring'">
+                    <li><span [innerHtml]="options.valueSvg ? options.valueSvg : options.value | htmlSanitize"></span>
+                    </li>
+                  </div>
+                  <div class="answer-div"
+                    *ngIf="queList.optionsType == 'image' && !(queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring')">
+                    <li>
+                      <img [src]="options.value" height="50px" style="height: 50px;" class="mr-2 mb-2">
+                      <span [innerHtml]="options.file_text"></span>
+                    </li>
+                  </div>
+                  <div class="answer-div"
+                    *ngIf="queList.optionsType == 'audio' && !(queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring')">
+                    <li>
+                      <audio controls [src]="options.value"></audio>
+                      <span [innerHtml]="options.file_text"></span>
+                    </li>
+                  </div>
+                  <!-- s3BucketUrl+ -->
+                  <div class="answer-div"
+                    *ngIf="queList.optionsType == 'video' && !(queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring')">
+                    <li>
+                      <video controls [src]="options.value"></video>
+                      <span [innerHtml]="options.file_text"></span>
+                    </li>
+                  </div>
+                </div>
+              </ng-container>
+            </ol>
+            <span> Answer: </span>
+            <div *ngFor="let answer of queList.answer">
+              <ng-container *ngIf="queList.questionType[0]=='trueOrFalse'; else other">
+                <span [innerHtml]="answer"></span>
+              </ng-container>
+              <ng-template #other>
+
+                <div class="answer-div Q-ans"
+                  *ngIf="queList.optionsType == 'text' || queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring'">
+                  <span class="answer"
+                    [innerHtml]="answer.valueSvg ? answer.valueSvg : answer.value | htmlSanitize"></span>
+                </div>
+                <div class="answer-div Q-ans"
+                  *ngIf="queList.optionsType == 'image' && !(queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring')">
+                  <img [src]="answer.value" height="50px" style="height: 50px;">
+                  <span class="answer" [innerHtml]="answer.file_text"></span>
+                </div>
+                <div class="answer-div Q-ans"
+                  *ngIf="queList.optionsType == 'audio' && !(queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring')">
+                  <audio controls [src]="answer.value"></audio>
+                  <span class="answer" [innerHtml]="answer.file_text"></span>
+                </div>
+                <!-- s3BucketUrl+ -->
+                <div class="answer-div Q-ans"
+                  *ngIf="queList.optionsType == 'video' && !(queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring')">
+                  <video controls [src]="answer.value"></video>
+                  <span class="answer" [innerHtml]="answer.file_text"></span>
+                </div>
+              </ng-template>
+
+            </div>
+          </ng-template>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label style="margin-top: 90px;">Question Type</label>
+            <input type="text" class="form-control" readonly [value]="queList.questionType[0]">
+          </div>
+          <div class="row preview-total">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Total Marks</label>
+                <input type="number" (blur)="getTotalScore()" [(ngModel)]="queList.totalMarks" class="form-control">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Negative marks</label>
+                <input type="number" class="form-control" [(ngModel)]="queList.negativeMarks"
+                  [disabled]="queList.negativeScore==='NO'">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <span>Negative Scoring<span class="reqStar">*</span></span>
+              <div style="margin-left:20px; display:inline-block">
+                <input type="radio" value="YES" name="negativeScoring" [id]="'n'+i" [(ngModel)]="queList.negativeScore">
+                <label>Yes</label>
+              </div>
+              <div style="margin-left:20px; display:inline-block">
+                <input type="radio" value="NO" name="negativeScoring" [id]="'nn'+i" [(ngModel)]="queList.negativeScore">
+                <label>No</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Duration</label>
+                <input type="number" class="form-control" [value]="queList.duration" width="50" readonly>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <button mat-raised-button class="btn btn-sm btn-primary" type="button"
+                (click)="selectQuestions(queList.questionType[0])">change</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #noQues>
+    <div>
+      <span>
+        <h3>No Questions Selected</h3>
+      </span>
+    </div>
+  </ng-template>
+
+</div>
+
+<!-- print Question Paper -->
+<div id="contentToPrint" class="mso-border-alt" [hidden]="true">
+  <div class="b-cls">
+    <div class="row" style=" margin: 1.5%;">
+      <div class="col-md-12">
+        <div><span style="font-weight: 500;
+        font-size: 16px;
+        line-height: 24px;">Title</span></div>
+        <div><span style="font-weight: 500;
+        font-size: 20px;
+        line-height: 30px;
+        text-decoration-line: underline;">{{questionPaper.question_title}}</span></div>
+        <div style=" margin-top: 6px;"><span>Created By: <span style="font-weight: normal;
+        font-size: 14px;
+        line-height: 21px;
+        color: #000000;">{{userName}}</span></span>
+        </div>
+      </div>
+      <!-- <div class="col-md-6 ">
+      <div class="btn-groups">
+        <button class="btn btn-sm btn-primary btn-submit-asses" (click)="submitAssessment()">Submit
+          Assessment</button>
+        <button class="btn btn-sm btn-primary btn-print-paper" (click)="Export2Doc('contentToPrint','TestDoc')">Print Question Paper</button>
+      </div>
+    </div> -->
+    </div>
+
+    <div *ngFor="let queList of selectedQuestionList;let i=index">
+      <ng-container *ngIf="queList.instruction">
+        <span style=" margin-left: 10px;
+      margin-top: 6px;">{{queList.instruction}}</span>
+      </ng-container>
+      <!-- <ng-template #ins>
+      <div class="row col-md-3" (click)="addInstruction(i,queList)">
+        <button type="button" class="btn btn-instruction">+</button> <span class="instruction-span">Add a
+          Instruction here</span>
+      </div>
+    </ng-template> -->
+      <div class="row" style=" background: #FFFFFF;
+    box-shadow: 0px 0px 10px 2px rgba(0 ,0,0 ,0.25);
+    border-radius: 5px;
+    padding: 21px;
+    margin: 16px;">
+        <div style=" border-radius: 6px;
+      height: 70px;
+      border-left: 6px solid #3699FF;">
+        </div>
+        <div class="col-md-7">
+
+          <span style="font-family: Poppins;
+            display: inline !important;
+          font-style: normal;
+          white-space:nowrap;
+          font-weight: normal;
+          font-size: 18px;
+          line-height: 27px;
+          color: #000000;"> Q{{i+1}} </span>
+
+          <span style="
+    display: inline !important;
+    font-family: Poppins;
+    white-space:nowrap;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 27px;
+    color: #000000;" [innerHTML]="queList.question[0]  "> </span>
+
+          <ol type="A" style=" font-family: Poppins;
+          list-style: upper-alpha;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 14px;
+        line-height: 27px;
+        color: #000000;">.
+            <ng-container
+              *ngIf="queList.questionType[0]=='threeColMtf' || queList.questionType[0]=='twoColMtf' || queList.questionType[0] == '3colOptionLevelScoring'">
+              <div class="row mb-2">
+                <table>
+
+
+                  <div class="col-md-3">
+                    <th><b>Column 1 </b></th>
+                    <td>
+                      <div *ngFor="let column1 of queList.matchOptions['column1']" class="d-flex">
+                        <span class="d-flex" [innerHtml]="column1.type"></span>.
+                        <ng-container *ngIf="queList.optionsType == 'text'">
+                          <span class="d-flex" [innerHtml]="column1.value"></span>
+                        </ng-container>
+                        <ng-container *ngIf="queList.optionsType == 'image'">
+                          <div class="d-flex answer-div">
+                            <img [src]="column1.value" height="50px" style="height: 50px;" class="ml-2 mr-2" />
+                            <span>{{ column1.file_text }}</span>
+                          </div>
+                        </ng-container>
+                        <ng-container *ngIf="queList.optionsType == 'audio'">
+                          <div class="d-flex answer-div">
+                            <audio controls [src]="column1.value"></audio>
+                            <span>{{ column1.file_text }}</span>
+                          </div>
+                        </ng-container>
+                      </div>
+                    </td>
+
+                  </div>
+                  <div class="col-md-3">
+                    <th> <b>Column 2</b></th>
+                    <td>
+                      <div *ngFor="let column1 of queList.matchOptions['column2']" class="d-flex">
+                        <span class="d-flex" [innerHtml]="column1.type"></span>.
+                        <ng-container *ngIf="queList.optionsType == 'text'">
+                          <span class="d-flex" [innerHtml]="column1.value"></span>
+                        </ng-container>
+                        <ng-container *ngIf="queList.optionsType == 'image'">
+                          <div class="d-flex answer-div">
+                            <img [src]="column1.value" height="50px" style="height: 50px;" class="ml-2 mr-2" />
+                            <span>{{ column1.file_text }}</span>
+                          </div>
+                        </ng-container>
+                        <ng-container *ngIf="queList.optionsType == 'audio'">
+                          <div class="d-flex answer-div">
+                            <audio controls [src]="column1.value"></audio>
+                            <span>{{ column1.file_text }}</span>
+                          </div>
+                        </ng-container>
+                      </div>
+                    </td>
+
+                  </div>
+                  <ng-container *ngIf="queList.questionType[0]=='threeColMtf'">
+                    <div class="col-md-3">
+                      <th><b>Column 3</b></th>
+                      <div>
+                        <div *ngFor="let column1 of queList.matchOptions['column3']" class="d-flex">
+                          <span class="d-flex" [innerHtml]="column1.type"></span>.
+                          <ng-container *ngIf="queList.optionsType == 'text'">
+                            <span class="d-flex" [innerHtml]="column1.value"></span>
+                          </ng-container>
+                          <ng-container *ngIf="queList.optionsType == 'image'">
+                            <div class="d-flex answer-div">
+                              <img [src]="column1.value" height="50px" style="height: 50px;" class="ml-2 mr-2" />
+                              <span>{{ column1.file_text }}</span>
+                            </div>
+                          </ng-container>
+                          <ng-container *ngIf="queList.optionsType == 'audio'">
+                            <div class="d-flex answer-div">
+                              <audio controls [src]="column1.value"></audio>
+                              <span>{{ column1.file_text }}</span>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+
+
+                    </div>
+                  </ng-container>
+                </table>
+              </div>
+
+            </ng-container>
+            <ng-container *ngIf="queList.questionType[0] != 'freeText' && queList.questionType[0] != 'NumericalRange'">
+              <div *ngFor="let options of queList.options">
+                <div class="answer-div"
+                  *ngIf="queList.optionsType == 'text' || queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring'">
+                  <li><span style="white-space:nowrap;"
+                      [innerHTML]="options.valueSvg ? options.valueSvg : options.value | htmlSanitize"></span></li>
+                </div>
+                <div class="answer-div"
+                  *ngIf="queList.optionsType == 'image' && !(queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring')">
+                  <li>
+                    <img [src]="options.value" height="50px" style="height: 50px;" class="mr-2 mb-2">
+                    <span [innerHtml]="options.file_text"></span>
+                  </li>
+                </div>
+                <div class="answer-div"
+                  *ngIf="queList.optionsType == 'audio' && !(queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring')">
+                  <li>
+                    <audio controls [src]="options.value"></audio>
+                    <span [innerHtml]="options.file_text"></span>
+                  </li>
+                </div>
+                <!-- s3BucketUrl+ -->
+                <div class="answer-div"
+                  *ngIf="queList.optionsType == 'video' && !(queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring')">
+                  <li>
+                    <video controls [src]="options.value"></video>
+                    <span [innerHtml]="options.file_text"></span>
+                  </li>
+                </div>
+              </div>
+            </ng-container>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- without audio video selected question list  -->
+  <div id="contentToPrintWithoutVideoAudio" class="mso-border-alt" [hidden]="true">
+    <div style='text-align:center'> <span style=" font-size: 26px; font-family: Poppins; font-weight: 800">{{schoolname
+        | uppercase}}</span> </div>
+    <div >
+      <div class="row" style=" margin: 1.5%;">
+
+        <div class="col-md-12">
+          <!--  <div><span style="font-weight: 500;
+        font-size: 16px;
+        line-height: 24px;">Title</span></div> -->
+          <div style='text-align:center'><span style="font-weight: 500; font-family: Arial Black;
+        font-size: 32px;
+        line-height: 30px;
+        text-decoration-line: underline;">{{questionPaper.question_title | uppercase }}</span></div><br>
+          <div style="height:2%">
+            <p style="color: white;">&nbsp;</p>
+          </div>
+          <div>
+            <div style="display: flex;flex-direction: row;justify-content: space-between;">
+              <span><b>Date: </b>{{currDate}}/{{currMonth}}/{{currYear}}</span>
+            
+            <span><b>Total Questions: </b>
+              <span *ngIf="questionPaper.detail_question_paper.totalQuestion<10">
+                {{0}}{{questionPaper.detail_question_paper.totalQuestion}}
+              </span>  
+              <span *ngIf="questionPaper.detail_question_paper.totalQuestion>10">
+                {{questionPaper.detail_question_paper.totalQuestion}}
+              </span>
+
+            </span>
+            </div>
+            
+
+          </div>
+
+          <div style="display: flex;flex-direction: row;justify-content: space-between;">
+
+            <span><b>Created by: </b>{{userName}}</span>
+            <span><b>Total Marks: </b> {{totalScore}}</span>
+
+          </div>
+          <hr>
+        </div>
+      </div>
+
+    </div>
+
+    <div *ngFor="let queList of selectedQuestionList;let i=index">
+      <ng-container *ngIf="queList.instruction">
+        <span style=" margin-left: 10px;
+      margin-top: 6px;">{{queList.instruction}}</span>
+      </ng-container>
+
+      <div class="row" style=" background: #FFFFFF;
+    box-shadow: 0px 0px 0px 0px rgba(0 ,0,0 ,0.25);
+    border-radius: 5px;
+    padding: 21px;
+    margin: 16px;">
+        <!-- <div style=" border-radius: 6px;
+      height: 70px;
+      border-left: 6px solid #3699FF;">
+        </div> -->
+        <div class="col-md-7">
+
+          <!-- Question Paper -->
+
+          <div style="display: flex;flex-direction: row;min-height: 100px;align-items: center; ">
+            <p style="font-family: Poppins;
+          font-weight: bold;
+          font-size: 18px;
+          color: #000000;">
+              {{(queList.questionType == 'comprehension')? 'Story' : 'Q'}}{{i+1}}:&nbsp; </p>
+            
+            <div style="
+            font-family: Poppins;
+            font-style: normal;
+            font-size: 18px;
+            color: rgb(17, 17, 17);display: flex;flex-direction: column" [innerHTML]=" queList.question[0] | htmlSanitize  "> </div>
+          </div>
+
+
+
+
+
+
+          <ng-container *ngIf="queList.questionType == 'comprehension' ; else nonComprehension;">
+            <ng-container *ngFor="let ques of queList.questions; let i = index">
+              <div style="display: flex;flex-direction: row;align-items: center;">
+                <span style="font-family: Poppins;
+                display: inline !important;
+              font-style: normal;
+              white-space:nowrap;
+              font-weight: normal;
+              font-size: 18px;
+              line-height: 27px;
+              color: #000000;"> Q{{i+1}}: &nbsp;</span>
+
+              <span style="
+        display: inline !important;
+        font-family: Poppins;
+        white-space:nowrap;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 18px;
+        line-height: 27px;
+        color: #111111;" [innerHTML]="ques.question[0] | htmlSanitize"> </span>
+              </div>
+             
+
+
+              <ol type="A" style=" font-family: Poppins;
+          list-style: upper-alpha;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 14px;
+        line-height: 27px;
+        color: #000000;"> 
+                <ng-container
+                  *ngIf="ques.questionType[0]=='threeColMtf' || ques.questionType[0]=='twoColMtf' || ques.questionType[0] == '3colOptionLevelScoring'">
+                  <table>
+                    <colgroup span="3">
+                      <div class="row mb-2">
+                        <div class="col-md-3">
+                          <col>
+                          <b>Column 1 </b>
+                          <div *ngFor="let column1 of ques.matchOptions['column1']" class="d-flex">
+                        <tr><span class="d-flex" [innerHtml]="column1.type"></span>.
+                      <ng-container *ngIf="ques.optionsType == 'text'">
+
+                        <td><span class="d-flex" [innerHtml]="column1.value"></span>
+
+                      </ng-container>
+                    </tr>
+                    <ng-container *ngIf="ques.optionsType == 'image'">
+                      <div class="d-flex answer-div">
+                        <img [src]="column1.value" height="50px" style="height: 50px;" class="ml-2 mr-2" />
+                        <span>{{ column1.file_text }}</span>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="ques.optionsType == 'audio'">
+                      <div class="d-flex answer-div">
+                        <audio controls [src]="column1.value"></audio>
+                        <span>{{ column1.file_text }}</span>
+                      </div>
+                    </ng-container>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <col>
+        <b>Column 2</b>
+        <div *ngFor="let column1 of ques.matchOptions['column2']" class="d-flex">
+          <span class="d-flex" [innerHtml]="column1.type"></span>.
+          <ng-container *ngIf="ques.optionsType == 'text'">
+            <tr>
+              <td><span class="d-flex" [innerHtml]="column1.value"></span>
+            </tr>
+          </ng-container>
+          <ng-container *ngIf="ques.optionsType == 'image'">
+            <div class="d-flex answer-div">
+              <img [src]="column1.value" height="50px" style="height: 50px;" class="ml-2 mr-2" />
+              <span>{{ column1.file_text }}</span>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="ques.optionsType == 'audio'">
+            <div class="d-flex answer-div">
+              <audio controls [src]="column1.value"></audio>
+              <span>{{ column1.file_text }}</span>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <ng-container *ngIf="ques.questionType[0]=='threeColMtf'">
+        <div class="col-md-3">
+          <col>
+          <b>Column 3</b>
+
+          <div *ngFor="let column1 of ques.matchOptions['column3']" class="d-flex">
+            <span class="d-flex" [innerHtml]="column1.type"></span>.
+            <ng-container *ngIf="ques.optionsType == 'text'">
+              <tr>
+                <td><span class="d-flex" [innerHtml]="column1.value"></span>
+              </tr>
+            </ng-container>
+            <ng-container *ngIf="ques.optionsType == 'image'">
+              <div class="d-flex answer-div">
+                <img [src]="column1.value" height="50px" style="height: 50px;width: 50px" class="ml-2 mr-2" />
+                <span>{{ column1.file_text }}</span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="ques.optionsType == 'audio'">
+              <div class="d-flex answer-div">
+                <audio controls [src]="column1.value"></audio>
+                <span>{{ column1.file_text }}</span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    </colgroup>
+    </table>
+    </ng-container>
+    <div *ngFor="let options of ques.options">
+      <div class="answer-div"
+        *ngIf="ques.optionsType == 'text' || ques.questionType == 'threeColMtf' || ques.questionType == 'twoColMtf' || ques.questionType == '3colOptionLevelScoring'">
+        <li><span style="white-space:nowrap;"
+            [innerHTML]="options.valueSvg ? options.valueSvg : options.value | htmlSanitize"></span></li>
+      </div>
+      <div class="answer-div"
+        *ngIf="ques.optionsType == 'image' && !(ques.questionType == 'threeColMtf' || ques.questionType == 'twoColMtf' || ques.questionType == '3colOptionLevelScoring')">
+        <li>
+          <img [src]="options.value" height="50px" style="height: 50px;width: 50px" class="mr-2 mb-2">
+          <span [innerHtml]="options.file_text"></span>
+        </li>
+      </div>
+      <div class="answer-div"
+        *ngIf="ques.optionsType == 'audio' && !(ques.questionType == 'threeColMtf' || ques.questionType == 'twoColMtf' || ques.questionType == '3colOptionLevelScoring')">
+        <li>
+          <audio controls [src]="options.value"></audio>
+          <span [innerHtml]="options.file_text"></span>
+        </li>
+      </div>
+      <!-- s3BucketUrl+ -->
+      <div class="answer-div"
+        *ngIf="ques.optionsType == 'video' && !(ques.questionType == 'threeColMtf' || ques.questionType == 'twoColMtf' || ques.questionType == '3colOptionLevelScoring')">
+        <li>
+          <video controls [src]="options.value"></video>
+          <span [innerHtml]="options.file_text"></span>
+        </li>
+      </div>
+    </div>
+    </ol>
+    </ng-container>
+    </ng-container>
+    <ng-template #nonComprehension>
+      <ol type="A" style=" font-family: Poppins;
+          list-style: upper-alpha;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 14px;
+        line-height: 27px;
+        color: #000000;">
+        <ng-container
+          *ngIf="queList.questionType[0]=='threeColMtf' || queList.questionType[0]=='twoColMtf' || queList.questionType[0] == '3colOptionLevelScoring'">
+
+          <table>
+            <tr>
+              <th style="text-align: left;">Column 1 </th>
+              <th style="text-align: left;">Column 2</th>
+              <th style="text-align: left;" *ngIf="queList.questionType[0]=='threeColMtf'">Column 3</th>
+            </tr>
+            <tr>
+              <td width="30%">
+                <div *ngFor="let column1 of queList.matchOptions['column1']" style="display: flex;flex-direction: row;align-items: center;width: 33%">
+                  <span [innerHtml]="column1.type"></span><p>. </p>
+                  <ng-container *ngIf="queList.optionsType == 'text'">
+                    <p [innerHtml]="column1.value"></p>
+                  </ng-container>
+                  <ng-container *ngIf="queList.optionsType == 'image'">
+                    <div class="d-flex answer-div">
+                      <img [src]="column1.value" height="50px" style="height: 50px;width: 50px" class="ml-2 mr-2" />
+                      <span>{{ column1.file_text }}</span>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="queList.optionsType == 'audio'">
+                    <div class="d-flex answer-div">
+                      <audio controls [src]="column1.value"></audio>
+                      <span>{{ column1.file_text }}</span>
+                    </div>
+                  </ng-container>
+                </div>
+              </td>
+        
+              <td width="30%">
+                <div *ngFor="let column1 of queList.matchOptions['column2']" class="d-flex" style="display: flex;flex-direction: row;align-items: center;width: 33%">
+                  <span class="d-flex" [innerHtml]="column1.type"></span>.
+                  <ng-container *ngIf="queList.optionsType == 'text'">
+
+                    <span class="d-flex" [innerHtml]="column1.value"></span>
+                  </ng-container>
+                  <ng-container *ngIf="queList.optionsType == 'image'">
+                    <div class="d-flex answer-div">
+                      <img [src]="column1.value" height="50px" style="height: 50px;width: 50px" class="ml-2 mr-2" />
+                      <span>{{ column1.file_text }}</span>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="queList.optionsType == 'audio'">
+                    <div class="d-flex answer-div">
+                      <audio controls [src]="column1.value"></audio>
+                      <span>{{ column1.file_text }}</span>
+                    </div>
+                  </ng-container>
+                </div>
+              </td>
+              
+              <td *ngIf="queList.questionType[0]=='threeColMtf'"  width="30%" >
+                <div *ngFor="let column1 of queList.matchOptions['column3']" class="d-flex" style="display: flex;flex-direction: row;align-items: center;width: 33%">
+                  <span class="d-flex" [innerHtml]="column1.type"></span>.
+                  <ng-container *ngIf="queList.optionsType == 'text'">
+
+                    <span class="d-flex" [innerHtml]="column1.value"></span>
+                  </ng-container>
+                  <ng-container *ngIf="queList.optionsType == 'image'">
+                    <div class="d-flex answer-div">
+                      <img [src]="column1.value" height="50px" style="height: 50px;width: 50px" class="ml-2 mr-2" />
+                      <span>{{ column1.file_text }}</span>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="queList.optionsType == 'audio'">
+                    <div class="d-flex answer-div">
+                      <audio controls [src]="column1.value"></audio>
+                      <span>{{ column1.file_text }}</span>
+                    </div>
+                  </ng-container>
+                </div>
+              </td>
+            </tr>
+
+          </table>
+
+
+          <!-- <colgroup span="3">
+            <div class="row mb-2">
+              <table>
+
+
+                <div class="col-md-3">
+                  <col>
+
+                  <th> <b>Column 1</b></th>
+                  <td>
+                    <div *ngFor="let column1 of queList.matchOptions['column1']" class="d-flex">
+                      <span class="d-flex" [innerHtml]="column1.type"></span>.
+                      <ng-container *ngIf="queList.optionsType == 'text'">
+                        <span class="d-flex" [innerHtml]="column1.value"></span>
+                      </ng-container>
+                      <ng-container *ngIf="queList.optionsType == 'image'">
+                        <div class="d-flex answer-div">
+                          <img [src]="column1.value" height="50px" style="height: 50px;width: 50px" class="ml-2 mr-2" />
+                          <span>{{ column1.file_text }}</span>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngIf="queList.optionsType == 'audio'">
+                        <div class="d-flex answer-div">
+                          <audio controls [src]="column1.value"></audio>
+                          <span>{{ column1.file_text }}</span>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </td>
+
+                </div>
+                <div class="col-md-3">
+                  <col>
+                  <th>
+                    <b>Column 2</b>
+                  </th>
+                  <td>
+                    <div *ngFor="let column1 of queList.matchOptions['column2']" class="d-flex">
+                      <span class="d-flex" [innerHtml]="column1.type"></span>.
+                      <ng-container *ngIf="queList.optionsType == 'text'">
+                        <span class="d-flex" [innerHtml]="column1.value"></span>
+                      </ng-container>
+                      <ng-container *ngIf="queList.optionsType == 'image'">
+                        <div class="d-flex answer-div">
+                          <img [src]="column1.value" height="50px" style="height: 50px;width: 50px" class="ml-2 mr-2" />
+                          <span>{{ column1.file_text }}</span>
+                        </div>
+                      </ng-container>
+                      <ng-container *ngIf="queList.optionsType == 'audio'">
+                        <div class="d-flex answer-div">
+                          <audio controls [src]="column1.value"></audio>
+                          <span>{{ column1.file_text }}</span>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </td>
+
+                </div>
+                <ng-container *ngIf="queList.questionType[0]=='threeColMtf'">
+                  <div class="col-md-3">
+                    <col>
+                    <th>
+                      <b>Column 3</b>
+                    </th>
+                    <td>
+                      <div *ngFor="let column1 of queList.matchOptions['column3']" class="d-flex">
+                        <span class="d-flex" [innerHtml]="column1.type"></span>.
+                        <ng-container *ngIf="queList.optionsType == 'text'">
+                          <span class="d-flex" [innerHtml]="column1.value"></span>
+                        </ng-container>
+                        <ng-container *ngIf="queList.optionsType == 'image'">
+                          <div class="d-flex answer-div">
+                            <img [src]="column1.value" height="50px" style="height: 50px;width: 50px"
+                              class="ml-2 mr-2" />
+                            <span>{{ column1.file_text }}</span>
+                          </div>
+                        </ng-container>
+                        <ng-container *ngIf="queList.optionsType == 'audio'">
+                          <div class="d-flex answer-div">
+                            <audio controls [src]="column1.value"></audio>
+                            <span>{{ column1.file_text }}</span>
+                          </div>
+                        </ng-container>
+                      </div>
+                    </td>
+
+                  </div>
+                </ng-container>
+              </table>
+            </div>
+          </colgroup> -->
+
+        </ng-container>
+        <div *ngFor="let options of queList.options">
+          <div class="answer-div"
+            *ngIf="queList.optionsType == 'text' || queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring'">
+            <li><span style="white-space:nowrap;"
+                [innerHTML]="options.valueSvg ? options.valueSvg : options.value | htmlSanitize"></span></li>
+          </div>
+          <div class="answer-div"
+            *ngIf="queList.optionsType == 'image' && !(queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring')">
+            <li>
+              <img [src]="options.value" height="50px" style="height: 50px;width: 50px" class="ml-2 mr-2 mb-2">
+              <span [innerHtml]="options.file_text"></span>
+            </li>
+          </div>
+          <div class="answer-div"
+            *ngIf="queList.optionsType == 'audio' && !(queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring')">
+            <li>
+              <audio controls [src]="options.value"></audio>
+              <span [innerHtml]="options.file_text"></span>
+            </li>
+          </div>
+          <!-- s3BucketUrl+ -->
+          <div class="answer-div"
+            *ngIf="queList.optionsType == 'video' && !(queList.questionType == 'threeColMtf' || queList.questionType == 'twoColMtf' || queList.questionType == '3colOptionLevelScoring')">
+            <li>
+              <video controls [src]="options.value"></video>
+              <span [innerHtml]="options.file_text"></span>
+            </li>
+          </div>
+        </div>
+      </ol>
+    </ng-template>
+  </div>
+</div>
+</div>
+</div>
+</div>

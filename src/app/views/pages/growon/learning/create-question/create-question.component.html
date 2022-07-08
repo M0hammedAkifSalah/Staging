@@ -1,0 +1,3061 @@
+<div class="bg">
+  <div>
+    <h3>Create Question</h3>
+  </div>
+  <form *ngIf="formLoaded" [formGroup]="questionaryForm">
+    <div *ngIf="!isOwner; else mySchool">
+      <div class="row">
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <div class="form-group">
+            <label>Class<span class="reqStar">*</span></label>
+            <ng-select formControlName="class" name="class" (change)="subjectChanged()">
+              <ng-option hidden disabled selected value>
+                -- select an option --
+              </ng-option>
+              <ng-option *ngFor="let item of classes" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+              </ng-option>
+              <ng-option *ngIf="classes.length == 0" disabled>No classes Available</ng-option>
+            </ng-select>
+            <span class="text-danger" *ngIf="
+                questionFormControl.class.touched &&
+                questionFormControl.class.errors?.required
+              ">Class is required</span>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <div class="form-group">
+            <label>Boards<span class="reqStar">*</span></label>
+            <!-- <mat-form-field appearance="none" class="form-group" [floatLabel]="'never'"> -->
+
+            <ng-select [closeOnSelect]="false" labelForId="board" clearAllText="Clear" [clearSearchOnAdd]="true"
+              [multiple]="true" formControlName="board" name="board" (change)="subjectChanged()"
+              placeholder="-- select an option --" [items]="boards" [bindLabel]="'name'" [bindValue]="'_id'">
+              <!-- <ng-template ng-header-tmp>
+                <button (click)="selectAll('board')" class="btn btn-sm btn-secondary" style="padding: 2px 14px; margin: 0px 2px;">Select all</button>
+                <button (click)="unselectAll('board')" class="btn btn-sm btn-secondary" style="padding: 2px 14px; margin: 0px 2px;">Unselect all</button>
+              </ng-template> -->
+              <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                <div class="row pl-3 pr-1">
+                  <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+                    [ngModelOptions]="{standalone: true}" />
+                  {{item['name']}}
+                </div>
+              </ng-template>
+              <ng-template ng-multi-label-tmp let-items="items">
+                <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                  {{item['name']}}
+                </div>
+                <div class="ng-value" *ngIf="items.length > 3">
+                  <span class="ng-value-label">{{items.length - 3}} more...</span>
+                </div>
+              </ng-template>
+              <!-- <option hidden disabled selected value> -- select an option -- </option> -->
+              <!-- <ng-option *ngFor="let item of boards" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+              </ng-option> -->
+              <ng-option *ngIf="boards.length == 0" disabled>No Boards Available</ng-option>
+            </ng-select>
+            <span class="text-danger" *ngIf="
+                questionFormControl.board.touched &&
+                questionFormControl.board.errors?.required
+              ">Board is required</span>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <div class="form-group">
+            <label>Syllabus<span class="reqStar">*</span></label>
+            <ng-select [closeOnSelect]="false" labelForId="syllabus" clearAllText="Clear" [clearSearchOnAdd]="true"
+              [multiple]="true" formControlName="syllabus" name="syllabus" (change)="subjectChanged()"
+              placeholder="-- select an option --" [items]="syllabuses" [bindLabel]="'name'" [bindValue]="'_id'">
+              <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                <div class="row pl-3 pr-1">
+                  <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+                    [ngModelOptions]="{standalone: true}" />
+                  {{item['name']}}
+                </div>
+              </ng-template>
+              <ng-template ng-multi-label-tmp let-items="items">
+                <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                  {{item['name']}}
+                </div>
+                <div class="ng-value" *ngIf="items.length > 3">
+                  <span class="ng-value-label">{{items.length - 3}} more...</span>
+                </div>
+              </ng-template>
+              <!-- <mat-option hidden disabled selected value> -- select an option -- </mat-option> -->
+              <!-- <ng-option *ngFor="let item of syllabuses" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+              </ng-option>
+              <ng-option *ngIf="syllabuses.length == 0" disabled>No syllabuses Available</ng-option> -->
+            </ng-select>
+            <span class="text-danger" *ngIf="
+                questionFormControl.syllabus.touched &&
+                questionFormControl.syllabus.errors?.required
+              ">Syllabus is required</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <div class="form-group">
+            <label>Subject<span class="reqStar">*</span></label>
+            <ng-select formControlName="subject" name="subject" (change)="getChpterAndSetSubjectGlobal()"
+              [loading]="!subjects || !subjects.length">
+              <ng-option hidden disabled selected value>
+                -- select an option --
+              </ng-option>
+              <ng-option *ngFor="let item of subjects" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+              </ng-option>
+              <ng-option *ngIf="subjects.length == 0" disabled>No Subjects Available</ng-option>
+            </ng-select>
+            <span class="text-danger" *ngIf="
+                questionFormControl.subject.touched &&
+                questionFormControl.subject.errors?.required
+              ">Subject is required</span>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <div class="form-group">
+            <ng-container *ngIf="chapterFlag">
+              <label>Chapter<span class="reqStar">*</span></label>
+              <ng-select [closeOnSelect]="false" labelForId="syllabus" clearAllText="Clear" [clearSearchOnAdd]="true"
+                [multiple]="true" formControlName="chapter" name="chapter" placeholder="-- select an option -- "
+                (change)="getTopicAndSetChapterGlobal()" [loading]="!chapters || !chapters.length" [items]="chapters"
+                [bindLabel]="'name'" [bindValue]="'_id'">
+                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                  <div class="row pl-3 pr-1">
+                    <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+                      [ngModelOptions]="{standalone: true}" />
+                    {{item['name']}}
+                  </div>
+                </ng-template>
+                <ng-template ng-multi-label-tmp let-items="items">
+                  <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                    {{item['name']}}
+                  </div>
+                  <div class="ng-value" *ngIf="items.length > 3">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+                <!-- <mat-option hidden disabled selected value> -- select an option -- </mat-option> -->
+                <!-- <ng-option *ngFor="let item of chapters" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+                </ng-option> -->
+                <ng-option *ngIf="chapters.length == 0" disabled>No chapters Available</ng-option>
+              </ng-select>
+              <span class="text-danger" *ngIf="
+                  questionFormControl.chapter.touched &&
+                  questionFormControl.chapter.errors?.required
+                ">Chapter is required</span>
+            </ng-container>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <div class="form-group">
+            <ng-container *ngIf="topicFlag">
+              <label>Topics<span class="reqStar"></span></label>
+              <ng-select [closeOnSelect]="false" labelForId="syllabus" clearAllText="Clear" [clearSearchOnAdd]="true"
+                [multiple]="true" formControlName="topic" name="topic" placeholder="-- select an option -- "
+                (change)="getLearningAndSetTopicGlobal()" [loading]="!topics || !topics.length" [items]="topics"
+                [bindLabel]="'name'" [bindValue]="'_id'">
+                <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                  <div class="row pl-3 pr-1">
+                    <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+                      [ngModelOptions]="{standalone: true}" />
+                    {{item['name']}} - {{item.chapter_id?.name}}
+                  </div>
+                </ng-template>
+                <ng-template ng-multi-label-tmp let-items="items">
+                  <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                    {{item['name']}} - {{item.chapter_id?.name}}
+                  </div>
+                  <div class="ng-value" *ngIf="items.length > 3">
+                    <span class="ng-value-label">{{items.length - 3}} more...</span>
+                  </div>
+                </ng-template>
+                <!-- <mat-option hidden disabled selected value> -- select an option -- </mat-option> -->
+                <!-- <ng-option *ngFor="let item of topics" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+                </ng-option> -->
+                <ng-option *ngIf="topics.length == 0" disabled>No Topics Available</ng-option>
+              </ng-select>
+              <span class="text-danger" *ngIf="
+                  questionFormControl.topic.touched &&
+                  questionFormControl.topic.errors?.required
+                ">Topic is required</span>
+            </ng-container>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <div class="form-group">
+            <ng-container *ngIf="learningOutcomeFlag">
+              <label>Learning Outcome<span class="reqStar"></span></label>
+              <ng-select [clearable]="false" [multiple]="true" formControlName="learningOutcome" name="learningOutcome"
+                placeholder="-- select an option -- ">
+                <ng-option *ngFor="let item of learningOutcomes" [value]="item._id">
+                  &nbsp;&nbsp;&nbsp;&nbsp;{{item.name}}
+                </ng-option>
+                <ng-option *ngIf="learningOutcomes.length == 0" disabled
+                  >No Learning Outcomes Available</ng-option
+                >
+              </ng-select>
+              <span
+                class="text-danger"
+                *ngIf="
+                  questionFormControl.learningOutcome.touched &&
+                  questionFormControl.learningOutcome.errors?.required
+                "
+                >Learning Outcome is required</span
+              >
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template class="background" #mySchool>
+      <div class="row">
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <div class="form-group">
+            <label>Class<span class="reqStar">*</span></label>
+            <ng-select formControlName="class" name="class" [clearable]="false"
+              (change)="getBoardIdAndSyllabusId($event)">
+              <ng-option hidden disabled selected value>
+                -- select an option --
+              </ng-option>
+              <ng-option *ngFor="let item of class" [value]="item.classId">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.className }}
+              </ng-option>
+              <ng-option *ngIf="class.length == 0" disabled>No classes Available</ng-option>
+            </ng-select>
+            <span class="text-danger" *ngIf="
+                questionFormControl.class.touched &&
+                questionFormControl.class.errors?.required
+              ">Class is required</span>
+          </div>
+        </div>
+        <ng-container *ngIf="subjectFlag">
+          <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="form-group">
+              <label>Boards<span class="reqStar">*</span></label>
+              <input type="text" readonly [value]="selectedBoardName" class="form-control" disabled="true" />
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="subjectFlag">
+          <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="form-group">
+              <label>Syllabus<span class="reqStar"></span></label>
+              <input type="text" readonly [value]="selectedSyllabusName" class="form-control" disabled="true" />
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <div class="form-group">
+            <ng-container *ngIf="subjectFlag">
+              <label>Subject<span class="reqStar">*</span></label>
+              <ng-select formControlName="subject" name="subject" [clearable]="false"
+                (change)="getChapterAndSetSubject($event)" [loading]="!subjects || !subjects.length">
+                <ng-option hidden disabled selected value>
+                  -- select an option --
+                </ng-option>
+                <ng-option *ngFor="let item of subjects" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+                </ng-option>
+                <ng-option *ngIf="subjects.length == 0" disabled>No Subjects Available</ng-option>
+              </ng-select>
+              <span class="text-danger" *ngIf="
+                  questionFormControl.subject.touched &&
+                  questionFormControl.subject.errors?.required
+                ">Subject is required</span>
+            </ng-container>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <div class="form-group">
+            <ng-container *ngIf="chapterFlag">
+              <label>Chapter<span class="reqStar">*</span></label>
+
+              <ng-select formControlName="chapter" name="chapter" [clearable]="false"
+                (change)="getTopicsAndSetChapter($event)" [loading]="!chapters || !chapters.length">
+                <ng-option hidden disabled selected value>
+                  -- select an option --
+                </ng-option>
+                
+                <ng-option *ngFor="let item of chapters" [value]="item._id">&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+                </ng-option>
+                <ng-option *ngIf="chapters.length == 0" disabled>No chapters Available</ng-option>
+              </ng-select>
+            </ng-container>
+            <span class="text-danger" *ngIf="
+                  questionFormControl.chapter.touched &&
+                  questionFormControl.chapter.errors?.required
+                ">Chapter is required</span>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <div class="form-group">
+            <ng-container *ngIf="topicFlag">
+              <label>Topics<span class="reqStar"></span></label>
+              <ng-select formControlName="topic" name="topic" [clearable]="false"
+                (change)="getLearnOutcomeAndSetTopic($event)" [loading]="!topics || !topics.length">
+                <ng-option hidden disabled selected value>
+                  -- select an option --
+                </ng-option>
+                <ng-option *ngFor="let item of topics" [value]="item._id"  selected>&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+                </ng-option>
+                <ng-option *ngIf="topics.length == 0" disabled>No Topics Available</ng-option>
+              </ng-select>
+            </ng-container>
+            <span class="text-danger" *ngIf="
+                  questionFormControl.topic.touched &&
+                  questionFormControl.topic.errors?.required
+                ">Topic is required</span>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+          <div class="form-group">
+            <ng-container *ngIf="learningOutcomeFlag">
+              <label>Learning Outcome<span class="reqStar"></span></label>
+              <ng-select
+                formControlName="learningOutcome"
+                name="learningOutcome"
+                [clearable]="false"
+                [loading]="!learningOutcomes || !learningOutcomes.length"
+              >
+                <ng-option hidden disabled selected value>
+                  -- select an option --
+                </ng-option>
+                <ng-option
+                  *ngFor="let item of learningOutcomes"
+                  [value]="item._id"
+                >
+                  &nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+                </ng-option>
+                <ng-option *ngIf="learningOutcomes.length == 0" disabled
+                  >No Learning Outcomes Available</ng-option
+                >
+              </ng-select>
+              <span
+                class="text-danger"
+                *ngIf="
+                  questionFormControl.learningOutcome.touched &&
+                  questionFormControl.learningOutcome.errors?.required
+                "
+                >Learning Outcome is required</span
+              >
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <div class="row questionary">
+      <div class="col-md-4 col-sm-4 col-xs-12">
+        <div class="form-group">
+          <label
+            >Select the Question Category<span class="reqStar"></span
+          ></label>
+          <ng-select
+            formControlName="questionCategory"
+            name="questionCategory"
+            [clearable]="false"
+          >
+            <ng-option hidden disabled selected value>
+              -- select an option --
+            </ng-option>
+            <ng-option
+              *ngFor="let item of questionCategories"
+              [value]="item._id"
+              >&nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+            </ng-option>
+            <ng-option *ngIf="questionCategories.length == 0" disabled
+              >No Question Categories Available</ng-option
+            >
+          </ng-select>
+          <span
+            class="text-danger"
+            *ngIf="
+              questionFormControl.questionCategory.touched &&
+              questionFormControl.questionCategory.errors?.required
+            "
+            >Question Category is required</span
+          >
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-4 col-xs-12">
+        <div class="form-group">
+          <label>Select the Exam Type<span class="reqStar"></span></label><br />
+          <!-- <mat-form-field appearance="none" class="form-group"> -->
+          <ng-select [closeOnSelect]="false" labelForId="syllabus" clearAllText="Clear" [clearSearchOnAdd]="true"
+            [multiple]="true" name="examType" placeholder="" formControlName="examType"
+            placeholder="-- select an option --" [items]="examTypes" [bindLabel]="'name'" [bindValue]="'_id'">
+            <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+              <div class="row pl-3 pr-1">
+                <input id="item-{{index}}" class="mr-2 mt-1" type="checkbox" [ngModel]="item$.selected"
+                  [ngModelOptions]="{standalone: true}" />
+                {{item['name']}}
+              </div>
+            </ng-template>
+            <ng-template ng-multi-label-tmp let-items="items">
+              <div class="ng-value" *ngFor="let item of items | slice:0:3">
+                {{item['name']}}
+              </div>
+              <div class="ng-value" *ngIf="items.length > 3">
+                <span class="ng-value-label">{{items.length - 3}} more...</span>
+              </div>
+            </ng-template>
+            <!-- <ng-option *ngFor="let exam of examTypes" [value]="exam._id">
+              {{ exam.name }}
+            </ng-option> -->
+            <ng-option *ngIf="examTypes.length == 0" disabled>No Exam Types Available</ng-option>
+          </ng-select>
+          <mat-error *ngIf="
+              questionFormControl.examType.touched &&
+              questionFormControl.examType.errors?.required
+            ">
+            Exam Type is required</mat-error>
+          <!-- </mat-form-field> -->
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-4 col-xs-12">
+        <div class="form-group">
+          <label>Select the Question Type<span class="reqStar">*</span></label>
+          <ng-select formControlName="questionType" name="questionType" [clearable]="false"
+            (change)="questionTypeChange()">
+            <ng-option hidden disabled selected value>
+              -- select an option --
+            </ng-option>
+            <div *ngFor="let item of questionTypes" >
+              <ng-option *ngIf="item.name" style="cursor: none !important;"
+              
+              [value]="item.value">&nbsp;&nbsp;&nbsp;&nbsp;<span >{{ item.name }}</span>
+              </ng-option>
+            </div>
+            
+            <ng-option *ngIf="questionTypes.length == 0" disabled>No Question Types Available</ng-option>
+          </ng-select>
+          <span class="text-danger" *ngIf="
+              questionFormControl.questionType.touched &&
+              questionFormControl.questionType.errors?.required
+            ">Question Type is required</span>
+        </div>
+      </div>
+    </div>
+    <ng-container *ngIf="updateFlag">
+      <div class="row">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div class="foem-group">
+            <label>Auto Generated Question Id</label>
+            <input type="text" [value]="question.question_count" readonly class="form-control" disabled="true" />
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <div class="row">
+      <div class="col-md-3">
+        <button type="button"  class="btn btn-md btn-primary" (click)="addChapter()">
+          Add Chapter
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button type="button" class="btn btn-md btn-primary" (click)="addTopic()">
+          Add Topic
+        </button>
+      </div>
+      <!-- <div class="col-md-3">
+        <button class="btn btn-md btn-primary" (click)="addLearningOutcome()">
+          Add Learning Outcome
+        </button>
+      </div> -->
+      <div class="col-md-3">
+        <button type="button" class="btn btn-md btn-primary" (click)="answerExplain()">
+          Solution Box
+        </button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <label>Practice/Test Question</label>
+        <div *ngFor="
+            let praticTestQuestion of praticTestQuestionArray;
+            let i = index
+          ">
+          <mat-checkbox class="example-margin" [checked]="ispracticeAndTestQuestion(praticTestQuestion.value)"
+            (change)="onChange($event)" [value]="praticTestQuestion.value">
+            {{ praticTestQuestion.name }}
+          </mat-checkbox>
+        </div>
+        <span class="text-danger" *ngIf="
+            questionFormControl.practiceAndTestQuestion.touched &&
+            questionFormControl.practiceAndTestQuestion.errors?.required
+          ">Practice/Test Question is required</span>
+      </div>
+      <!-- <div class="col-md-6 col-sm-6 col-xs-12">
+        <label>Student Type</label>
+        <div *ngFor="let studentType of studentTypeArray; let i = index">
+          <mat-checkbox
+            class="example-margin"
+            [checked]="isStudentType(studentType.value)"
+            (change)="onStudentTypeChange($event)"
+            [value]="studentType.value"
+          >
+            {{ studentType.name }}
+          </mat-checkbox>
+        </div>
+        <span class="text-danger"
+          *ngIf="(questionFormControl.studentType.touched) && questionFormControl.studentType.errors?.required">Student
+          Type is required</span>
+      </div> -->
+    </div>
+
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <mat-radio-group formControlName="difficultyLevel" (change)="difficultyRadioChanged($event)" name="difficultyLevel" color="primary">
+          <mat-label>
+            <h3>
+              <strong>Set Difficulty Level</strong>
+            </h3>
+          </mat-label>
+          <mat-radio-button class="example-radio-button" *ngFor="let item of difficultyLevelArray"
+            [checked]="item.checked" [value]="item.value">
+            {{ item.name }}</mat-radio-button>
+        </mat-radio-group>
+        <span class="text-danger" *ngIf="
+            questionFormControl.difficultyLevel.touched &&
+            questionFormControl.difficultyLevel.errors?.required
+          ">Difficulty Level is required</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 col-sm-4 col-xs-12">
+        <div class="form-group">
+          <label>Language<span class="reqStar"></span></label>
+          <ng-select formControlName="language" [clearable]="false" name="language">
+            <ng-option hidden disabled selected value>
+              -- select an option --
+            </ng-option>
+            <ng-option *ngFor="let item of languages" [value]="item">&nbsp;&nbsp;&nbsp;&nbsp;{{ item }}</ng-option>
+            <ng-option *ngIf="languages.length == 0" disabled>No Languages Available</ng-option>
+          </ng-select>
+          <span class="text-danger" *ngIf="
+              questionFormControl.language.touched &&
+              questionFormControl.language.errors?.required
+            ">Language is required</span>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-4 col-xs-12">
+        <mat-label>Negative Scoring</mat-label>
+        <mat-radio-group formControlName="negativeScore" name="negativeScore" color="primary"
+          (change)="negativeScoreChange()">
+          <mat-radio-button class="example-radio-button" value="YES">Yes</mat-radio-button>
+          <mat-radio-button class="example-radio-button" value="NO">No</mat-radio-button>
+        </mat-radio-group>
+        <span class="text-danger" *ngIf="
+            questionFormControl.negativeScore.touched &&
+            questionFormControl.negativeScore.errors?.required
+          ">Negative Scoring is required</span>
+      </div>
+      <div class="col-md-4 col-sm-4 col-xs-12">
+        <div class="form-group">
+          <label>Negative Marks<span class="reqStar">*</span></label>
+          <input class="form-control" type="text" name="negativeMarks" formControlName="negativeMarks" />
+          <span class="text-danger" *ngIf="
+              questionFormControl.negativeMarks.touched &&
+              questionFormControl.negativeMarks.errors?.required
+            ">Negative Marks is required</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="form-group">
+          <label>Total Marks<span class="reqStar">*</span></label>
+          <input class="form-control" type="number"
+          [attr.disabled]="(questionFormControl.questionType.value == '3colOptionLevelScoring' || questionFormControl.questionType.value == 'optionLevelScoring' || questionFormControl.questionType.value == 'comprehension' )?'' : null"
+            name="totalMarks" formControlName="totalMarks" />
+          <span class="text-danger" *ngIf="
+              questionFormControl.totalMarks.touched &&
+              questionFormControl.totalMarks.errors?.required
+            ">Total Marks is required</span>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="form-group">
+          <label>Duration in Minutes<span class="reqStar">*</span></label>
+          <input class="form-control" type="text" name="duration" formControlName="duration" />
+          <span class="text-danger" *ngIf="
+              questionFormControl.duration.touched &&
+              questionFormControl.duration.errors?.required
+            ">Duration is required</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="form-group">
+          <label> Question ID<span class="reqStar"></span></label>
+          <input class="form-control" type="text" name="questionTitle" formControlName="questionTitle" />
+          <!-- <span class="text-danger"
+          *ngIf="(questionFormControl.questionTitle.touched) && questionFormControl.questionTitle.errors?.required">Question
+          ID required</span> -->
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12 big-editor">
+        <!-- <h3 *ngIf="questionFormControl.questionType.value == 'fillInTheBlanks'"><strong>Instruction:</strong>Add
+          {{fibText}} for the blank the 'Answer' will need to be provide in the answer section See example below <br />
+          EX:{{fibText}} is the capital city of India</h3> -->
+        <!-- <kt-editor [configType]="'all'" [editordata]="questionFormControl.question.value"
+          (valuechanges)="valuechanged($event)" style="background: #fff"></kt-editor> -->
+        <div class="form-group">
+          <label *ngIf="questionFormControl.questionType.value == 'comprehension'"> Enter Story<span
+              class="reqStar"></span></label>
+              <editor apiKey="z9dzc87sg0nk112m5vx7phbkan0tfek10e5w8mwes1xplpyi" [init]="({
+                quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quicktable quickimage',
+                toolbar_mode: 'sliding',
+                contextmenu: 'link image imagetools table',
+                 height: 350,
+                 plugins: [
+                   'advlist autolink lists link charmap print preview anchor',
+                   'searchreplace visualblocks code fullscreen',
+                   'insertdatetime media table code help powerpaste wordcount',
+                   'print preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons tinymce-formula'
+                 ],
+                
+                 menubar: 'file edit view insert format tools table help',
+              toolbar_sticky: true,
+              autosave_ask_before_unload: true,
+              autosave_interval: '30s',
+              autosave_restore_when_empty: false,
+              autosave_retention: '2m',
+             
+              external_plugins: { tiny_mce_wiris: 'https://www.wiris.net/demo/plugins/tiny_mce/plugin.js' },
+              
+                 toolbar:
+                    
+                   'undo redo | formatselect | bold italic backcolor | \
+                   alignleft aligncenter alignright alignjustify | \
+                   bullist numlist outdent indent | removeformat | help | tiny_mce_wiris_formulaEditor tiny_mce_wiris_formulaEditorChemistry '
+               })" [ngModelOptions]="{standalone: true}"
+                [(ngModel)]="questionFormControl.question.value"  (ngModelChange)="valuechanged($event)" ></editor>
+          <span class="text-danger" *ngIf="
+            questionFormControl.question.touched &&
+            questionFormControl.question.errors?.required
+          ">Question is required</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- only for comprehension type question -->
+    <ng-container
+      *ngIf="questionFormControl.questionType.value == 'comprehension' && comprehensionQuestionArray && comprehensionQuestionArray.length">
+
+      <div style="border: 1px solid grey;padding: 8px">
+        <ng-container *ngFor="let ques of comprehensionQuestionArray; let idx = index">
+          <form #myComprehensionForm="ngForm">
+            <div class="row">
+              <div class="col-md-4 d-grid">
+                <div class="form-group">
+                  <label>Question Type<span class="reqStar">*</span></label>
+                  <ng-select [(ngModel)]="ques.questionType"
+                    (change)="comprehensionQuestionTypeChanged($event, ques, idx)" name="questionType1"
+                    [clearable]="false">
+                    <ng-option hidden disabled selected value>
+                      -- select an option --
+                    </ng-option>
+
+                   <div  *ngFor="let item of questionTypes | excludeComprehension" >
+                    <ng-option *ngIf="item.value" [value]="item.value">
+                      &nbsp;&nbsp;&nbsp;&nbsp;<span >{{ item.name }}</span>
+                    </ng-option>
+
+                   </div>
+
+
+                   
+
+
+
+                    <ng-option *ngIf="questionTypes.length == 0" disabled>No Question Types Available</ng-option>
+                  </ng-select>
+                </div>
+                <div class="form-group">
+                  <label>Total Marks<span class="reqStar">*</span></label>
+                  <input type="number" [attr.disabled]="(ques.questionType == '3colOptionLevelScoring' || ques.questionType == 'optionLevelScoring')?'' : null" [min]="1" [(ngModel)]="ques.totalMarks" (ngModelChange)="comprehensionTotalMarksChange()" name="marks{{idx}}" class="form-control">
+                </div>
+              </div>
+
+              <div class="col-md-8">
+                <div class="form-group">
+                  <div class="d-flex justify-content-between">
+                    <label>Question<span class="reqStar">*</span></label>
+                    <span (click)="removeComprehensionElement(idx)" class="remove-it"><i class="fa fa-close"></i></span>
+                  </div>
+                  <editor apiKey="z9dzc87sg0nk112m5vx7phbkan0tfek10e5w8mwes1xplpyi" [init]="({
+                    quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quicktable quickimage',
+                    toolbar_mode: 'sliding',
+                    contextmenu: 'link image imagetools table',
+                     height: 350,
+                     plugins: [
+                       'advlist autolink lists link charmap print preview anchor',
+                       'searchreplace visualblocks code fullscreen',
+                       'insertdatetime media table code help powerpaste wordcount',
+                       'print preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons tinymce-formula'
+                     ],
+                    
+                     menubar: 'file edit view insert format tools table help',
+                  toolbar_sticky: true,
+                  autosave_ask_before_unload: true,
+                  autosave_interval: '30s',
+                  autosave_restore_when_empty: false,
+                  autosave_retention: '2m',
+                 
+                  external_plugins: { tiny_mce_wiris: 'https://www.wiris.net/demo/plugins/tiny_mce/plugin.js' },
+                  
+                     toolbar:
+                        
+                       'undo redo | formatselect | bold italic backcolor | \
+                       alignleft aligncenter alignright alignjustify | \
+                       bullist numlist outdent indent | removeformat | help | tiny_mce_wiris_formulaEditor tiny_mce_wiris_formulaEditorChemistry '
+                   })" [ngModelOptions]="{standalone: true}"
+                    [(ngModel)]="ques.question"></editor>
+                  <div class="row" *ngIf="ques.questionType == 'freeText'">
+                    <p class="col-md-12 col-sm-12 col-xs-12" style="color: hsl(0, 100%, 50%)">
+                      Note : This Question Type cannot be auto corrected
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <ng-container *ngIf="ques.questionType">
+              <div class="row" *ngIf="
+                (ques.questionType == 'sorting' ||
+                ques.questionType == 'twoColMtf' ||
+                ques.questionType == 'threeColMtf' ||
+                ques.questionType == '3colOptionLevelScoring' ||
+                ques.questionType == 'objectives' ||
+                ques.questionType == 'mcq' ||
+                ques.questionType == 'optionLevelScoring' ||
+                ques.questionType == 'sequencingQuestion' ||
+                ques.questionType == 'sentenceSequencing' ||
+                ques.questionType == 'fillInTheBlanks')
+              ">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                  <div class="form-group">
+                    <label>Select Option Type<span class="reqStar">*</span></label>
+                    <ng-select [(ngModel)]="ques.optionsType" name="optionsType1" [clearable]="false" #opType
+                      (ngModelChange)="comprehensionOptionChange(ques)" required>
+                      <!-- (change)="optionChange()" -->
+                      <ng-option hidden disabled selected value>
+                        -- select an option --
+                      </ng-option>
+                      <ng-container *ngFor="let item of objType">
+                        <ng-option *ngIf="((ques.questionType =='fillInTheBlanks' && item.value=='text' ) ||
+                    ques.questionType !='fillInTheBlanks')" [value]="item.value">
+                          &nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+                        </ng-option>
+                      </ng-container>
+                      <ng-option *ngIf="objType.length == 0" disabled>No Option Types Available</ng-option>
+                    </ng-select>
+                    <span class="text-danger" *ngIf="
+                opType.touched &&
+                opType.errors?.required
+            ">Question is required</span>
+                  </div>
+                </div>
+              </div>
+
+              <ng-container *ngIf="ques.questionType == 'NumericalRange'">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="row">
+                      <div class="col-sm-6 col-md-6 col-xs-12">
+                        <div class="form-group">
+                          <label>Enter Min Value<span class="reqStar">*</span></label>
+                          <input class="form-control" type="number" name="minValue"
+                            (keyup)="comprehensionNumericalChange(ques)" [(ngModel)]="ques.answer[0].minValue" />
+                        </div>
+                      </div>
+                      <div class="col-sm-6 col-md-6 col-xs-12">
+                        <div class="form-group">
+                          <label>Enter Max Value<span class="reqStar">*</span></label>
+                          <input class="form-control" type="number" name="maxValue"
+                            (keyup)="comprehensionNumericalChange(ques)" [(ngModel)]="ques.answer[0].maxValue" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="ques.questionType == 'trueOrFalse'">
+                <div class="row">
+                  <div class="col-md-12">
+                    Answer:
+                    <ng-container *ngFor="let item of trueOrFalse;let srno=index;">
+                      <input type="radio" (change)="comprehensionAnsSelected(item.value, ques, srno)"
+                        [value]="item.value" [checked]="(ques.answer && ques.answer.length)?item.value == ques.answer[0]:false" name="trueOrFalse{{idx}}" id="id{{idx}}-{{srno}}">
+                      <label style="margin-top: -4px;" class="ml-1 font-weight-bold" for="id{{idx}}-{{srno}}"
+                        [innerHTML]="item.value"></label>
+                    </ng-container>
+                    <!-- <mat-radio-group formControlName="{{ i }}" name="answer" color="primary">
+                      <mat-label> Answer: </mat-label>
+                      <mat-radio-button class="example-radio-button" >
+                        {{ item.name }}</mat-radio-button>
+                    </mat-radio-group> -->
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="ques.questionType == 'fillInTheBlanks'">
+                <div class="col-md-4 options-row d-flex justicy-content-between"
+                  *ngFor="let opt of ques.options; let srno = index;">
+                  <kt-editor [configType]="'math'" (valuechanges)="comprehensionFillInTheBlank($event, ques, srno)"
+                    [editordata]="opt.value"></kt-editor>
+                    <button type="button" class="btn btn-md btn-primary answer-submit" (click)="addOption23ColFromEditor(optionInEditorModal, opt)">Or</button>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="ques.questionType == 'twoColMtf' || ques.questionType == 'threeColMtf' || ques.questionType == '3colOptionLevelScoring'">
+                <div class="row option-div" *ngIf="ques.matchOptions">
+                  <div class="col-md-4 options-row"
+                    *ngIf="ques.matchOptions.column1 && ques.matchOptions.column1.length">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <ng-container *ngFor="let col1 of ques.matchOptions.column1;let srno = index;">
+                          <span class="mr-1">{{col1.type}}</span>
+                          <ng-container *ngIf="ques.optionsType == 'text'">
+                            <kt-editor [configType]="'math'" [editordata]="col1.value"
+                              (valuechanges)="compOptionChange($event, ques, srno, 'col1')"></kt-editor>
+                              <button type="button" class="btn btn-md btn-primary answer-submit" (click)="addOption23ColFromEditor(optionInEditorModal, col1)">Or</button>
+                          </ng-container>
+
+                          <ng-container *ngIf="ques.optionsType == 'image'">
+                            <div class="avatar-upload">
+                              <div class="avatar-edit">
+                                <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput1
+                                  (change)="onComprehensionFileChanged($event, ques, srno, 'col1')" />
+                              </div>
+                              <div class="avatar-preview">
+                                <div id="imagePreview">
+                                  <img [src]="
+                                    col1.value
+                                        ? col1.value
+                                        : imageupload
+                                    " />
+                                  <button type="button"  mat-mini-fab color="primary" type="submit" (click)="fileInput1.click()">
+                                    <mat-icon>add_a_photo</mat-icon>
+                                  </button>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label>Image Title<span class="reqStar">*</span></label>
+                                <input class="form-control" type="text" name="file_text-{{idx}}-{{srno}}"
+                                  [(ngModel)]="col1.file_text" />
+                                <!-- <span class="text-danger" *ngIf="
+                                    optionFormArray.controls[i].get('file_text').touched &&
+                                    optionFormArray.controls[i].get('file_text').errors
+                                      ?.required
+                                  ">Image Title is required</span> -->
+                              </div>
+                            </div>
+                          </ng-container>
+
+                          <div class="avatar-upload" *ngIf="ques.optionsType=='audio'">
+                            <div class="avatar-edit">
+                              <input type="file" id="imageUpload" accept="audio/*" #fileInput11
+                                (change)="onComprehensionFileChanged($event, ques, srno, 'col1')" />
+                            </div>
+                            <div class="avatar-preview">
+                              <div id="imagePreview">
+                                <img [src]="
+                                    (col1 && col1.value)
+                                        ? col1.value
+                                        : imageupload
+                                    " />
+                                <button mat-mini-fab color="primary" type="submit" (click)="fileInput11.click()">
+                                  <mat-icon>attach_file</mat-icon>
+                                </button>
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <audio *ngIf="col1 && col1.value" controls [src]="ques.colImages.column1[srno]"></audio>
+                              <label>Audio Title<span class="reqStar">*</span></label>
+                              <input class="form-control" type="text" name="file_text{{idx}}-{{srno}}"
+                                [(ngModel)]="col1.file_text" />
+                              <!-- <span class="text-danger" *ngIf="
+                                    optionFormArray.controls[i].get('file_text').touched &&
+                                    optionFormArray.controls[i].get('file_text').errors
+                                      ?.required
+                                  ">Audio Title is required</span> -->
+                            </div>
+                          </div>
+                        </ng-container>
+
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <button type="button"  mat-raised-button (click)="comprehensionAddOption(ques, idx, 'col1')"
+                          class="btn btn-primary">
+                          Add Option
+                        </button>
+                        <button type="button"  mat-raised-button (click)="comprehensionRemoveLastOption(ques, idx, 'col1')"
+                          class="btn btn-primary">
+                          Remove Last
+                        </button>
+                        <button type="button"  mat-raised-button (click)="comprehensionRemoveAllOption(ques, idx, 'col1')"
+                          class="btn btn-primary">
+                          Remove All
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 options-row"
+                    *ngIf="ques.matchOptions.column2 && ques.matchOptions.column2.length">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <ng-container *ngFor="let col2 of ques.matchOptions.column2;let srno = index;">
+                          <span class="mr-1">{{col2.type}}</span>
+                          <ng-container *ngIf="ques.optionsType == 'text'">
+                            <kt-editor [configType]="'math'" [editordata]="col2.value"
+                              (valuechanges)="compOptionChange($event, ques, srno, 'col2')"></kt-editor>
+                              <button type="button" class="btn btn-md btn-primary answer-submit" (click)="addOption23ColFromEditor(optionInEditorModal, col2)">Or</button>
+                          </ng-container>
+
+                          <ng-container *ngIf="ques.optionsType == 'image'">
+                            <div class="avatar-upload">
+                              <div class="avatar-edit">
+                                <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput1
+                                  (change)="onComprehensionFileChanged($event, ques, srno, 'col2')" />
+                              </div>
+                              <div class="avatar-preview">
+                                <div id="imagePreview">
+                                  <img [src]="
+                                    col2.value
+                                        ? col2.value
+                                        : imageupload
+                                    " />
+                                  <button mat-mini-fab color="primary" type="submit" (click)="fileInput1.click()">
+                                    <mat-icon>add_a_photo</mat-icon>
+                                  </button>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label>Image Title<span class="reqStar">*</span></label>
+                                <input class="form-control" type="text" name="file_text-{{idx}}-{{srno}}"
+                                  [(ngModel)]="col2.file_text" />
+                                <!-- <span class="text-danger" *ngIf="
+                                    optionFormArray.controls[i].get('file_text').touched &&
+                                    optionFormArray.controls[i].get('file_text').errors
+                                      ?.required
+                                  ">Image Title is required</span> -->
+                              </div>
+                            </div>
+                          </ng-container>
+
+                          <div class="avatar-upload" *ngIf="ques.optionsType=='audio'">
+                            <div class="avatar-edit">
+                              <input type="file" id="imageUpload" accept="audio/*" #fileInput11
+                                (change)="onComprehensionFileChanged($event, ques, srno, 'col2')" />
+                            </div>
+                            <div class="avatar-preview">
+                              <div id="imagePreview">
+                                <img [src]="
+                                    (col2 && col2.value)
+                                        ? col2.value
+                                        : imageupload
+                                    " />
+                                <button mat-mini-fab color="primary" type="submit" (click)="fileInput11.click()">
+                                  <mat-icon>attach_file</mat-icon>
+                                </button>
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <audio *ngIf="col2 && col2.value" controls [src]="ques.colImages.column2[srno]"></audio>
+                              <label>Audio Title<span class="reqStar">*</span></label>
+                              <input class="form-control" type="text" name="file_text{{idx}}-{{srno}}"
+                                [(ngModel)]="col2.file_text" />
+                              <!-- <span class="text-danger" *ngIf="
+                                    optionFormArray.controls[i].get('file_text').touched &&
+                                    optionFormArray.controls[i].get('file_text').errors
+                                      ?.required
+                                  ">Audio Title is required</span> -->
+                            </div>
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <button type="button"  mat-raised-button (click)="comprehensionAddOption(ques, idx, 'col2')"
+                          class="btn btn-primary">
+                          Add Option
+                        </button>
+                        <button type="button"  mat-raised-button (click)="comprehensionRemoveLastOption(ques, idx, 'col2')"
+                          class="btn btn-primary">
+                          Remove Last
+                        </button>
+                        <button type="button" mat-raised-button (click)="comprehensionRemoveAllOption(ques, idx, 'col2')"
+                          class="btn btn-primary">
+                          Remove All
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 options-row"
+                    *ngIf="ques.matchOptions.column3 && ques.matchOptions.column3.length">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <ng-container *ngFor="let col3 of ques.matchOptions.column3;let srno = index;">
+                          <span class="mr-1">{{col3.type}}</span>
+                          <ng-container *ngIf="ques.optionsType == 'text'">
+                            <kt-editor [configType]="'math'" [editordata]="col3.value"
+                              (valuechanges)="compOptionChange($event, ques, srno, 'col3')"></kt-editor>
+                              <button type="button" class="btn btn-md btn-primary answer-submit" (click)="addOption23ColFromEditor(optionInEditorModal, col3)">Or</button>
+                          </ng-container>
+
+                          <ng-container *ngIf="ques.optionsType == 'image'">
+                            <div class="avatar-upload">
+                              <div class="avatar-edit">
+                                <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput1
+                                  (change)="onComprehensionFileChanged($event, ques, srno, 'col3')" />
+                              </div>
+                              <div class="avatar-preview">
+                                <div id="imagePreview">
+                                  <img [src]="
+                                    col3.value
+                                        ? col3.value
+                                        : imageupload
+                                    " />
+                                  <button mat-mini-fab color="primary" type="submit" (click)="fileInput1.click()">
+                                    <mat-icon>add_a_photo</mat-icon>
+                                  </button>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label>Image Title<span class="reqStar">*</span></label>
+                                <input class="form-control" type="text" name="file_text-{{idx}}-{{srno}}"
+                                  [(ngModel)]="col3.file_text" />
+                                <!-- <span class="text-danger" *ngIf="
+                                    optionFormArray.controls[i].get('file_text').touched &&
+                                    optionFormArray.controls[i].get('file_text').errors
+                                      ?.required
+                                  ">Image Title is required</span> -->
+                              </div>
+                            </div>
+                          </ng-container>
+
+                          <div class="avatar-upload" *ngIf="ques.optionsType=='audio'">
+                            <div class="avatar-edit">
+                              <input type="file" id="imageUpload" accept="audio/*" #fileInput11
+                                (change)="onComprehensionFileChanged($event, ques, srno, 'col1')" />
+                            </div>
+                            <div class="avatar-preview">
+                              <div id="imagePreview">
+                                <img [src]="
+                                    (col3 && col3.value)
+                                        ? col3.value
+                                        : imageupload
+                                    " />
+                                <button mat-mini-fab color="primary" type="submit" (click)="fileInput11.click()">
+                                  <mat-icon>attach_file</mat-icon>
+                                </button>
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <audio *ngIf="col3 && col3.value" controls [src]="ques.colImages.column3[srno]"></audio>
+                              <label>Audio Title<span class="reqStar">*</span></label>
+                              <input class="form-control" type="text" name="file_text{{idx}}-{{srno}}"
+                                [(ngModel)]="col3.file_text" />
+                              <!-- <span class="text-danger" *ngIf="
+                                    optionFormArray.controls[i].get('file_text').touched &&
+                                    optionFormArray.controls[i].get('file_text').errors
+                                      ?.required
+                                  ">Audio Title is required</span> -->
+                            </div>
+                          </div>
+                        </ng-container>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-md-12">
+                        <button type="button"  mat-raised-button (click)="comprehensionAddOption(ques, idx, 'col3')"
+                          class="btn btn-primary">
+                          Add Option
+                        </button>
+                        <button type="button"  mat-raised-button (click)="comprehensionRemoveLastOption(ques, idx, 'col3')"
+                          class="btn btn-primary">
+                          Remove Last
+                        </button>
+                        <button type="button"  mat-raised-button (click)="comprehensionRemoveAllOption(ques, idx, 'col3')"
+                          class="btn btn-primary">
+                          Remove All
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <button type="button"  mat-raised-button [disabled]="!enableComprehensionNextBtn(ques, idx, true)"
+                      class="btn btn-primary" (click)="comprehensionNextClicked(false, ques, idx, true)">
+                      Next
+                    </button>
+                  </div>
+                </div>
+
+                <ng-container *ngIf="ques.colAdded">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <label>Options</label>
+                      <ng-container *ngIf="ques.options && ques.options.length">
+                        <div class="row" *ngFor="let opt of ques.options; let srno=index;">
+                          <div class="col-md-12">
+                            <span class="mr-1">{{srno + 1}}</span>
+                            <kt-editor [configType]="'math'" [editordata]="opt.value"
+                              (valuechanges)="compOptionChange($event, ques, srno)"></kt-editor>
+                              <button type="button" class="btn btn-md btn-primary answer-submit" (click)="addOption23ColFromEditor(optionInEditorModal, opt)">Or</button>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-12">
+                      <button type="button"  mat-raised-button (click)="comprehensionAddOption(ques, idx)" class="btn btn-primary">
+                        Add Option
+                      </button>
+                      <button type="button"  mat-raised-button (click)="comprehensionRemoveLastOption(ques, idx)"
+                        class="btn btn-primary">
+                        Remove Last
+                      </button>
+                      <button type="button"  mat-raised-button (click)="comprehensionRemoveAllOption(ques, idx)"
+                        class="btn btn-primary">
+                        Remove All
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-12">
+                      <button type="button"  mat-raised-button [disabled]="!enableComprehensionNextBtn(ques, idx)"
+                        class="btn btn-primary" (click)="comprehensionNextClicked(false, ques, idx)">
+                        Next
+                      </button>
+                    </div>
+                  </div>
+
+                  <ng-container *ngIf="ques.optionsAdded && ques.setAns && enableComprehensionNextBtn(ques, idx)">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div [innerHtml]="ques.questionSvg"></div>
+                        <h3>
+                          Please select the correct answer option for the above question<span class="reqStar">*</span>
+                        </h3>
+                      </div>
+                    </div>
+                    <div class="row" *ngIf="ques.questionType == 'twoColMtf' || ques.questionType == 'threeColMtf' || ques.questionType == '3colOptionLevelScoring'">
+                      <div class="col-md-3 example-margin d-flex justify-content-start"
+                        *ngFor="let item of ques.options;let srno = index;">
+
+                        <ng-container *ngIf="ques.questionType == 'twoColMtf' || ques.questionType == 'threeColMtf'; else else1Block">
+                          <input type="radio" [checked]="(ques.answer  && ques.answer.length)?ques.answer[0].value == item.value : false" (change)="comprehensionAnsSelected(item.value, ques, srno)"
+                            [value]="item.value" name="name{{idx}}" id="id{{idx}}-{{srno}}">
+                        </ng-container>
+
+                        <ng-template #else1Block>
+                          <input type="checkbox" [checked]="isComprehensionCheckbox(ques,item)" (change)="comprehensionAnsSelected(item.value, ques, srno, $event)"
+                            [value]="item.value" name="name{{idx}}" id="id{{idx}}-{{srno}}">
+                        </ng-template>
+
+                        <ng-container
+                          *ngIf="ques.optionsType == 'text' || (ques.questionType == 'twoColMtf' || ques.questionType == 'threeColMtf' || ques.questionType == '3colOptionLevelScoring')">
+                          <label style="margin-top: -4px;" class="ml-1 font-weight-bold" for="id{{idx}}-{{srno}}"
+                            [innerHTML]="item.value"></label>
+                        </ng-container>
+
+                        <div class="answer-div"
+                          *ngIf="ques.optionsType == 'image' && !(ques.questionType == 'twoColMtf' || ques.questionType == 'threeColMtf' || ques.questionType == '3colOptionLevelScoring')">
+                          <img [src]="item.value" />
+                          <span>{{ item.file_text }}</span>
+                        </div>
+
+                        <div class="answer-div"
+                          *ngIf="ques.optionsType == 'audio' && !(ques.questionType == 'twoColMtf' || ques.questionType == 'threeColMtf' || ques.questionType == '3colOptionLevelScoring')">
+                          <audio controls [src]="item.value"></audio>
+                          <span>{{ item.file_text }}</span>
+                        </div>
+
+                        <input [disabled]="item.disabled" *ngIf="ques.questionType == '3colOptionLevelScoring'" (keyup)="comprehensionScoreKeyup(ques, srno)" type="number" name="score{{idx}}-{{srno}}" [(ngModel)]="item.score">
+                      </div>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+
+              <ng-container
+                *ngIf="ques.questionType == 'objectives' || ques.questionType == 'mcq' || ques.questionType == 'optionLevelScoring'">
+                <div class="row option-div" *ngIf="ques.options && ques.options.length">
+
+                  <ng-container *ngIf="ques.optionsType == 'text'">
+                    <div class="col-md-4 options-row d-flex justicy-content-between"
+                      *ngFor="let opt of ques.options; let srno = index;">
+                      <span class="mr-1">{{srno + 1}}</span>
+                      <kt-editor [configType]="'math'" (valuechanges)="compOptionChange($event, ques, srno)"
+                        [editordata]="opt.value"></kt-editor>
+                        <button type="button" class="btn btn-md btn-primary answer-submit" (click)="addOption23ColFromEditor(optionInEditorModal, opt)">Or</button>
+                    </div>
+                  </ng-container>
+
+                  <ng-container *ngIf="ques.optionsType=='audio'">
+                    <div class="col-md-4 avatar-upload options-row d-flex justicy-content-between"
+                      *ngFor="let opt of ques.options; let srno = index;">
+                      <div class="avatar-edit">
+                        <input type="file" id="imageUpload" accept="audio/*" #fileInput11
+                          (change)="onComprehensionFileChanged($event, ques, srno)" />
+                      </div>
+                      <div class="avatar-preview">
+                        <div id="imagePreview">
+                          <img [src]="
+                            (opt && opt.value)
+                                ? opt.value
+                                : imageupload
+                            " />
+                          <button mat-mini-fab color="primary" type="submit" (click)="fileInput11.click()">
+                            <mat-icon>attach_file</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <audio *ngIf="opt && opt.value" controls [src]="ques.images[srno]"></audio>
+                        <label>Audio Title<span class="reqStar">*</span></label>
+                        <input class="form-control" type="text" name="file_text{{idx}}-{{srno}}"
+                          [(ngModel)]="opt.file_text" />
+                        <!-- <span class="text-danger" *ngIf="
+                            optionFormArray.controls[i].get('file_text').touched &&
+                            optionFormArray.controls[i].get('file_text').errors
+                              ?.required
+                          ">Audio Title is required</span> -->
+                      </div>
+                    </div>
+                  </ng-container>
+
+                  <ng-container *ngIf="ques.optionsType == 'image'">
+                    <div class="col-md-4 options-row d-flex justicy-content-between"
+                      *ngFor="let opt of ques.options; let srno = index;">
+                      <span class="mr-1">{{srno + 1}}</span>
+                      <div class="avatar-upload">
+                        <div class="avatar-edit">
+                          <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput1
+                            (change)="onComprehensionFileChanged($event, ques, srno)" />
+                        </div>
+                        <div class="avatar-preview">
+                          <div id="imagePreview">
+                            <img [src]="
+                              opt.value
+                                ? opt.value
+                                : imageupload
+                            " />
+                            <button mat-mini-fab color="primary" type="submit" (click)="fileInput1.click()">
+                              <mat-icon>add_a_photo</mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label>Image Title<span class="reqStar">*</span></label>
+                          <input class="form-control" type="text" name="file_text-{{idx}}-{{srno}}"
+                            [(ngModel)]="opt.file_text" />
+                          <!-- <span class="text-danger" *ngIf="
+                            optionFormArray.controls[i].get('file_text').touched &&
+                            optionFormArray.controls[i].get('file_text').errors
+                              ?.required
+                          ">Image Title is required</span> -->
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+
+                </div>
+
+                <div class="row" *ngIf="ques.questionType != 'fillInTheBlanks'">
+                  <div class="col-md-12">
+                    <button type="button"  mat-raised-button (click)="comprehensionAddOption(ques, idx)" class="btn btn-primary">
+                      Add Option
+                    </button>
+                    <button type="button" mat-raised-button (click)="comprehensionRemoveLastOption(ques, idx)"
+                      class="btn btn-primary">
+                      Remove Last
+                    </button>
+                    <button type="button"  mat-raised-button (click)="comprehensionRemoveAllOption(ques, idx)" class="btn btn-primary">
+                      Remove All
+                    </button>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12">
+                    <button type="button" mat-raised-button [disabled]="!enableComprehensionNextBtn(ques, idx)"
+                      class="btn btn-primary" (click)="comprehensionNextClicked(false, ques, idx)">
+                      Next
+                    </button>
+                  </div>
+                </div>
+
+                <ng-container *ngIf="ques.optionsAdded">
+                  <div class="row" *ngIf="ques.questionType == 'objectives' || ques.questionType == 'mcq' ||ques.questionType == 'optionLevelScoring' || ques.questionType == 'twoColMtf' || ques.questionType == 'threeColMtf'">
+                    <div class="col-md-12">
+                      <h2><div [innerHtml]="ques.questionSvg "></div></h2>
+                      <h3>
+                        Please select the correct answer option for the above question<span class="reqStar">*</span>
+                      </h3>
+                    </div>
+                  </div>
+                  <div class="row"
+                    *ngIf="ques.questionType == 'objectives' || ques.questionType == 'optionLevelScoring' || ques.questionType == 'mcq' || ques.questionType == 'twoColMtf' || ques.questionType == 'threeColMtf'">
+                    <div class="col-md-3 d-flex justify-content-start"
+                      *ngFor="let item of ques.options;let srno = index;">
+
+                      <div class="d-grid example-margin">
+                        <ng-container
+                          *ngIf="(ques.questionType == 'objectives' || ques.questionType == 'twoColMtf' || ques.questionType == 'threeColMtf'); else elseBlock">
+                          <input type="radio" [checked]="(ques.answer  && ques.answer.length)?ques.answer[0].value == item.value : false" (change)="comprehensionAnsSelected(item.value, ques, srno)"
+                            [value]="item.value" name="name{{idx}}" id="id{{idx}}-{{srno}}">
+                        </ng-container>
+
+                        <ng-template #elseBlock>
+                          <input type="checkbox" [checked]="isComprehensionCheckbox(ques,item)" (change)="comprehensionAnsSelected(item.value, ques, srno, $event)"
+                            [value]="item.value" name="name{{idx}}" id="id{{idx}}-{{srno}}">
+                        </ng-template>
+
+
+                        <ng-container *ngIf="ques.optionsType == 'text'">
+                          <label style="margin-top: -4px;" class="ml-1 font-weight-bold" for="id{{idx}}-{{srno}}"
+                            [innerHTML]="item.value"></label>
+                        </ng-container>
+
+                        <ng-container *ngIf="ques.optionsType == 'image'">
+                          <div class="d-flex answer-div">
+                            <img [src]="item.value" />
+                            <span>{{ item.file_text }}</span>
+                          </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="ques.optionsType == 'audio'">
+                          <div class="d-flex answer-div">
+                            <audio controls [src]="item.value"></audio>
+                            <span>{{ item.file_text }}</span>
+                          </div>
+                        </ng-container>
+                        <input [disabled]="item.disabled" (keyup)="comprehensionScoreKeyup(ques, srno)" *ngIf="ques.questionType == 'optionLevelScoring' || ques.questionType == '3colOptionLevelScoring'" type="number" name="score{{idx}}-{{srno}}" [(ngModel)]="item.score">
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </form>
+          <hr>
+        </ng-container>
+        <div class="row">
+          <div class="col-md-12 d-flex justify-content-end">
+            <button type="button"  mat-raised-button class="btn btn-primary" (click)="addCompQuestion()">
+              Add more questions
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+    <!-- comprehension type ends -->
+
+    <div class="row" *ngIf="
+        questionFormControl.questionType.value == 'sorting' ||
+        questionFormControl.questionType.value == 'twoColMtf' ||
+        questionFormControl.questionType.value == 'threeColMtf' ||
+        questionFormControl.questionType.value == '3colOptionLevelScoring' ||
+        questionFormControl.questionType.value == 'objectives' ||
+        questionFormControl.questionType.value == 'mcq' ||
+        questionFormControl.questionType.value == 'optionLevelScoring' ||
+        questionFormControl.questionType.value == 'sequencingQuestion' ||
+        questionFormControl.questionType.value == 'sentenceSequencing' ||
+        questionFormControl.questionType.value == 'fillInTheBlanks'
+      ">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="form-group">
+          <label>Select Option Type<span class="reqStar">*</span></label>
+          <ng-select formControlName="optionsType" name="optionsType" [clearable]="false" required
+            (change)="optionChange()">
+            <ng-option hidden disabled selected value>
+              -- select an option --
+            </ng-option>
+            <ng-container *ngFor="let item of objType">
+              <ng-option *ngIf="((questionFormControl.questionType.value=='fillInTheBlanks' && item.value=='text' ) ||
+              questionFormControl.questionType.value !='fillInTheBlanks')" [value]="item.value">
+                &nbsp;&nbsp;&nbsp;&nbsp;{{ item.name }}
+              </ng-option>
+            </ng-container>
+            <ng-option *ngIf="objType.length == 0" disabled>No Option Types Available</ng-option>
+          </ng-select>
+          <span class="text-danger" *ngIf="
+              questionFormControl.optionsType.touched &&
+              questionFormControl.optionsType.errors?.required
+            ">Question is required</span>
+        </div>
+      </div>
+    </div>
+    <div class="row" *ngIf="
+        questionFormControl.questionType.value == 'objectives' ||
+        questionFormControl.questionType.value == 'mcq' ||
+        questionFormControl.questionType.value == 'optionLevelScoring' ||
+        questionFormControl.questionType.value == 'sequencingQuestion' || 
+        questionFormControl.questionType.value == 'sentenceSequencing'
+        ">
+      <!-- <ng-container *ngIf="!updateFlag; else updateCurrentMedia;"> -->
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <ng-container formArrayName="options">
+          <div class="option-div" *ngFor="let option of optionFormArray.controls; index as i">
+            <span class="formSpan">{{ i + 1 }}</span>
+            <ng-container [formGroupName]="i">
+              <div class="text-editor-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                <div class="">
+                <kt-editor [configType]="'math'" [editordata]="optionFormArray.controls[i].get('value').value"
+                  (valuechanges)="optionValueChanged($event, i)"></kt-editor>
+                  <button type="button" class="btn btn-md btn-primary answer-submit" (click)="addOptionFromEditor(optionInEditorModal, optionFormArray.controls[i].get('value'))">Or</button>
+                </div>
+                <span class="text-danger" *ngIf="
+                    optionFormArray.controls[i].get('value').touched &&
+                    optionFormArray.controls[i].get('value').errors?.required
+                  ">Option is required</span>
+              </div>
+              <ng-container *ngIf="!updateFlag; else updateCurrentMediaImage">
+                <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'image'">
+                  <div class="avatar-edit">
+                    <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput
+                      (change)="onFileChanged($event, i)" />
+                  </div>
+                  <div class="avatar-preview">
+                    <div id="imagePreview">
+                      <img [src]="
+                          optionFormArray.controls[i].get('value').value
+                            ? images[i]
+                            : imageupload
+                        " />
+                      <button  mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                        <mat-icon>add_a_photo</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Image Title<span class="reqStar">*</span></label>
+                    <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                    <span class="text-danger" *ngIf="
+                        optionFormArray.controls[i].get('file_text').touched &&
+                        optionFormArray.controls[i].get('file_text').errors
+                          ?.required
+                      ">Image Title is required</span>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #updateCurrentMediaImage>
+                <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'image'">
+                  <div class="avatar-edit">
+                    <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput
+                      (change)="onFileChanged($event, i)" />
+                  </div>
+                  <div class="avatar-preview">
+                    <div id="imagePreview">
+                      <!-- [src]="optionFormArray.controls[i].get('value').value?images[i]:imageupload" -->
+                      <img [src]="option.get('value').value" />
+                      <button type="button"  mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                        <mat-icon>add_a_photo</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Image Title<span class="reqStar">*</span></label>
+                    <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                    <span class="text-danger" *ngIf="
+                        optionFormArray.controls[i].get('file_text').touched &&
+                        optionFormArray.controls[i].get('file_text').errors
+                          ?.required
+                      ">Image Title is required</span>
+                  </div>
+                </div>
+              </ng-template>
+              <ng-container *ngIf="!updateFlag; else updateCurrentMediaAudio">
+                <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                  <div class="avatar-edit">
+                    <input type="file" id="imageUpload" accept="audio/*" #fileInput
+                      (change)="onFileChanged($event, i)" />
+                  </div>
+                  <div class="avatar-preview">
+                    <div id="imagePreview">
+                      <img [src]="
+                          optionFormArray.controls[i].get('value').value
+                            ? images[i]
+                            : imageupload
+                        " />
+                      <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                        <mat-icon>attach_file</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <audio *ngIf="optionFormArray.controls[i].get('value').value" controls [src]="images[i]"></audio>
+                  <div class="form-group">
+                    <label>Audio Title<span class="reqStar">*</span></label>
+                    <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                    <span class="text-danger" *ngIf="
+                        optionFormArray.controls[i].get('file_text').touched &&
+                        optionFormArray.controls[i].get('file_text').errors
+                          ?.required
+                      ">Audio Title is required</span>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #updateCurrentMediaAudio>
+                <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                  <div class="avatar-edit">
+                    <input type="file" id="imageUpload" accept="audio/*" #fileInput
+                      (change)="onFileChanged($event, i)" />
+                  </div>
+                  <div class="avatar-preview">
+                    <div id="imagePreview">
+                      <img [src]="option.get('value').value" />
+                      <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                        <mat-icon>attach_file</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <audio *ngIf="optionFormArray.controls[i].get('value').value" controls [src]="images[i]"></audio>
+                  <div class="form-group">
+                    <label>Audio Title<span class="reqStar">*</span></label>
+                    <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                    <span class="text-danger" *ngIf="
+                        optionFormArray.controls[i].get('file_text').touched &&
+                        optionFormArray.controls[i].get('file_text').errors
+                          ?.required
+                      ">Audio Title is required</span>
+                  </div>
+                </div>
+              </ng-template>
+              <ng-container *ngIf="!updateFlag; else updateCurrentMediaVideo">
+                <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'video'">
+                  <div class="avatar-edit">
+                    <input type="file" id="imageUpload" accept="video/*" #fileInput
+                      (change)="onFileChanged($event, i)" />
+                  </div>
+                  <div class="avatar-preview">
+                    <div id="imagePreview">
+                      <img [src]="
+                          optionFormArray.controls[i].get('value').value
+                            ? videoThubmnail
+                            : imageupload
+                        " />
+                      <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                        <mat-icon>attach_file </mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <video *ngIf="optionFormArray.controls[i].get('value').value" controls [src]="images[i]"></video>
+                  <div class="form-group">
+                    <label>Video Title<span class="reqStar">*</span></label>
+                    <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                    <span class="text-danger" *ngIf="
+                        optionFormArray.controls[i].get('file_text').touched &&
+                        optionFormArray.controls[i].get('file_text').errors
+                          ?.required
+                      ">Video Title is required</span>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #updateCurrentMediaVideo>
+                <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'video'">
+                  <div class="avatar-edit">
+                    <input type="file" id="imageUpload" accept="video/*" #fileInput
+                      (change)="onFileChanged($event, i)" />
+                  </div>
+                  <div class="avatar-preview">
+                    <div id="imagePreview">
+                      <img [src]="option.get('value').value" />
+                      <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                        <mat-icon>attach_file </mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <video *ngIf="optionFormArray.controls[i].get('value').value" controls [src]="images[i]"></video>
+                  <div class="form-group">
+                    <label>Video Title<span class="reqStar">*</span></label>
+                    <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                    <span class="text-danger" *ngIf="
+                        optionFormArray.controls[i].get('file_text').touched &&
+                        optionFormArray.controls[i].get('file_text').errors
+                          ?.required
+                      ">Video Title is required</span>
+                  </div>
+                </div>
+              </ng-template>
+            </ng-container>
+          </div>
+          <button type="button"  mat-raised-button (click)="addOption()" class="btn btn-primary">
+            Add Option
+          </button>
+          <button  type="button" mat-raised-button (click)="removeLastOption()" class="btn btn-primary">
+            Remove Last
+          </button>
+          <button  type="button" mat-raised-button (click)="removeAllOption()" class="btn btn-primary">
+            Remove All
+          </button>
+          <div>
+            <button type="button" mat-raised-button [disabled]="optionFormArray.invalid || isLoader" (click)="submitoptions()"
+              class="btn btn-primary">
+              Next
+            </button>
+          </div>
+        </ng-container>
+      </div>
+      <!-- </ng-container> -->
+    </div>
+    <div class="row" *ngIf="questionFormControl.questionType.value == 'fillInTheBlanks'">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <ng-container formArrayName="options" *ngIf="optionFormArray.controls && optionFormArray.controls.length">
+          <div class="option-div" *ngFor="let option of optionFormArray.controls; index as i">
+            <ng-container [formGroupName]="i">
+              <div class="text-editor-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                <label> Type your answer<span class="reqStar"></span></label>
+                <kt-editor [configType]="'math'" [editordata]="optionFormArray.controls[i].get('value').value"
+                  (valuechanges)="submitFillBlanksQuestion($event, i)"></kt-editor>
+                  <button type="button" class="btn btn-md btn-primary answer-submit" (click)="addOptionFromEditor(optionInEditorModal, optionFormArray.controls[i].get('value'))">Or</button>
+                <span class="text-danger" *ngIf="
+                    optionFormArray.controls[i].get('value').touched &&
+                    optionFormArray.controls[i].get('value').errors?.required
+                  ">Option is required</span>
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="
+        questionFormControl.questionType.value == 'objectives' ||
+        questionFormControl.questionType.value == 'mcq' ||
+        questionFormControl.questionType.value == 'optionLevelScoring' ||
+        questionFormControl.questionType.value == 'sequencingQuestion'
+      ">
+      <mat-spinner *ngIf="isLoader"></mat-spinner>
+      <div class="col-md-12 col-sm-12 col-xs-12" *ngIf="submitted" formArrayName="answer">
+        
+        <!-- <div [innerHtml]="questionFormControl.question.value | sanitizeHtml"></div> -->
+        <h3>
+          Please select the correct answer option for the above question<span class="reqStar">*</span>
+        </h3>
+        <!-- <ng-container > -->
+        <div *ngIf="!updateFlag; else updateCurrent">
+          <ng-container *ngFor="let answer of answerFormArray.controls; index as i">
+            <ng-container
+              *ngIf="questionFormControl?.questionType && questionFormControl.questionType.value == 'objectives'">
+              <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                formControlName="{{ i }}">
+                <mat-radio-button class="example-radio-button"
+                  *ngFor="let options of optionFormArray.controls; index as j" [value]="options.value">
+                  <!-- [checked]="question.answer[0].value===options.get('value').value" -->
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                    <span id="{{ 'mathOptId' + j }}"></span>
+                  </div>
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'image'">
+                    <img [src]="options.get('value').value" />
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                    <audio controls [src]="options.get('value').value"></audio>
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                  <!-- s3BucketUrl+ -->
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'video'">
+                    <video controls [src]="s3BucketUrl + options.get('value').value"></video>
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                </mat-radio-button>
+              </mat-radio-group>
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngFor="let answer of answerFormArray.controls; index as i">
+            <ng-container *ngIf="questionFormControl?.questionType &&
+            questionFormControl.questionType.value == 'fillInTheBlanks'
+          ">
+              <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                formControlName="{{ i }}">
+                <mat-radio-button class="example-radio-button"
+                  *ngFor="let options of optionFormArray.controls; index as j" [value]="options.value">
+                  <!-- [checked]="question.answer[0].value===options.get('value').value" -->
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                    <span id="{{ 'mathOptId' + j }}"></span>
+                  </div>
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'image'">
+                    <img [src]="options.get('value').value" />
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                    <audio controls [src]="options.get('value').value"></audio>
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                  <!-- s3BucketUrl+ -->
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'video'">
+                    <video controls [src]="s3BucketUrl + options.get('value').value"></video>
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                </mat-radio-button>
+              </mat-radio-group>
+            </ng-container>
+          </ng-container>
+
+          <!-- <ng-container *ngFor="let answer of answerFormArray.controls; index as i"> -->
+          <mat-radio-group *ngIf="questionFormControl?.questionType &&
+              questionFormControl.questionType.value == 'sequencingQuestion'
+            " aria-labelledby="example-radio-group-label" class="example-radio-group">
+            <mat-radio-button class="example-radio-button" *ngFor="let options of optionFormArray.controls; index as j"
+              [value]="options.value" (change)="objectiveAnswerChange(options)">
+              <!-- [checked]="question.answer[0].value===options.get('value').value" -->
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                <span id="{{ 'mathOptId' + j }}"></span>
+              </div>
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'image'">
+                <img [src]="options.get('value').value" />
+                <span>{{ options.get("file_text").value }}</span>
+              </div>
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                <audio controls [src]="options.get('value').value"></audio>
+                <span>{{ options.get("file_text").value }}</span>
+              </div>
+              <!-- s3BucketUrl+ -->
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'video'">
+                <video controls [src]="s3BucketUrl + options.get('value').value"></video>
+                <span>{{ options.get("file_text").value }}</span>
+              </div>
+            </mat-radio-button>
+          </mat-radio-group>
+          <!-- </ng-container> -->
+
+          <div *ngIf="questionFormControl?.questionType && questionFormControl.questionType.value == 'mcq'">
+            <mat-checkbox *ngFor="let options of optionFormArray.controls; index as j" class="example-margin"
+              (change)="onAnswerChange($event)" [value]="options.value">
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                <span id="{{ 'mathOptId' + j }}"></span>
+              </div>
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'image'">
+                <img [src]="options.get('value').value" />
+                <span>{{ options.get("file_text").value }}</span>
+              </div>
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                <audio controls [src]="options.get('value').value"></audio>
+                <span>{{ options.get("file_text").value }}</span>
+              </div>
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'video'">
+                <video controls [src]="options.get('value').value"></video>
+                <span>{{ options.get("file_text").value }}</span>
+              </div>
+            </mat-checkbox>
+          </div>
+
+          <div *ngIf="questionFormControl?.questionType &&
+              questionFormControl.questionType.value == 'optionLevelScoring'
+            ">
+            <mat-checkbox *ngFor="let options of optionFormArray.controls; index as j" class="example-margin"
+              (change)="onAnswerChange($event, j)" [value]="options.value">
+              <div>
+                <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                  <span id="{{ 'mathOptId' + j }}"></span>
+                </div>
+                <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'image'">
+                  <img [src]="options.get('value').value" />
+                  <span>{{ options.get("file_text").value }}</span>
+                </div>
+                <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                  <audio controls [src]="options.get('value').value"></audio>
+                  <span>{{ options.get("file_text").value }}</span>
+                </div>
+                <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'video'">
+                  <video controls [src]="options.get('value').value"></video>
+                  <span>{{ options.get("file_text").value }}</span>
+                </div>
+                <input type="number" id="j" (input)="optionInputChanged($event, j)" 
+                  [disabled]="options.value.isDisable" />
+              </div>
+            </mat-checkbox>
+          </div>
+        </div>
+        <!-- </ng-container> -->
+
+        <ng-template #updateCurrent>
+          <ng-container *ngFor="let answer of answerFormArray.controls; index as i">
+            <ng-container *ngIf="questionFormControl.questionType.value == 'objectives'">
+              <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                formControlName="{{ i }}">
+                <mat-radio-button class="example-radio-button"
+                  *ngFor="let options of optionFormArray.controls; index as j" [value]="options.value" [checked]="
+                  question.answer[0].value === options.get('value').value
+                " (change)="objectiveAnswerChange(options)">
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                    <span id="{{ 'mathOptId' + j }}"></span>
+                  </div>
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'image'">
+                    <img [src]="options.get('value').value" />
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                    <audio controls [src]="options.get('value').value"></audio>
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'video'">
+                    <video controls [src]="options.get('value').value"></video>
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                </mat-radio-button>
+              </mat-radio-group>
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngFor="let answer of answerFormArray.controls; index as i">
+            <ng-container *ngIf="
+            questionFormControl.questionType.value == 'fillInTheBlanks'
+          ">
+              <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                formControlName="{{ i }}">
+                <mat-radio-button class="example-radio-button"
+                  *ngFor="let options of optionFormArray.controls; index as j" [value]="options.value" [checked]="
+                  question.answer[0].value === options.get('value').value
+                " (change)="objectiveAnswerChange(options)">
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                    <span id="{{ 'mathOptId' + j }}"></span>
+                  </div>
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'image'">
+                    <img [src]="options.get('value').value" />
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                    <audio controls [src]="options.get('value').value"></audio>
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'video'">
+                    <video controls [src]="options.get('value').value"></video>
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                </mat-radio-button>
+              </mat-radio-group>
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngFor="let answer of answerFormArray.controls; index as i">
+            <ng-container *ngIf="
+            questionFormControl.questionType.value == 'sequencingQuestion'
+          ">
+              <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                formControlName="{{ i }}">
+                <mat-radio-button class="example-radio-button"
+                  *ngFor="let options of optionFormArray.controls; index as j" [value]="options.value" [checked]="
+                  question.answer[0].value === options.get('value').value
+                " (change)="objectiveAnswerChange(options)">
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                    <span id="{{ 'mathOptId' + j }}"></span>
+                  </div>
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'image'">
+                    <img [src]="options.get('value').value" />
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                    <audio controls [src]="options.get('value').value"></audio>
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                  <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'video'">
+                    <video controls [src]="options.get('value').value"></video>
+                    <span>{{ options.get("file_text").value }}</span>
+                  </div>
+                </mat-radio-button>
+              </mat-radio-group>
+            </ng-container>
+          </ng-container>
+
+          <div *ngIf="questionFormControl.questionType.value == 'mcq'">
+            <mat-checkbox *ngFor="let options of optionFormArray.controls; index as j"
+              [checked]="setAnswerForMcq(options.get('value').value)" class="example-margin"
+              (change)="onAnswerChange($event)" [value]="options.value">
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                <span id="{{ 'mathOptId' + j }}"></span>
+              </div>
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'image'">
+                <img [src]="options.get('value').value" />
+                <span>{{ options.get("file_text").value }}</span>
+              </div>
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                <audio controls [src]="options.get('value').value"></audio>
+                <span>{{ options.get("file_text").value }}</span>
+              </div>
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'video'">
+                <video controls [src]="options.get('value').value"></video>
+                <span>{{ options.get("file_text").value }}</span>
+              </div>
+            </mat-checkbox>
+          </div>
+
+          <div *ngIf="
+              questionFormControl.questionType.value == 'optionLevelScoring'
+            ">
+            <mat-checkbox *ngFor="let options of optionFormArray.controls; index as j"
+              [checked]="setAnswerForMcq(options.get('value').value)" class="example-margin"
+              (change)="onAnswerChange($event, j)" [value]="options.value">
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                <span id="{{ 'mathOptId' + j }}"></span>
+              </div>
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'image'">
+                <img [src]="options.get('value').value" />
+                <span>{{ options.get("file_text").value }}</span>
+              </div>
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                <audio controls [src]="options.get('value').value"></audio>
+                <span>{{ options.get("file_text").value }}</span>
+              </div>
+              <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'video'">
+                <video controls [src]="options.get('value').value"></video>
+                <span>{{ options.get("file_text").value }}</span>
+              </div>
+              <input type="number" id="j" [value]="options.get('score').value" (input)="optionInputChanged($event, j)"
+                [disabled]="options.value.isDisable" />
+            </mat-checkbox>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="questionFormControl.questionType.value == 'trueOrFalse'" formArrayName="answer">
+      <ng-container *ngFor="let answer of answerFormArray.controls; index as i">
+        <mat-radio-group formControlName="{{ i }}" name="answer" color="primary">
+          <mat-label> Answer: </mat-label>
+          <mat-radio-button class="example-radio-button" *ngFor="let item of trueOrFalse" [value]="item.value">
+            {{ item.name }}</mat-radio-button>
+        </mat-radio-group>
+      </ng-container>
+    </div>
+
+    <div class="row" *ngIf="questionFormControl.questionType.value == 'NumericalRange'">
+      <div class="col-sm-12 col-md-12 col-xs-12" formArrayName="options">
+        <div *ngFor="let option of optionFormArray.controls; index as i">
+          <div class="row" [formGroupName]="i">
+            <div class="col-sm-6 col-md-6 col-xs-12">
+              <div class="form-group">
+                <label>Enter Min Value<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="minValue" formControlName="minValue" />
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-6 col-xs-12">
+              <div class="form-group">
+                <label>Enter Max Value<span class="reqStar">*</span></label>
+                <input class="form-control" type="number" name="maxValue" formControlName="maxValue" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-12 col-xs-12">
+        <button type="button" mat-raised-button [disabled]="optionFormArray.invalid" (click)="submitNumericOption()"
+          class="btn btn-primary">
+          Next
+        </button>
+      </div>
+
+      <div *ngIf="submitted" class="col-sm-12 col-md-12 col-xs-12">
+        <ng-container formArrayName="answer">
+          <div *ngFor="
+              let _ of questionaryForm.controls['answer'].controls as FormArray;
+              index as i
+            ">
+
+            <div class="row" [formGroupName]="i">
+              <div class="col-sm-6 col-md-6 col-xs-12">
+                <div class="form-group">
+                  <label>Enter Min Value<span class="reqStar">*</span></label>
+                  <input class="form-control" type="number" name="minValue" formControlName="minValue" />
+                </div>
+              </div>
+              <div class="col-sm-6 col-md-6 col-xs-12">
+                <div class="form-group">
+                  <label>Enter Max Value<span class="reqStar">*</span></label>
+                  <input class="form-control" type="number" name="maxValue" formControlName="maxValue" />
+                </div>
+              </div>
+            </div>
+
+            <!-- <div class="form-group">
+              <label>Enter correct range for above values<span class="reqStar">*</span></label>
+              <input class="form-control" type="number" name="{{ i }}" [formControlName]="i" />
+              <span class="text-danger" *ngIf="
+                  questionFormControl.answer.touched &&
+                  questionFormControl.answer.errors?.required
+                ">Answer is required</span>
+            </div> -->
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="questionFormControl.questionType.value == 'sorting'">
+      <ng-container formArrayName="options">
+        <ng-container *ngFor="let options of optionFormArray.controls; index as j" formGroupName="{{ j }}">
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <h4><strong>Options</strong></h4>
+            <ng-container formArrayName="sortingOption">
+              <div class="option-div" *ngFor="
+                  let option of sortingOptionArray.controls as FormArray;
+                  index as i
+                ">
+                <span class="formSpan">{{ i + 1 }}</span>
+                <ng-container style="width: 100%" [formGroupName]="i">
+                  <div style="width: 100%" *ngIf="questionFormControl.optionsType.value == 'text'">
+                    <kt-editor [configType]="'math'" [editordata]="sortingOptionArray.value[i].value"
+                      (valuechanges)="sortingOptionchanged($event, i)"></kt-editor>
+                  </div>
+                  <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'image'">
+                    <div class="avatar-edit">
+                      <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput
+                        (change)="onFileSortingChanged($event, i)" />
+                    </div>
+                    <div class="avatar-preview">
+                      <div id="imagePreview">
+                        <img [src]="
+                            sortingOptionArray.controls[i].get('value').value
+                              ? optionImages[i]
+                              : imageupload
+                          " />
+                        <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                          <mat-icon>add_a_photo</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>Image Title<span class="reqStar">*</span></label>
+                      <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                      <span class="text-danger" *ngIf="
+                          sortingOptionArray.controls[i].get('file_text')
+                            .touched &&
+                          sortingOptionArray.controls[i].get('file_text').errors
+                            ?.required
+                        ">Image Title is required</span>
+                    </div>
+                  </div>
+                  <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                    <div class="avatar-edit">
+                      <input type="file" id="imageUpload" accept="audio/*" #fileInput
+                        (change)="onFileSortingChanged($event, i)" />
+                    </div>
+                    <div class="avatar-preview">
+                      <div id="imagePreview">
+                        <img [src]="
+                            sortingOptionArray.controls[i].get('value').value
+                              ? audioThubmnail
+                              : imageupload
+                          " />
+                        <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                          <mat-icon>attach_file</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                    <audio *ngIf="sortingOptionArray.controls[i].get('value').value" controls
+                      [src]="optionImages[i]"></audio>
+                    <div class="form-group">
+                      <label>Audio Title<span class="reqStar">*</span></label>
+                      <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                      <span class="text-danger" *ngIf="
+                          sortingOptionArray.controls[i].get('file_text')
+                            .touched &&
+                          sortingOptionArray.controls[i].get('file_text').errors
+                            ?.required
+                        ">Audio Title is required</span>
+                    </div>
+                  </div>
+                  <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'video'">
+                    <div class="avatar-edit">
+                      <input type="file" id="imageUpload" accept="video/*" #fileInput
+                        (change)="onFileSortingChanged($event, i)" />
+                    </div>
+                    <div class="avatar-preview">
+                      <div id="imagePreview">
+                        <img [src]="
+                            sortingOptionArray.controls[i].get('value').value
+                              ? videoThubmnail
+                              : imageupload
+                          " />
+                        <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                          <mat-icon>attach_file </mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                    <video *ngIf="sortingOptionArray.controls[i].get('value').value" controls
+                      [src]="optionImages[i]"></video>
+                    <div class="form-group">
+                      <label>Video Title<span class="reqStar">*</span></label>
+                      <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                      <span class="text-danger" *ngIf="
+                          sortingOptionArray.controls[i].get('file_text')
+                            .touched &&
+                          sortingOptionArray.controls[i].get('file_text').errors
+                            ?.required
+                        ">Video Title is required</span>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+            <button type="button" mat-raised-button (click)="addSortingOption()" class="btn btn-primary">
+              Add Option
+            </button>
+            <button type="button" mat-raised-button (click)="removeSortingLastOption()" class="btn btn-primary">
+              Remove Last
+            </button>
+            <button type="button" mat-raised-button (click)="removeSortingAllOption()" class="btn btn-primary">
+              Remove All
+            </button>
+          </div>
+
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <h4><strong>Groups</strong></h4>
+            <ng-container formArrayName="groups">
+              <div class="option-div" *ngFor="
+                  let option of groupsArray.controls as FormArray;
+                  index as i
+                ">
+                <span class="formSpan">{{ i + 1 }}</span>
+                <ng-container [formGroupName]="i">
+                  <div style="width: 100%" *ngIf="questionFormControl.optionsType.value == 'text'">
+                    <kt-editor [configType]="'math'" [editordata]="groupsArray.value[i].value"
+                      (valuechanges)="sortingGroupOptionchanged($event, i)"></kt-editor>
+                  </div>
+                  <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'image'">
+                    <div class="avatar-edit">
+                      <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput
+                        (change)="onFileSortingGroupChanged($event, i)" />
+                    </div>
+                    <div class="avatar-preview">
+                      <div id="imagePreview">
+                        <img [src]="
+                            groupsArray.controls[i].get('value').value
+                              ? groupImages[i]
+                              : imageupload
+                          " />
+                        <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                          <mat-icon>add_a_photo</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>Image Title<span class="reqStar">*</span></label>
+                      <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                      <span class="text-danger" *ngIf="
+                          groupsArray.controls[i].get('file_text').touched &&
+                          groupsArray.controls[i].get('file_text').errors
+                            ?.required
+                        ">Image Title is required</span>
+                    </div>
+                  </div>
+                  <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                    <div class="avatar-edit">
+                      <input type="file" id="imageUpload" accept="audio/*" #fileInput
+                        (change)="onFileSortingGroupChanged($event, i)" />
+                    </div>
+                    <div class="avatar-preview">
+                      <div id="imagePreview">
+                        <img [src]="
+                            groupsArray.controls[i].get('value').value
+                              ? audioThubmnail
+                              : imageupload
+                          " />
+                        <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                          <mat-icon>attach_file</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                    <audio *ngIf="groupsArray.controls[i].get('value').value" controls [src]="groupImages[i]"></audio>
+                    <div class="form-group">
+                      <label>Audio Title<span class="reqStar">*</span></label>
+                      <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                      <span class="text-danger" *ngIf="
+                          groupsArray.controls[i].get('file_text').touched &&
+                          groupsArray.controls[i].get('file_text').errors
+                            ?.required
+                        ">Audio Title is required</span>
+                    </div>
+                  </div>
+                  <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'video'">
+                    <div class="avatar-edit">
+                      <input type="file" id="imageUpload" accept="video/*" #fileInput
+                        (change)="onFileSortingGroupChanged($event, i)" />
+                    </div>
+                    <div class="avatar-preview">
+                      <div id="imagePreview">
+                        <img [src]="
+                            groupsArray.controls[i].get('value').value
+                              ? videoThubmnail
+                              : imageupload
+                          " />
+                        <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                          <mat-icon>attach_file </mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                    <video *ngIf="groupsArray.controls[i].get('value').value" controls [src]="groupImages[i]"></video>
+                    <div class="form-group">
+                      <label>Video Title<span class="reqStar">*</span></label>
+                      <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                      <span class="text-danger" *ngIf="
+                          groupsArray.controls[i].get('file_text').touched &&
+                          groupsArray.controls[i].get('file_text').errors
+                            ?.required
+                        ">Video Title is required</span>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </ng-container>
+            <button type="button" mat-raised-button (click)="addGroupOption()" class="btn btn-primary">
+              Add Option
+            </button>
+            <button type="button" mat-raised-button (click)="removeGroupLastOption()" class="btn btn-primary">
+              Remove Last
+            </button>
+            <button type="button" mat-raised-button (click)="removeGroupAllOption()" class="btn btn-primary">
+              Remove All
+            </button>
+          </div>
+        </ng-container>
+      </ng-container>
+      <div class="col-md-12 col-xs-12 col-sm-12">
+        <button type="button" mat-raised-button [disabled]="optionFormArray.invalid" (click)="submitSortingOption()"
+          class="btn btn-primary">
+          Next
+        </button>
+      </div>
+      <mat-spinner *ngIf="isLoader"></mat-spinner>
+      <ng-container *ngIf="!isLoader && submitted" formArrayName="answer">
+        <div *ngFor="let option of answerFormArray.controls; index as i">
+          <ng-container>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <mat-form-field class="form-group">
+                <mat-label>Options for Group {{ groupsArray.value[i].value }}</mat-label>
+                <mat-select class="form-control" name="examType" placeholder="" [formControlName]="i" multiple
+                  (selectionChange)="groupAnswerChanged()">
+                  <mat-option *ngFor="
+                      let options of sortingOptionArray.controls as FormArray
+                    " [value]="options.value">
+                    <span [innerHTML]="options.get('value').value"></span>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="row" *ngIf="questionaryForm.get('questionType').value == 'freeText'" formArrayName="answer">
+      <p class="col-md-12 col-sm-12 col-xs-12" style="color: hsl(0, 100%, 50%)">
+        Note : This Question Type cannot be auto corrected
+      </p>
+      <!-- <p class="col-md-12 col-sm-12 col-xs-12">Add Answer in the below box</p> -->
+
+    </div>
+
+    <div class="row" *ngIf="
+        questionaryForm.get('questionType').value == 'twoColMtf' ||
+        questionaryForm.get('questionType').value == 'threeColMtf' ||
+        questionaryForm.get('questionType').value == '3colOptionLevelScoring'
+      ">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="row" formGroupName="matchOptions">
+          <div class="col">
+            <h4><strong>Column 1</strong></h4>
+            <ng-container formArrayName="column1">
+              <ol class="p-0">
+                <div class="option-div" *ngFor="
+                  let option of column1Array.controls as FormArray;
+                  index as i
+                ">
+                  <li class="w-100 ">
+                    <!-- <span class="formSpan">{{ i + 1 }}</span> -->
+                    <ng-container [formGroupName]="i">
+                      <div class="col-md-12 p-0" *ngIf="questionFormControl.optionsType.value == 'text'">
+                        <kt-editor [configType]="'math'" [editordata]="column1Array.value[i].value"
+                          (valuechanges)="column1Optionchanged($event, i)"></kt-editor>
+                          <button type="button" class="btn btn-md btn-primary answer-submit" (click)="addOption23ColFromEditor(optionInEditorModal, column1Array.value[i])">Or</button>
+                      </div>
+                      <ng-container *ngIf="!updateFlag; else updateCol1Image">
+                        <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'image'">
+                          <div class="avatar-edit">
+                            <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput
+                              (change)="onFileColumn1Changed($event, i)" />
+                          </div>
+                          <div class="avatar-preview">
+                            <div id="imagePreview">
+                              <img [src]="
+                              column1Array.controls[i].get('value').value
+                                ? column1Images[i]
+                                : imageupload
+                            " />
+                              <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                                <mat-icon>add_a_photo</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label>Image Title<span class="reqStar">*</span></label>
+                            <input class="form-control" type="text" name="file_text" formControlName="file_text"
+                              (blur)="checkColumnValidation(option, i, 'col1')" />
+                            <span class="text-danger" *ngIf="
+                            column1Array.controls[i].get('file_text').touched &&
+                            column1Array.controls[i].get('file_text').errors
+                              ?.required
+                          ">Image Title is required</span>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <ng-template #updateCol1Image>
+                        <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'image'">
+                          <div class="avatar-edit">
+                            <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput
+                              (change)="onFileColumn1Changed($event, i)" />
+                          </div>
+                          <div class="avatar-preview">
+                            <div id="imagePreview">
+                              <!-- [src]="optionFormArray.controls[i].get('value').value?images[i]:imageupload" -->
+                              <img [src]="
+                              option.get('value').value
+                                ? option.get('value').value
+                                : imageupload
+                            " />
+                              <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                                <mat-icon>add_a_photo</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label>Image Title<span class="reqStar">*</span></label>
+                            <input class="form-control" type="text" name="file_text" formControlName="file_text"
+                              (blur)="checkColumnValidation(option, i, 'col1')" />
+                            <span class="text-danger" *ngIf="
+                            column1Array.controls[i].get('file_text').touched &&
+                            column1Array.controls[i].get('file_text').errors
+                              ?.required
+                          ">Image Title is required</span>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <ng-container *ngIf="!updateFlag; else updateCol1Audio">
+                        <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                          <div class="avatar-edit">
+                            <input type="file" id="imageUpload" accept="audio/*" #fileInput
+                              (change)="onFileColumn1Changed($event, i)" />
+                          </div>
+                          <div class="avatar-preview">
+                            <div id="imagePreview">
+                              <img [src]="
+                              column1Array.controls[i].get('value').value
+                                ? audioThubmnail
+                                : imageupload
+                            " />
+                              <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                                <mat-icon>attach_file</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                          <audio *ngIf="column1Array.controls[i].get('value').value" controls
+                            [src]="column1Images[i]"></audio>
+                          <div class="form-group">
+                            <label>Audio Title<span class="reqStar">*</span></label>
+                            <input class="form-control" type="text" name="file_text" formControlName="file_text"
+                              (blur)="checkColumnValidation(option, i, 'col1')" />
+                            <span class="text-danger" *ngIf="
+                            column1Array.controls[i].get('file_text').touched &&
+                            column1Array.controls[i].get('file_text').errors
+                              ?.required
+                          ">Audio Title is required</span>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <ng-template #updateCol1Audio>
+                        <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                          <div class="avatar-edit">
+                            <input type="file" id="imageUpload" accept="audio/*" #fileInput
+                              (change)="onFileColumn1Changed($event, i)" />
+                          </div>
+                          <div class="avatar-preview">
+                            <div id="imagePreview">
+                              <img [src]="
+                              option.get('value').value
+                                ? option.get('value').value
+                                : imageupload
+                            " />
+                              <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                                <mat-icon>attach_file</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                          <audio *ngIf="column1Array.controls[i].get('value').value" controls
+                            [src]="column1Images[i]"></audio>
+                          <div class="form-group">
+                            <label>Audio Title<span class="reqStar">*</span></label>
+                            <input class="form-control" type="text" name="file_text" formControlName="file_text"
+                              (blur)="checkColumnValidation(option, i, 'col1')" />
+                            <span class="text-danger" *ngIf="
+                            column1Array.controls[i].get('file_text').touched &&
+                            column1Array.controls[i].get('file_text').errors
+                              ?.required
+                          ">Audio Title is required</span>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'video'">
+                        <div class="avatar-edit">
+                          <input type="file" id="imageUpload" accept="video/*" #fileInput
+                            (change)="onFileColumn1Changed($event, i)" />
+                        </div>
+                        <div class="avatar-preview">
+                          <div id="imagePreview">
+                            <img [src]="
+                            column1Array.controls[i].get('value').value
+                              ? videoThubmnail
+                              : imageupload
+                          " />
+                            <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                              <mat-icon>attach_file </mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                        <video *ngIf="column1Array.controls[i].get('value').value" controls
+                          [src]="column1Images[i]"></video>
+                        <div class="form-group">
+                          <label>Video Title<span class="reqStar">*</span></label>
+                          <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                          <span class="text-danger" *ngIf="
+                          column1Array.controls[i].get('file_text').touched &&
+                          column1Array.controls[i].get('file_text').errors
+                            ?.required
+                        ">Video Title is required</span>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </li>
+                </div>
+              </ol>
+            </ng-container>
+            <button type="button" mat-raised-button (click)="addColumn1Option()" class="btn btn-primary">
+              Add Option
+            </button>
+            <button type="button" mat-raised-button (click)="removeColumn1LastOption()" class="btn btn-primary">
+              Remove Last
+            </button>
+            <button type="button" mat-raised-button (click)="removeColumn1AllOption()" class="btn btn-primary">
+              Remove All
+            </button>
+          </div>
+          <div class="col">
+            <h4><strong>Column 2</strong></h4>
+            <ng-container formArrayName="column2">
+              <ol type="A" class="p-0">
+                <div class="option-div" *ngFor="
+                  let option of column2Array.controls as FormArray;
+                  index as i
+                ">
+                  <li class="w-100">
+                    <!-- <span class="formSpan">{{ i + 1 }}</span> -->
+                    <ng-container [formGroupName]="i">
+                      <div style="width: 100%" *ngIf="questionFormControl.optionsType.value == 'text'">
+                        <kt-editor [configType]="'math'" [editordata]="column2Array.value[i].value"
+                          (valuechanges)="column2Optionchanged($event, i)"></kt-editor>
+                          <button type="button" class="btn btn-md btn-primary answer-submit" (click)="addOption23ColFromEditor(optionInEditorModal, column2Array.value[i])">Or</button>
+                      </div>
+                      <ng-container *ngIf="!updateFlag; else updateCol2Image">
+                        <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'image'">
+                          <div class="avatar-edit">
+                            <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput
+                              (change)="onFileColumn2Changed($event, i)" />
+                          </div>
+                          <div class="avatar-preview">
+                            <div id="imagePreview">
+                              <img [src]="
+                              column2Array.controls[i].get('value').value
+                                ? column2Images[i]
+                                : imageupload
+                            " />
+                              <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                                <mat-icon>add_a_photo</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label>Image Title<span class="reqStar">*</span></label>
+                            <input class="form-control" type="text" name="file_text" formControlName="file_text"
+                              (blur)="checkColumnValidation(option, i, 'col2')" />
+                            <span class="text-danger" *ngIf="
+                            column2Array.controls[i].get('file_text').touched &&
+                            column2Array.controls[i].get('file_text').errors
+                              ?.required
+                          ">Image Title is required</span>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <ng-template #updateCol2Image>
+                        <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'image'">
+                          <div class="avatar-edit">
+                            <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput
+                              (change)="onFileColumn2Changed($event, i)" />
+                          </div>
+                          <div class="avatar-preview">
+                            <div id="imagePreview">
+                              <!-- [src]="optionFormArray.controls[i].get('value').value?images[i]:imageupload" -->
+                              <img [src]="
+                              option.get('value').value
+                                ? option.get('value').value
+                                : imageupload
+                            " />
+                              <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                                <mat-icon>add_a_photo</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label>Image Title<span class="reqStar">*</span></label>
+                            <input class="form-control" type="text" name="file_text" formControlName="file_text"
+                              (blur)="checkColumnValidation(option, i, 'col2')" />
+                            <span class="text-danger" *ngIf="
+                            column2Array.controls[i].get('file_text').touched &&
+                            column2Array.controls[i].get('file_text').errors
+                              ?.required
+                          ">Image Title is required</span>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <ng-container *ngIf="!updateFlag; else updateCol2Audio">
+                        <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                          <div class="avatar-edit">
+                            <input type="file" id="imageUpload" accept="audio/*" #fileInput
+                              (change)="onFileColumn2Changed($event, i)" />
+                          </div>
+                          <div class="avatar-preview">
+                            <div id="imagePreview">
+                              <img [src]="
+                              column2Array.controls[i].get('value').value
+                                ? audioThubmnail
+                                : imageupload
+                            " />
+                              <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                                <mat-icon>attach_file</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                          <audio *ngIf="column2Array.controls[i].get('value').value" controls
+                            [src]="column2Images[i]"></audio>
+                          <div class="form-group">
+                            <label>Audio Title<span class="reqStar">*</span></label>
+                            <input class="form-control" type="text" name="file_text" formControlName="file_text"
+                              (blur)="checkColumnValidation(option, i, 'col2')" />
+                            <span class="text-danger" *ngIf="
+                            column2Array.controls[i].get('file_text').touched &&
+                            column2Array.controls[i].get('file_text').errors
+                              ?.required
+                          ">Audio Title is required</span>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <ng-template #updateCol2Audio>
+                        <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                          <div class="avatar-edit">
+                            <input type="file" id="imageUpload" accept="audio/*" #fileInput
+                              (change)="onFileColumn2Changed($event, i)" />
+                          </div>
+                          <div class="avatar-preview">
+                            <div id="imagePreview">
+                              <img [src]="
+                              option.get('value').value
+                                ? option.get('value').value
+                                : imageupload
+                            " />
+                              <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                                <mat-icon>attach_file</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                          <audio *ngIf="column2Array.controls[i].get('value').value" controls
+                            [src]="column2Images[i]"></audio>
+                          <div class="form-group">
+                            <label>Audio Title<span class="reqStar">*</span></label>
+                            <input class="form-control" type="text" name="file_text" formControlName="file_text"
+                              (blur)="checkColumnValidation(option, i, 'col2')" />
+                            <span class="text-danger" *ngIf="
+                            column2Array.controls[i].get('file_text').touched &&
+                            column2Array.controls[i].get('file_text').errors
+                              ?.required
+                          ">Audio Title is required</span>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'video'">
+                        <div class="avatar-edit">
+                          <input type="file" id="imageUpload" accept="video/*" #fileInput
+                            (change)="onFileColumn2Changed($event, i)" />
+                        </div>
+                        <div class="avatar-preview">
+                          <div id="imagePreview">
+                            <img [src]="
+                            column2Array.controls[i].get('value').value
+                              ? videoThubmnail
+                              : imageupload
+                          " />
+                            <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                              <mat-icon>attach_file </mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                        <video *ngIf="column2Array.controls[i].get('value').value" controls
+                          [src]="column2Images[i]"></video>
+                        <div class="form-group">
+                          <label>Video Title<span class="reqStar">*</span></label>
+                          <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                          <span class="text-danger" *ngIf="
+                          column2Array.controls[i].get('file_text').touched &&
+                          column2Array.controls[i].get('file_text').errors
+                            ?.required
+                        ">Video Title is required</span>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </li>
+                </div>
+              </ol>
+            </ng-container>
+            <button type="button" mat-raised-button (click)="addColumn2Option()" class="btn btn-primary">
+              Add Option
+            </button>
+            <button type="button" mat-raised-button (click)="removeColumn2LastOption()" class="btn btn-primary">
+              Remove Last
+            </button>
+            <button type="button" mat-raised-button (click)="removeColumn2AllOption()" class="btn btn-primary">
+              Remove All
+            </button>
+          </div>
+          <div class="col" *ngIf="
+              questionaryForm.get('questionType').value == 'threeColMtf' ||
+              questionaryForm.get('questionType').value ==
+                '3colOptionLevelScoring'
+            ">
+            <h4><strong>Column 3</strong></h4>
+            <ng-container formArrayName="column3">
+              <ol type="i" class="p-0">
+                <div class="option-div" *ngFor="
+                  let option of column3Array.controls as FormArray;
+                  index as i
+                ">
+                  <li class="w-100">
+                    <!-- <span class="formSpan">{{ i + 1 }}</span> -->
+                    <ng-container [formGroupName]="i">
+                      <div style="width: 100%" *ngIf="questionFormControl.optionsType.value == 'text'">
+                        <kt-editor [configType]="'math'" [editordata]="column3Array.value[i].value"
+                          (valuechanges)="column3Optionchanged($event, i)"></kt-editor>
+                          <button type="button" class="btn btn-md btn-primary answer-submit" (click)="addOption23ColFromEditor(optionInEditorModal, column3Array.value[i])">Or</button>
+                      </div>
+                      <ng-container *ngIf="!updateFlag; else updateCol3Image">
+                        <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'image'">
+                          <div class="avatar-edit">
+                            <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput
+                              (change)="onFileColumn3Changed($event, i)" />
+                          </div>
+                          <div class="avatar-preview">
+                            <div id="imagePreview">
+                              <img [src]="
+                              column3Array.controls[i].get('value').value
+                                ? column3Images[i]
+                                : imageupload
+                            " />
+                              <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                                <mat-icon>add_a_photo</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label>Image Title<span class="reqStar">*</span></label>
+                            <input class="form-control" type="text" name="file_text" formControlName="file_text"
+                              (blur)="checkColumnValidation(option, i, 'col3')" />
+                            <span class="text-danger" *ngIf="
+                            column3Array.controls[i].get('file_text').touched &&
+                            column3Array.controls[i].get('file_text').errors
+                              ?.required
+                          ">Image Title is required</span>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <ng-template #updateCol3Image>
+                        <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'image'">
+                          <div class="avatar-edit">
+                            <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" #fileInput
+                              (change)="onFileColumn3Changed($event, i)" />
+                          </div>
+                          <div class="avatar-preview">
+                            <div id="imagePreview">
+                              <!-- [src]="optionFormArray.controls[i].get('value').value?images[i]:imageupload" -->
+                              <img [src]="
+                              option.get('value').value
+                                ? option.get('value').value
+                                : imageupload
+                            " />
+                              <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                                <mat-icon>add_a_photo</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label>Image Title<span class="reqStar">*</span></label>
+                            <input class="form-control" type="text" name="file_text" formControlName="file_text"
+                              (blur)="checkColumnValidation(option, i, 'col3')" />
+                            <span class="text-danger" *ngIf="
+                            column3Array.controls[i].get('file_text').touched &&
+                            column3Array.controls[i].get('file_text').errors
+                              ?.required
+                          ">Image Title is required</span>
+                          </div>
+                        </div>
+                      </ng-template>
+                      <ng-container *ngIf="!updateFlag; else updateCol3Audio">
+                        <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                          <div class="avatar-edit">
+                            <input type="file" id="imageUpload" accept="audio/*" #fileInput
+                              (change)="onFileColumn3Changed($event, i)" />
+                          </div>
+                          <div class="avatar-preview">
+                            <div id="imagePreview">
+                              <img [src]="
+                              column3Array.controls[i].get('value').value
+                                ? audioThubmnail
+                                : imageupload
+                            " />
+                              <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                                <mat-icon>attach_file</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                          <audio *ngIf="column3Array.controls[i].get('value').value" controls
+                            [src]="column3Images[i]"></audio>
+                          <div class="form-group">
+                            <label>Audio Title<span class="reqStar">*</span></label>
+                            <input class="form-control" type="text" name="file_text" formControlName="file_text"
+                              (blur)="checkColumnValidation(option, i, 'col3')" />
+                            <span class="text-danger" *ngIf="
+                            column3Array.controls[i].get('file_text').touched &&
+                            column3Array.controls[i].get('file_text').errors
+                              ?.required
+                          ">Audio Title is required</span>
+                          </div>
+                        </div>
+                      </ng-container>
+                      <ng-template #updateCol3Audio>
+                        <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                          <div class="avatar-edit">
+                            <input type="file" id="imageUpload" accept="audio/*" #fileInput
+                              (change)="onFileColumn3Changed($event, i)" />
+                          </div>
+                          <div class="avatar-preview">
+                            <div id="imagePreview">
+                              <img [src]="
+                              option.get('value').value
+                                ? option.get('value').value
+                                : imageupload
+                            " />
+                              <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                                <mat-icon>attach_file</mat-icon>
+                              </button>
+                            </div>
+                          </div>
+                          <audio *ngIf="column3Array.controls[i].get('value').value" controls
+                            [src]="column3Images[i]"></audio>
+                          <div class="form-group">
+                            <label>Audio Title<span class="reqStar">*</span></label>
+                            <input class="form-control" type="text" name="file_text" formControlName="file_text"
+                              (blur)="checkColumnValidation(option, i, 'col3')" />
+                            <span class="text-danger" *ngIf="
+                            column3Array.controls[i].get('file_text').touched &&
+                            column3Array.controls[i].get('file_text').errors
+                              ?.required
+                          ">Audio Title is required</span>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <div class="avatar-upload" *ngIf="questionFormControl.optionsType.value == 'video'">
+                        <div class="avatar-edit">
+                          <input type="file" id="imageUpload" accept="video/*" #fileInput
+                            (change)="onFileColumn3Changed($event, i)" />
+                        </div>
+                        <div class="avatar-preview">
+                          <div id="imagePreview">
+                            <img [src]="
+                            column3Array.controls[i].get('value').value
+                              ? videoThubmnail
+                              : imageupload
+                          " />
+                            <button mat-mini-fab color="primary" type="submit" (click)="fileInput.click()">
+                              <mat-icon>attach_file </mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                        <video *ngIf="column3Array.controls[i].get('value').value" controls
+                          [src]="column3Images[i]"></video>
+                        <div class="form-group">
+                          <label>Video Title<span class="reqStar">*</span></label>
+                          <input class="form-control" type="text" name="file_text" formControlName="file_text" />
+                          <span class="text-danger" *ngIf="
+                          column3Array.controls[i].get('file_text').touched &&
+                          column3Array.controls[i].get('file_text').errors
+                            ?.required
+                        ">Video Title is required</span>
+                        </div>
+                      </div>
+                    </ng-container>
+                  </li>
+                </div>
+              </ol>
+            </ng-container>
+            <button type="button" mat-raised-button (click)="addColumn3Option()" class="btn btn-primary">
+              Add Option
+            </button>
+            <button type="button" mat-raised-button (click)="removeColumn3LastOption()" class="btn btn-primary">
+              Remove Last
+            </button>
+            <button type="button" mat-raised-button (click)="removeColumn3AllOption()" class="btn btn-primary">
+              Remove All
+            </button>
+          </div>
+        </div>
+        <div class="col-md-12 col-xs-12 col-sm-12">
+          <button type="button" mat-raised-button [disabled]="questionFormControl.matchOptions.invalid" (click)="submitMatchOptions()"
+            class="btn btn-primary">
+            Next
+          </button>
+        </div>
+        <mat-spinner *ngIf="isLoader"></mat-spinner>
+        <ng-container *ngIf="!isLoader && matchSubmitted" formArrayName="options">
+          <h4><strong>Options</strong></h4>
+          <div class="col-sm-12 col-md-12 col-xs-12" *ngFor="
+              let option of optionFormArray.controls as FormArray;
+              index as i
+            ">
+            <ng-container [formGroupName]="i">
+              <div class="form-group">
+                <span class="formSpan">{{ i + 1 }}</span>
+                <input class="form-control" type="text" name="{{ i }}" formControlName="value" />
+              </div>
+            </ng-container>
+          </div>
+          <button type="button" mat-raised-button (click)="addColumnOption()" class="btn btn-primary">
+            Add Option
+          </button>
+          <button type="button" mat-raised-button (click)="removeColumnLastOption()" class="btn btn-primary">
+            Remove Last
+          </button>
+          <button type="button" mat-raised-button (click)="removeColumnAllOption()" class="btn btn-primary">
+            Remove All
+          </button>
+          <div class="col-md-12 col-xs-12 col-sm-12">
+            <button type="button" mat-raised-button [disabled]="optionFormArray.invalid" (click)="submitMatchOption()"
+              class="btn btn-primary">
+              Next
+            </button>
+          </div>
+        </ng-container>
+        <div class="row" *ngIf="submitted" formArrayName="answer">
+          <div *ngIf="!updateFlag; else updateCurrentCol">
+            <div *ngFor="let answer of answerFormArray.controls; index as i">
+              <mat-radio-group *ngIf="questionFormControl.questionType.value == 'twoColMtf'" formControlName="{{ i }}"
+                name="answer" color="primary">
+                <mat-label>
+                  <h3>
+                    <strong>Please enter correct matches<span class="reqStar">*</span></strong>
+                  </h3>
+                </mat-label>
+                <mat-radio-button class="example-radio-button" *ngFor="
+                    let options of questionaryForm.get('options')
+                      .controls as FormArray
+                  " [value]="options.value">
+                  {{ options.get("value").value }}
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+
+            <div *ngIf="
+                questionFormControl.questionType.value == 'threeColMtf' ||
+                questionFormControl.questionType.value ==
+                  '3colOptionLevelScoring'
+              ">
+              <mat-checkbox *ngFor="let options of optionFormArray.controls; index as i" class="example-margin"
+                (change)="onAnswerChange($event, i)" [value]="options.value">
+                <div class="answer-div">
+                  <span id="{{ 'mathOptId' + i }}">{{
+                    options.get("value").value
+                    }}</span>
+                </div>
+
+                <!-- <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                  <span id="{{'mathOptId' + i}}">{{options.get('value').value}}</span>
+                </div> -->
+                <!-- <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'image'">
+                  <img [src]="options.get('value').value?options.get('value').value:imageupload">
+                  <span>{{options.get('file_text').value?options.get('file_text').value:'no value'}}</span>
+                </div>
+                <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                  <audio controls [src]="options.get('value').value?options.get('value').value:imageupload"></audio>
+                  <span>{{options.get('file_text').value}}</span>
+                </div>
+                <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'video'">
+                  <video controls [src]="options.get('value').value"></video>
+                  <span>{{options.get('file_text').value}}</span>
+                </div> -->
+                <ng-container *ngIf="
+                    questionFormControl.questionType.value ==
+                    '3colOptionLevelScoring'
+                  ">
+                  <input type="number" id="i" (input)="optionInputChanged($event, i)"
+                    [disabled]="options.value.isDisable" />
+                </ng-container>
+              </mat-checkbox>
+            </div>
+          </div>
+          <ng-template #updateCurrentCol>
+            <div *ngFor="let answer of answerFormArray.controls; index as i">
+              <mat-radio-group *ngIf="questionFormControl.questionType.value == 'twoColMtf'" formControlName="{{ i }}"
+                name="answer" color="primary">
+                <mat-label>
+                  <h3>
+                    <strong>Please enter correct matches<span class="reqStar">*</span></strong>
+                  </h3>
+                </mat-label>
+                <mat-radio-button class="example-radio-button" *ngFor="
+                    let options of questionaryForm.get('options')
+                      .controls as FormArray
+                  " [value]="options.value" [checked]="
+                    question.answer[0].value === options.get('value').value
+                  ">
+                  {{ options.get("value").value }}
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
+
+            <div *ngIf="
+                questionFormControl.questionType.value == 'threeColMtf' ||
+                questionFormControl.questionType.value ==
+                  '3colOptionLevelScoring'
+              ">
+              <mat-checkbox *ngFor="let options of optionFormArray.controls; index as j"
+                [checked]="setAnswerForMcq(options.get('value').value)" class="example-margin"
+                (change)="onAnswerChange($event, j)" [value]="options.value">
+                <div class="answer-div">
+                  <span id="{{ 'mathOptId' + j }}">{{
+                    options.get("value").value
+                    }}</span>
+                </div>
+                <!-- <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'text'">
+                  <span id="{{'mathOptId' + j}}">{{options.get('value').value}}</span>
+                </div>
+                <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'image'">
+                  <img [src]="options.get('value').value?options.get('value').value:imageupload">
+                  <span>{{options.get('file_text').value}}</span>
+                </div>
+                <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'audio'">
+                  <audio controls [src]="options.get('value').value?options.get('value').value:imageupload"></audio>
+                  <span>{{options.get('file_text').value}}</span>
+                </div>
+                <div class="answer-div" *ngIf="questionFormControl.optionsType.value == 'video'">
+                  <video controls [src]="options.get('value').value"></video>
+                  <span>{{options.get('file_text').value}}</span>
+                </div> -->
+                <ng-container *ngIf="
+                    questionFormControl.questionType.value ==
+                    '3colOptionLevelScoring'
+                  ">
+                  <input type="number"  [value]="options.get('score').value"
+                    (input)="optionInputChanged($event, j)" [disabled]="options.value.isDisable" />
+                </ng-container>
+              </mat-checkbox>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <!--  -->
+        <ng-container *ngIf="!id">
+          <button type="button"  mat-raised-button class="btn btn-primary" (click)="resetButton()" style="float: right">
+            Reset
+          </button>
+        </ng-container>
+        <button type="button" mat-raised-button *ngIf="questionFormControl.questionType && questionFormControl.questionType.value == 'comprehension'" [disabled]="!(comprehensionQuestionArray | comprehensionFormValidate : questionFormControl : pipeRefreshCount)" (click)="submitAnswer($event)"  class="btn btn-primary"
+          style="float: right">
+          Submit Question
+        </button>
+        <button type="button" mat-raised-button *ngIf="questionaryForm.get('questionType').value != 'comprehension'" [disabled]="questionaryForm.invalid" (click)="submitAnswer()" class="btn btn-primary"
+          style="float: right">
+          Submit Question
+        </button>
+      </div>
+    </div>
+   
+  </form>
+
+</div>
+
+<ng-template #optionInEditorModal let-modal>
+  <div class="modal-header">
+    <!-- <h4 class="modal-title">Add Text</h4> -->
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss(false)">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <editor apiKey="z9dzc87sg0nk112m5vx7phbkan0tfek10e5w8mwes1xplpyi" [init]="({
+      quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quicktable quickimage',
+      toolbar_mode: 'sliding',
+      contextmenu: 'link image imagetools table',
+       height: 350,
+       plugins: [
+         'advlist autolink lists link charmap print preview anchor',
+         'searchreplace visualblocks code fullscreen',
+         'insertdatetime media table code help powerpaste wordcount',
+         'print preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons tinymce-formula'
+       ],
+      
+       menubar: 'file edit view insert format tools table help',
+    toolbar_sticky: true,
+    autosave_ask_before_unload: true,
+    autosave_interval: '30s',
+    autosave_restore_when_empty: false,
+    autosave_retention: '2m',
+   
+    external_plugins: { tiny_mce_wiris: 'https://www.wiris.net/demo/plugins/tiny_mce/plugin.js' },
+    
+       toolbar:
+          
+         'undo redo | formatselect | bold italic backcolor | \
+         alignleft aligncenter alignright alignjustify | \
+         bullist numlist outdent indent | removeformat | help | tiny_mce_wiris_formulaEditor tiny_mce_wiris_formulaEditorChemistry '
+     })" [ngModelOptions]="{standalone: true}"
+      [(ngModel)]="addOptionTextEditor"  ></editor>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-md btn-primary answer-submit" (click)="modal.close(true)">ADD</button>
+  </div>
+</ng-template>

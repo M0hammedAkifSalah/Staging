@@ -1,0 +1,15 @@
+<div class="pd-15">
+    <h2>Solution Box</h2>
+</div>
+
+<div class="row">
+    <div class="col-md-12 editor">
+        <!-- <angular-editor [(ngModel)]="answerExplain" [config]="config"></angular-editor> -->
+        <editor [init]="{base_url: '/tinymce', suffix: '.min'}" [disabled]="readyOnly" [ngModelOptions]="{standalone: true}" name="val1" [(ngModel)]="answerExplain"></editor>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <button class="btn btn-md btn-primary answer-submit" (click)="submitAnswerExplain()" *ngIf="!readyOnly">Answer explanation</button>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 heading">
+      <span>
+        <h4>Map Syllabus to you Classes </h4>
+      </span>
+    </div>
+  </div>
+</div>
+<div [formGroup]="syllabusForm">
+  <table mat-table class="tbl" [dataSource]="dataSource" matSort formArrayName="syllabusMap">
+    <ng-container matColumnDef="Class">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> class </th>
+      <td mat-cell *matCellDef="let row">{{row.className}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Syllabus">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Syllabus</th>
+      <td mat-cell *matCellDef="let index = index" [formGroupName]="index">
+        <select name="board" class="form-control" (change)="checkValidation()" formControlName="syllabus" placeholder="-- select an option --">
+          <option *ngFor="let syl of syllabus; let i =index" [value]="syl.name">
+            {{syl.name}}
+          </option>
+        </select>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+  <div class="row">
+    <div class="col-md-12">
+      <button class="btn add-btn" [disabled]="syllabusFlag" (click)="addSyllabus()">
+        <span *ngIf="updateFlag">Update Syllabus</span>
+        <span *ngIf="!updateFlag">Add Syllabus</span>
+      </button>
+    </div>
+  </div>
+</div>

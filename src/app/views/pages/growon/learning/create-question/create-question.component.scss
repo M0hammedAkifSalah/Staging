@@ -1,0 +1,121 @@
+.option-div {
+  display: flex;
+  align-items: center;
+  padding-bottom: 10px;
+
+  .formSpan {
+    font-size: 20px;
+    padding: 10px;
+  }
+
+  .avatar-upload {
+    position: relative;
+    display: flex;
+
+    .avatar-edit {
+      position: absolute;
+      right: 19px;
+      z-index: 1;
+      top: 13px;
+
+      input {
+        display: none;
+      }
+    }
+
+    .avatar-preview {
+      width: 120px;
+      height: 120px;
+      position: relative;
+      border-radius: 5px;
+      overflow: visible;
+      border: 5px solid #fff;
+      -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+      -moz-box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+      box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+
+      div {
+        width: 100%;
+        height: 100%;
+        border-radius: 100%;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+
+        button {
+          right: 0;
+          position: absolute;
+          bottom: 0;
+
+          .material-icons {
+            font-size: 22px !important;
+          }
+
+        }
+      }
+    }
+
+    .form-group {
+      margin: 0;
+      align-self: center;
+      padding: 20px;
+    }
+  }
+
+  .text-editor-div {
+    width: 100%;
+  }
+
+  audio {
+    align-self: center;
+  }
+
+  video {
+    width: 150px;
+    padding: 0 10px;
+  }
+}
+
+button {
+  margin: 5px;
+}
+
+.example-radio-group,
+.example-margin {
+  .answer-div {
+    display: flex;
+    align-items: center;
+  }
+
+  img,
+  video {
+    width: 120px;
+    height: 120px;
+    border: 5px white solid;
+    border-radius: 5px;
+  }
+
+  span {
+    padding: 10px;
+    font-size: 18px;
+  }
+}
+
+mat-checkbox {
+  display: block;
+}
+.background{
+  background-color: white;
+}
+.bg{
+  background-color: white !important;
+  margin: -15px;
+  margin-left: -25px;
+  margin-right: -25px;
+  padding: 25px;
+}

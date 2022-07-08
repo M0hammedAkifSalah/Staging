@@ -1,0 +1,30 @@
+
+
+.mat-form-field {
+  width: 100% !important;
+}
+.mat-form-field-appearance-legacy .mat-form-field-underline {
+  background-color: #111;
+}
+
+ .classcontainer{
+    padding: 10px;
+//     display: flex;
+//   flex-direction: column;
+}
+
+// ::ng-deep .cdk-overlay-container {
+//     z-index: 1200 !important;
+//   }
+
+//   // /deep/ 
+//   .cdk-overlay-container {
+//     z-index: 1200 !important;
+//   }
+
+//   .cdk-global-overlay-wrapper, .cdk-overlay-container {
+//     z-index: 99999 !important;
+//   }
+.mat-radio-button.mat-primary.mat-radio-checked .mat-radio-outer-circle {
+  border-color: #ffbd51 !important;
+}

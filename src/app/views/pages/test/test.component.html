@@ -1,0 +1,2 @@
+<input type="file" accept=".csv" style="display: none;" name="files" #uploads (change)="import(uploads.files)" multiple value="process"/>
+<button class="primary-btn" (click)="uploads.click()">Upload startups</button>

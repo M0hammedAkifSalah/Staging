@@ -1,0 +1,139 @@
+<div class="row classContainer" autocomplete="off">
+  <h3>Assign Role</h3>
+  <div class="row" style="width: 100%;">
+    <div class="col-md-5 col-sm-5 col-xs-12">
+      <form [formGroup]="assignRoleForm" (ngSubmit)="addUser()">
+        <div class="form-group">
+          <label>Name*</label>
+          <input type="text" name="name" id="" class="form-control" formControlName="name">
+          <mat-error *ngIf="assignRoleForm.get('name').hasError('required')"> Name is required </mat-error>
+          <mat-error *ngIf="assignRoleForm.get('name').hasError('maxlength')">You can only enter maximum
+            of 50 character </mat-error>
+        </div>
+        <div class="form-group">
+          <label>Password*</label>
+          <input type="text" name="password" id="" class="form-control" formControlName="password">
+          <mat-error *ngIf="assignRoleForm.get('password').hasError('required')"> password is required </mat-error>
+        </div>
+        <div class="form-group">
+          <label>Contact Number*</label>
+          <input type="tel" name="mobile" id="" class="form-control" formControlName="mobile">
+          <mat-error *ngIf="assignRoleForm.get('mobile').hasError('required')"> contact number is required </mat-error>
+          <mat-error *ngIf="assignRoleForm.get('mobile').hasError('maxlength')"> you can enter maximum of 15
+            numbers </mat-error>
+          <mat-error *ngIf="assignRoleForm.get('mobile').hasError('minlength')"> You should enter minimum of
+            10 numbers</mat-error>
+          <mat-error *ngIf="assignRoleForm.get('mobile').hasError('pattern')"> Contact number can only have
+            numbers</mat-error>
+        </div>
+        <div class="form-group">
+          <label>Email Address*</label>
+          <input type="email" name="email" id="" class="form-control" formControlName="email">
+          <mat-error *ngIf="assignRoleForm.get('email').hasError('pattern')"> email should be in this
+            format(example@mail.com)
+          </mat-error>
+        </div>
+        <div class="form-group">
+          <label>Primary Role*<span class="reqStar">*</span></label>
+          <ng-select name="profileType" id="" formControlName="profile_type" required>
+            <ng-option *ngFor="let item of roles" [value]="item._id">{{item.display_name}}</ng-option>
+          </ng-select>
+          <mat-error *ngIf="assignRoleForm.get('profile_type').hasError('required')"> Primary Role is required
+          </mat-error>
+        </div>
+
+        <div class="form-group import-btn">
+          <button class="btn btn-primary" [disabled]="!assignRoleForm.valid">Add User</button>
+          <input type="reset" id="reset" class="btn btn-primary" value="Reset" hidden>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-7 col-sm-7 col-xs-12 allclasses">
+      <!-- <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">SL No</th>
+            <th scope="col"> Name</th>
+            <th scope="col">Phone Number</th>
+            <th scope="col">Primary Role</th>
+            <th scope="col">Update</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="userLoaded">
+          <tr *ngFor="let user of users; let i = index">
+            <th scope="row">{{i+1}}</th>
+            <th>{{user.name}}</th>
+            <th>{{user.mobile}}</th>
+            <th>{{user.profile_type.display_name}}</th>
+            <th><button class="btn btn-primary" (click)="updateUser(user)">Update</button></th>
+            <th><button class="btn btn-primary" (click)="deleteUser(user._id)">Delete</button></th>
+          </tr>
+        </tbody>
+        <tfoot> -->
+      <!-- <tr>
+            <td><span (click)="prev()" *ngIf="index != 0" class="navLinks"><strong>Prev</strong></span></td>
+            <td></td>
+            <td></td>
+            <td><span (click)="next()" *ngIf="index >= 0" class="navLinks"><strong>Next</strong></span></td>
+          </tr> -->
+      <!-- </tfoot>
+      </table> -->
+
+      <mat-form-field>
+        <mat-label>Filter</mat-label>
+        <input matInput placeholder="Search a Role" (keyup)="applyFilter($event)" #input>
+      </mat-form-field>
+
+      <div class="mat-elevation-z8">
+        <table mat-table [dataSource]="dataSource" matSort>
+
+          <!--  name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+            <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+          </ng-container>
+
+          <!-- phone number  Column -->
+          <ng-container matColumnDef="mobile">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Phone Number </th>
+            <td mat-cell *matCellDef="let row"> {{row.mobile}} </td>
+          </ng-container>
+
+          <!-- primary role Column -->
+          <!-- <ng-container matColumnDef="profileType">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Primary Role </th>
+            <td mat-cell *matCellDef="let row"> {{row.profile_type.role_name}} </td>
+          </ng-container> -->
+
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
+            <td mat-cell *matCellDef="let row">
+              <button class="btn btn-primary" (click)="updateUser(row)">
+                <mat-icon aria-hidden="false" aria-label="Update">edit</mat-icon>
+              </button>
+              <button class="btn btn-primary" (click)="deleteUser(row)">
+                <mat-icon aria-hidden="false" aria-label="Delete">delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          <!-- Row shown when there is no matching data. -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+          </tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      </div>
+
+
+      <h3 *ngIf="!userLoaded" style="text-align: center; margin-top: 40px;"><strong>Loading roles please wait</strong>
+      </h3>
+    </div>
+  </div>
+</div>
