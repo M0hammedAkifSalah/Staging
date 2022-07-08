@@ -16,7 +16,7 @@ phases:
       - pwd
   build:
     commands:
-      - npm run build
+      - ng build 
   post_build:
     commands:
       - echo Build completed on `date`
