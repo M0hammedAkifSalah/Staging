@@ -5,7 +5,7 @@
     "scripts": {
         "serve": "node --max_old_space_size=12288 ./node_modules/@angular/cli/bin/ng serve",
         "ng": "ng",
-        "build":"ng build",
+        "build": "node --max_old_space_size=5000 ./node_modules/@angular/cli/bin/ng build --output-hashing all",
         "start": "node --max_old_space_size=6168 node_modules/@angular/cli/bin/ng serve",
         "prodBuild": "node --max_old_space_size=12288 ./node_modules/@angular/cli/bin/ng build --configuration prod",
         "preProdBuild": "node --max_old_space_size=12288 ./node_modules/@angular/cli/bin/ng build --configuration preprod",
