@@ -12,17 +12,15 @@ phases:
       - npm install -g @angular/cli@9.0.7 --unsafe-perm=true --allow-root
   pre_build:
     commands:
+      - cd FE/
       - npm i
   build:
     commands:
       - npm run build
-      - pwd
   post_build:
     commands:
       - echo Build completed on `date`
 # Include only the files required for your application to run.
 artifacts:
   files:
-    - "**/*"
-  discard-paths: no
-  base-directory: dist
+    - '**/*'
